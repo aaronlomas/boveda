@@ -28,14 +28,14 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-panel/60 backdrop-blur-sm"
   on:click={close}
   on:keydown={handleKeydown}
   role="dialog"
   aria-modal="true"
   tabindex="-1"
 >
-  <div class="w-full max-w-[440px] bg-white/4 backdrop-blur-2xl border border-white/10 rounded-2xl p-8 shadow-2xl relative">
+  <div class="w-full max-w-[440px] bg-surface/4 backdrop-blur-2xl border border-surface/10 rounded-2xl p-8 shadow-2xl relative">
     <div class="flex items-center gap-3 mb-4">
       <div class="w-9 h-9 rounded-lg grid place-items-center {type === 'danger' ? 'bg-danger/15 text-[#f87171] border border-danger/20' : ''}">
         <IconAlertTriangle size={20} />
@@ -47,8 +47,8 @@
       <p class="text-text-secondary text-[14px] leading-relaxed">{message}</p>
     </div>
 
-    <div class="flex gap-3 justify-end border-t border-white/8 pt-4">
-      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border border-white/10 bg-white/5 text-text-secondary hover:bg-white/10 hover:text-text-primary min-w-[100px]" on:click={() => dispatch("cancel")}>
+    <div class="flex gap-3 justify-end border-t border-surface/8 pt-4">
+      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={() => dispatch("cancel")}>
         {cancelText}
       </button>
       <button 

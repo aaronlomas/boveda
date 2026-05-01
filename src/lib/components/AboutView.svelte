@@ -18,7 +18,7 @@
 
   <div class="space-y-6">
     <!-- Card 1 -->
-    <div class="p-6 bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl flex gap-5 items-start transition-all hover:bg-white/5">
+    <div class="p-6 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl flex gap-5 items-start transition-all hover:bg-surface/5">
       <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center shrink-0">
         <IconCode size={24} />
       </div>
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Card 2 -->
-    <div class="p-6 bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl flex gap-5 items-start transition-all hover:bg-white/5">
+    <div class="p-6 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl flex gap-5 items-start transition-all hover:bg-surface/5">
       <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center shrink-0">
         <IconDatabase size={24} />
       </div>
@@ -44,7 +44,7 @@
     </div>
 
     <!-- Card 3 -->
-    <div class="p-6 bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl flex gap-5 items-start transition-all hover:bg-white/5">
+    <div class="p-6 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl flex gap-5 items-start transition-all hover:bg-surface/5">
       <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center shrink-0">
         <IconShieldCheck size={24} />
       </div>
@@ -56,7 +56,7 @@
       </div>
     </div>
   </div>
-  <li>
-    <p>Para Actualizar este programa, debe volver a descargar la última versión desde <a href="https://github.com/aaronlomas/boveda/releases/">GitHub Releases</a></p>
+  <li class="py-2 my-4">
+    <p class="text-sm">Para Actualizar este programa, debe volver a descargar la última versión desde <a class="cursor-pointer hover:underline text-accent" href="https://github.com/aaronlomas/boveda/releases/" target="_blank">Github Releases</a></p>
   </li>
 </div>

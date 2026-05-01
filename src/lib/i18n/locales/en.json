@@ -31,6 +31,17 @@
       "preview_active_item": "Selected Item",
       "bg_description": "Background Color",
       "title_options": "Accent Theme",
+      "appearance": "Appearance",
+      "mode_light": "Light",
+      "mode_dark": "Dark",
+      "mode_system": "System",
+      "presets_title": "Recommended Themes",
+      "presets": {
+        "midnight_violet": "Midnight Violet",
+        "ocean_light": "Ocean Light",
+        "matrix_dark": "Terminal Matrix",
+        "crimson_light": "Crimson Light"
+      },
       "bg_dark": "Pure Dark (Default)",
       "bg_dark_desc": "Minimalist deep black background",
       "bg_solid": "Solid Color",
@@ -39,7 +50,11 @@
       "bg_image": "Custom Image",
       "bg_image_loading": "Loading...",
       "bg_image_click": "Click to change",
-      "bg_image_formats": "JPG, PNG, WEBP, or GIF"
+      "bg_image_formats": "JPG, PNG, WEBP, or GIF",
+      "text_primary_label": "Primary Text Color",
+      "text_primary_desc": "Color of titles and main content",
+      "text_secondary_label": "Secondary Text Color",
+      "text_secondary_desc": "Color of labels and supporting text"
     },
     "language": {
       "description": "Select your preferred language.",

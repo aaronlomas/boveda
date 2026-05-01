@@ -13,7 +13,7 @@
     </p>
   </div>
 
-  <div class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl">
+  <div class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl">
     <div class="w-16 h-16 rounded-2xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center mb-2">
       <IconFileDescription size={32} />
     </div>

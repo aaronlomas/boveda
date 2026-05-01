@@ -30,6 +30,17 @@
       "preview_active": "Vista previa Activo",
       "preview_active_item": "Elemento Seleccionado",
       "title_options": "Tema de Acento",
+      "appearance": "Apariencia",
+      "mode_light": "Claro",
+      "mode_dark": "Oscuro",
+      "mode_system": "Sistema",
+      "presets_title": "Temas Recomendados",
+      "presets": {
+        "midnight_violet": "Violeta Medianoche",
+        "ocean_light": "Océano Claro",
+        "matrix_dark": "Terminal Matrix",
+        "crimson_light": "Carmín Claro"
+      },
       "bg_description": "Color de fondo",
       "bg_dark": "Oscuro Puro (Por defecto)",
       "bg_dark_desc": "Fondo minimalista negro profundo",
@@ -39,7 +50,11 @@
       "bg_image": "Imagen Personalizada",
       "bg_image_loading": "Cargando...",
       "bg_image_click": "Haz clic para cambiar",
-      "bg_image_formats": "JPG, PNG, WEBP o GIF"
+      "bg_image_formats": "JPG, PNG, WEBP o GIF",
+      "text_primary_label": "Color de Texto Primario",
+      "text_primary_desc": "Color de los títulos y contenido principal",
+      "text_secondary_label": "Color de Texto Secundario",
+      "text_secondary_desc": "Color de etiquetas y textos de apoyo"
     },
     "language": {
       "description": "Selecciona tu idioma preferido.",

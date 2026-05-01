@@ -15,9 +15,13 @@
   --color-danger: #ef4444;
   --color-warning: #f59e0b;
   
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #9999a3;
-  --color-text-muted: #848487;
+  --color-text-primary: var(--text-primary, var(--fallback-text-primary));
+  --color-text-secondary: var(--text-secondary, var(--fallback-text-secondary));
+  --color-text-muted: var(--text-muted, #848487);
+  
+  /* Semantic Surfaces */
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
   
   /* Radii */
   --radius-sm: 8px;
@@ -43,6 +47,21 @@
     font-family: "Inter", system-ui, sans-serif;
     color: var(--color-text-primary);
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Theming variables ────────────────────────────────────────────────── */
+  :root {
+    --surface: #ffffff; /* glass objects are white with opacity in dark mode */
+    --panel: #000000;   /* deep panels are black with opacity in dark mode */
+    --fallback-text-primary: #ffffff;
+    --fallback-text-secondary: #9999a3;
+  }
+  
+  :root.light-mode {
+    --surface: #000000; /* glass objects are black with opacity in light mode */
+    --panel: #ffffff;   /* deep panels are white with opacity in light mode */
+    --fallback-text-primary: #0f172a;
+    --fallback-text-secondary: #475569;
   }
 
   /* ─── Dynamic Background ───────────────────────────────────────────────── */

@@ -68,11 +68,11 @@
 </script>
 
 <aside 
-  class="h-screen bg-white/4 border-r border-white/8 flex flex-col p-6 px-4 gap-2 transition-[width,min-width] duration-300 overflow-hidden backdrop-blur-2xl relative z-10"
+  class="h-screen bg-surface/4 border-r border-surface/8 flex flex-col p-6 px-4 gap-2 transition-[width,min-width] duration-300 overflow-hidden backdrop-blur-2xl relative z-10"
   style="width: {$sidebarCollapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar-w)'}; min-width: {$sidebarCollapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar-w)'};"
 >
   <!-- Brand -->
-  <div class="flex items-center gap-3 px-1 pb-5 border-b border-white/8 mb-3 overflow-hidden whitespace-nowrap">
+  <div class="flex items-center gap-3 px-1 pb-5 border-b border-surface/8 mb-3 overflow-hidden whitespace-nowrap">
     <div class="text-2xl shrink-0 w-10 h-10 flex items-center justify-center bg-transparent rounded-sm border-none">
       <img src="/boveda.svg" alt="Logo" width="50" height="50" />
     </div>
@@ -102,7 +102,7 @@
 
   <!-- Logout button -->
   <button
-    class="mt-auto flex items-center gap-3 p-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-[13px] transition-all whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-white"
+    class="mt-auto flex items-center gap-3 p-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-[13px] transition-all whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
     on:click={logout}
     data-tooltip={$sidebarCollapsed ? $_("sidebar.logout") : undefined}
   >
@@ -114,7 +114,7 @@
 
   <!-- Collapse toggle -->
   <button 
-    class="flex items-center gap-2.5 p-2.5 px-3 border-none border-t border-white/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-[12px] transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary" 
+    class="flex items-center gap-2.5 p-2.5 px-3 border-none border-t border-surface/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-[12px] transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary" 
     on:click={toggle} 
     aria-label="Toggle sidebar"
   >

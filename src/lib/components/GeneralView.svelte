@@ -16,7 +16,7 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
     <!-- Card Cuentas -->
-    <button class="flex flex-col items-start text-left p-6 gap-4 bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl hover:border-accent/30 hover:bg-white/7 transition-all group cursor-pointer" on:click={() => activeView.set('accounts')}>
+    <button class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group cursor-pointer" on:click={() => activeView.set('accounts')}>
       <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
         <IconKey size={24} />
       </div>
@@ -27,8 +27,8 @@
     </button>
 
     <!-- Card Seguridad PIN -->
-    <button class="flex flex-col items-start text-left p-6 gap-4 bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl hover:border-accent/30 hover:bg-white/7 transition-all group cursor-pointer relative overflow-hidden" on:click={() => activeView.set('pin')}>
-      <div class="absolute top-4 right-4 bg-white/10 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-sm">
+    <button class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group cursor-pointer relative overflow-hidden" on:click={() => activeView.set('pin')}>
+      <div class="absolute top-4 right-4 bg-surface/10 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-sm">
         {$_("general_view.coming_soon")}
       </div>
       <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -41,8 +41,8 @@
     </button>
 
     <!-- Card Tokens / Claves dinámicas -->
-    <button class="flex flex-col items-start text-left p-6 gap-4 bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl hover:border-accent/30 hover:bg-white/7 transition-all group cursor-pointer relative overflow-hidden" on:click={() => activeView.set('tokens')}>
-      <div class="absolute top-4 right-4 bg-white/10 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-sm">
+    <button class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group cursor-pointer relative overflow-hidden" on:click={() => activeView.set('tokens')}>
+      <div class="absolute top-4 right-4 bg-surface/10 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-sm">
         {$_("general_view.coming_soon")}
       </div>
       <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-light border border-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">

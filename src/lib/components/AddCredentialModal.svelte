@@ -145,16 +145,16 @@
 </script>
 
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-panel/60 backdrop-blur-sm"
   on:click={(e) => { if (e.target === e.currentTarget) close(); }}
   on:keydown={(e) => { if (e.key === "Escape") close(); }}
   role="dialog"
   aria-modal="true"
   tabindex="-1"
 >
-  <div class="w-full max-w-[440px] max-h-[90vh] bg-white/4 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
+  <div class="w-full max-w-[440px] max-h-[90vh] bg-surface/4 backdrop-blur-2xl border border-surface/10 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
     <!-- Header -->
-    <div class="flex items-center justify-between p-6 pb-4 border-b border-white/5 shrink-0">
+    <div class="flex items-center justify-between p-6 pb-4 border-b border-surface/5 shrink-0">
       <h2 class="text-lg font-bold text-text-primary">{$_("add_credential.title")}</h2>
     </div>
 
@@ -166,7 +166,7 @@
         <label for="add-site" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.site_label")}</label>
         <input
           id="add-site"
-          class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-white/8 transition-all"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
           bind:value={site}
           placeholder={$_("add_credential.site_placeholder")}
         />
@@ -177,7 +177,7 @@
         <label for="add-user" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.user_label")}</label>
         <input
           id="add-user"
-          class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-white/8 transition-all"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
           bind:value={username}
           placeholder={$_("add_credential.user_placeholder")}
           autocomplete="off"
@@ -202,7 +202,7 @@
         <div class="relative">
           <input
             id="add-pw"
-            class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-white/8 transition-all pr-10"
+            class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all pr-10"
             type={showPw ? "text" : "password"}
             bind:value={password}
             placeholder={$_("add_credential.placeholder") || "•••••••••••••••"}
@@ -224,7 +224,7 @@
         <!-- Strength bar -->
         {#if password}
           <div class="flex items-center gap-2.5 mt-1">
-            <div class="flex-1 h-[3px] rounded-sm bg-white/10 overflow-hidden">
+            <div class="flex-1 h-[3px] rounded-sm bg-surface/10 overflow-hidden">
               <div
                 class="h-full rounded-sm transition-[width,background] duration-300"
                 style="width: {strength.score * 20}%; background: {strength.color}"
@@ -239,12 +239,12 @@
         <!-- Generator panel -->
         {#if showGenerator}
           <div class="p-4 flex flex-col gap-3 rounded-xl border border-accent/20 bg-accent/10 backdrop-blur-md">
-            <div class="flex items-center gap-2 bg-black/30 rounded-sm p-2.5 px-3">
+            <div class="flex items-center gap-2 bg-panel/30 rounded-sm p-2.5 px-3">
               <code class="flex-1 font-mono text-[13px] text-accent-light break-all select-all"
                 >{genLoading ? $_("add_credential.generating") : genPreview}</code>
               <button
                 type="button"
-                class="p-1.5 text-text-muted hover:text-text-primary hover:bg-white/7 rounded-md transition-all flex items-center justify-center"
+                class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/7 rounded-md transition-all flex items-center justify-center"
                 on:click={refreshPreview}
                 data-tooltip={$_("add_credential.regenerate_tooltip")}
                 aria-label={$_("add_credential.regenerate_tooltip")}>↻</button>
@@ -279,7 +279,7 @@
             <div class="flex gap-2 justify-end mt-1 flex-wrap">
               <button
                 type="button"
-                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-[13px] font-bold cursor-pointer transition-all border border-white/10 bg-white/5 text-text-secondary hover:bg-white/10 hover:text-text-primary"
+                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-[13px] font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary"
                 on:click={copyGenerated}
               >
                 {genCopied ? $_("add_credential.copied_button") : $_("add_credential.copy_button")}
@@ -301,7 +301,7 @@
         <label for="add-notes" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.notes_label")}</label>
         <textarea
           id="add-notes"
-          class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-white/8 transition-all resize-vertical min-h-[72px]"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all resize-vertical min-h-[72px]"
           bind:value={notes}
           placeholder={$_("add_credential.notes_placeholder")}
           rows="3"
@@ -316,13 +316,13 @@
     </div>
 
     <!-- Fixed Footer -->
-    <div class="p-6 pt-4 border-t border-white/5 flex gap-2.5 justify-end shrink-0">
-      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border border-white/10 bg-white/5 text-text-secondary hover:bg-white/10 hover:text-text-primary min-w-[100px]" on:click={close}
+    <div class="p-6 pt-4 border-t border-surface/5 flex gap-2.5 justify-end shrink-0">
+      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={close}
         >{$_("add_credential.cancel_button")}</button
       >
       <button form="add-credential-form" type="submit" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed min-w-[100px] gap-1.5" disabled={loading}>
         {#if loading}
-          <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> {$_("add_credential.saving")}
+          <span class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin"></span> {$_("add_credential.saving")}
         {:else}
           {$_("add_credential.save_button")}
         {/if}

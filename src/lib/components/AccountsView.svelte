@@ -153,7 +153,7 @@
       <IconSearch size={18} />
     </div>
     <input
-      class="w-full px-4 py-3 pl-10 bg-white/5 border border-white/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-white/8 transition-all"
+      class="w-full px-4 py-3 pl-10 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
       bind:value={search}
       placeholder={$_("dashboard.search_placeholder")}
     />
@@ -172,10 +172,10 @@
   {:else}
     <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
       {#each filtered as account (account.id)}
-        <div class="p-5 flex flex-col gap-3.5 transition-all bg-white/4 backdrop-blur-2xl rounded-2xl border border-white/8 shadow-xl hover:border-accent/30 hover:translate-y-[-2px]">
+        <div class="p-5 flex flex-col gap-3.5 transition-all bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:translate-y-[-2px]">
           <!-- favicon / avatar -->
           <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-[10px] bg-white/5 border border-white/10 grid place-items-center shrink-0 text-lg font-bold text-white relative overflow-hidden">
+            <div class="w-11 h-11 rounded-[10px] bg-surface/5 border border-surface/10 grid place-items-center shrink-0 text-lg font-bold text-white relative overflow-hidden">
               {#if account.favicon_url}
                 <img
                   src={account.favicon_url}
@@ -204,7 +204,7 @@
           <!-- Password Field -->
           <div class="flex flex-col gap-1.5 mt-1">
             <span class="text-[10px] text-text-muted uppercase tracking-[0.08em] font-bold ml-1">Contraseña</span>
-            <div class="flex items-center gap-2 bg-white/5 border border-white/8 rounded-lg p-2.5 px-3 transition-colors hover:bg-white/[0.07]">
+            <div class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-lg p-2.5 px-3 transition-colors hover:bg-surface/[0.07]">
               <code class="flex-1 font-mono text-[13px] text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider" class:text-white={revealed[account.id]}>
                 {revealed[account.id]
                   ? account.password
@@ -212,7 +212,7 @@
               </code>
               <div class="flex items-center gap-0.5">
                 <button
-                  class="p-1.5 text-text-muted hover:text-white hover:bg-white/10 rounded-md transition-all"
+                  class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all"
                   on:click={() => (revealed[account.id] = !revealed[account.id])}
                   aria-label="Mostrar/ocultar"
                   data-tooltip={revealed[account.id] ? $_("dashboard.hide_tooltip") : $_("dashboard.show_tooltip")}
@@ -225,7 +225,7 @@
                 </button>
 
                 <button
-                  class="p-1.5 text-text-muted hover:text-white hover:bg-white/10 rounded-md transition-all relative {copyTimers[account.id] != null ? 'bg-accent-dim border border-accent/30 text-accent-light' : ''}"
+                  class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all relative {copyTimers[account.id] != null ? 'bg-accent-dim border border-accent/30 text-accent-light' : ''}"
                   on:click={() =>
                     copyToClipboard(account.id, account.password, $_("dashboard.password_label"))}
                   aria-label={$_("dashboard.copy_password_tooltip")}
@@ -246,10 +246,10 @@
           <!-- Username Field -->
           <div class="flex flex-col gap-1.5">
             <span class="text-[10px] text-text-muted uppercase tracking-[0.08em] font-bold ml-1">Usuario</span>
-            <div class="flex items-center gap-2 bg-white/5 border border-white/8 rounded-lg p-2.5 px-3 transition-colors hover:bg-white/[0.07]">
+            <div class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-lg p-2.5 px-3 transition-colors hover:bg-surface/[0.07]">
               <code class="flex-1 font-mono text-[13px] text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider">{account.username}</code>
               <button
-                class="p-1.5 text-text-muted hover:text-white hover:bg-white/10 rounded-md transition-all"
+                class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all"
                 on:click={() =>
                   copyToClipboard(
                     account.id + "_user",
@@ -264,7 +264,7 @@
           </div>
 
           {#if account.notes}
-            <div class="text-[12px] text-text-muted p-2 px-2.5 bg-black/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-[60px] overflow-hidden">{account.notes}</div>
+            <div class="text-[12px] text-text-muted p-2 px-2.5 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-[60px] overflow-hidden">{account.notes}</div>
           {/if}
 
           <div class="text-[11px] text-text-muted text-right">{$_("dashboard.added_at", { values: { date: formatDate(account.created_at) } })}</div>

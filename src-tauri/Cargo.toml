@@ -1,6 +1,6 @@
 [package]
 name = "boveda"
-version = "0.1.0"
+version = "1.0.0"
 description = "Bóveda — Elegant Password Manager"
 authors = ["you"]
 edition = "2021"

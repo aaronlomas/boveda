@@ -2,7 +2,7 @@
 
 Bóveda is a locally-hosted, secure, and modern password manager built with **Tauri**, **Svelte**, and **Rust**. It ensures your data remains purely local and encrypted at rest using industry-standard cryptography.
 
-![License](https://img.shields.io/badge/license-MIT-blue)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange)
 ![Svelte](https://img.shields.io/badge/Svelte-5.0-red)
 ![Rust](https://img.shields.io/badge/Rust-1.70+-black)

@@ -2,7 +2,14 @@
   import { isUnlocked } from "$lib/stores";
   import { unlockVault, isVaultInitialized } from "$lib/tauri";
   import { onMount } from "svelte";
-  import { IconEye, IconEyeOff, IconSettings, IconLock, IconDownload, IconShieldHalfFilled } from '@tabler/icons-svelte';
+  import {
+    IconEye,
+    IconEyeOff,
+    IconSettings,
+    IconLock,
+    IconDownload,
+    IconShieldHalfFilled,
+  } from "@tabler/icons-svelte";
   import { invoke } from "@tauri-apps/api/core";
   import { open } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
@@ -51,7 +58,7 @@
     try {
       const filePath = await open({
         title: $_("global.select_db_title"),
-        filters: [{ name: $_("global.db_filter_name"), extensions: ["db"] }]
+        filters: [{ name: $_("global.db_filter_name"), extensions: ["db"] }],
       });
       if (filePath) {
         await invoke("import_db", { srcPath: filePath });
@@ -64,22 +71,37 @@
 </script>
 
 <div class="min-h-screen grid grid-rows-[auto_1fr_60px] bg-transparent">
-  <header class=" bg-panel/30 rounded-2xl px-10 py-4 flex items-center justify-between m-2">
-    <div class="text-xl font-bold text-text-primary tracking-tight pointer-events-none">Bóveda</div>
+  <header
+    class=" bg-panel/30 rounded-2xl px-10 py-4 flex items-center justify-between m-2"
+  >
+    <div
+      class="text-xl font-bold text-text-primary tracking-tight pointer-events-none"
+    >
+      Bóveda
+    </div>
     <div class="flex items-center gap-3">
-      <button class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-[13px] font-medium cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl" type="button" on:click={handleImport}>
+      <button
+        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-[13px] font-medium cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
+        type="button"
+        on:click={handleImport}
+      >
         <IconDownload size={16} />
         <span>{$_("unlock_screen.header_import")}</span>
       </button>
-      <button class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-[13px] font-medium cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl" type="button" on:click={() => (showPreferences = true)}>
+      <button
+        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-[13px] font-medium cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
+        type="button"
+        on:click={() => (showPreferences = true)}
+      >
         <IconSettings size={16} />
         <span>{$_("unlock_screen.header_settings")}</span>
       </button>
     </div>
   </header>
 
-
-  <div class="m-auto p-10 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8">
+  <div
+    class="m-auto p-10 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8"
+  >
     <div class="flex mb-4">
       <!-- <img
         src="/boveda.svg"
@@ -89,7 +111,9 @@
       /> -->
       <IconShieldHalfFilled size={72} />
     </div>
-    <p class="text-text-primary text-[14px] text-center mb-6 leading-relaxed max-w-[280px] pointer-events-none">
+    <p
+      class="text-text-primary text-[14px] text-center mb-6 leading-relaxed max-w-[280px] pointer-events-none"
+    >
       {isNew
         ? $_("unlock_screen.new_vault_desc")
         : $_("unlock_screen.unlock_vault_desc")}
@@ -97,9 +121,13 @@
 
     <form on:submit|preventDefault={submit} class="w-full flex flex-col gap-4">
       <div class="flex flex-col gap-1.5">
-        <label for="master-pw" class="text-[12px] font-medium text-text-primary">{$_("unlock_screen.master_password_label")}</label>
+        <label for="master-pw" class="text-[12px] font-medium text-text-primary"
+          >{$_("unlock_screen.master_password_label")}</label
+        >
 
-        <div class="flex border border-surface/10 bg-surface/5 rounded-lg px-4 py-3 gap-x-2">
+        <div
+          class="flex border border-surface/10 rounded-lg px-4 py-3 gap-x-2 bg-transparent"
+        >
           <input
             id="master-pw"
             class="w-full border-0 text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:bg-transparent"
@@ -120,12 +148,15 @@
             {/if}
           </button>
         </div>
-
       </div>
 
       {#if isNew}
         <div class="flex flex-col gap-1.5">
-          <label for="confirm-pw" class="text-[12px] font-medium text-text-secondary">{$_("unlock_screen.confirm_password_label")}</label>
+          <label
+            for="confirm-pw"
+            class="text-[12px] font-medium text-text-secondary"
+            >{$_("unlock_screen.confirm_password_label")}</label
+          >
           <div class="relative">
             <input
               id="confirm-pw"
@@ -139,7 +170,11 @@
       {/if}
 
       {#if error}
-        <p class="text-danger text-[12px] py-2 px-3 bg-danger/10 border border-danger/20 rounded-md">{error}</p>
+        <p
+          class="text-danger text-[12px] py-2 px-3 bg-danger/10 border border-danger/20 rounded-md"
+        >
+          {error}
+        </p>
       {/if}
 
       <button
@@ -148,7 +183,10 @@
         disabled={loading}
       >
         {#if loading}
-          <span class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin"></span> {$_("unlock_screen.button_processing")}
+          <span
+            class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin"
+          ></span>
+          {$_("unlock_screen.button_processing")}
         {:else if isNew}
           {$_("unlock_screen.button_create")}
         {:else}
@@ -158,17 +196,20 @@
     </form>
 
     {#if isNew}
-      <p class="text-[11px] text-warning text-center mt-2 p-2 px-3 bg-warning/10 rounded-md border border-warning/20">
+      <p
+        class="text-[11px] text-warning text-center mt-2 p-2 px-3 bg-warning/10 rounded-md border border-warning/20"
+      >
         {$_("unlock_screen.warning_new")}
       </p>
     {/if}
   </div>
 
-  <footer class="absolute bottom-6 left-0 right-0 text-center text-text-muted text-[11px] tracking-wide">
+  <footer
+    class="absolute bottom-6 left-0 right-0 text-center text-text-muted text-[11px] tracking-wide"
+  >
     <p>
-      {$_("unlock_screen.footer_rights")} - <span
-        class="font-semibold text-accent-light">v{version}</span
-      >
+      {$_("unlock_screen.footer_rights")} -
+      <span class="font-semibold text-accent-light">v{version}</span>
     </p>
   </footer>
 </div>

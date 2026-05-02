@@ -10,7 +10,7 @@
       ← Volver
     </button>
     <div>
-      <h1 class="text-[26px] font-bold bg-linear-to-br from-white to-accent-light bg-clip-text text-transparent">
+      <h1 class="text-[26px] font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent">
         {$_("general_view.tokens_title")}
       </h1>
       <p class="text-text-muted text-[14px] mt-1">

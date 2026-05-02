@@ -6,6 +6,7 @@
   import { invoke } from "@tauri-apps/api/core";
   import { open, save } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
+  import {IconShieldHalfFilled} from '@tabler/icons-svelte';
 
   let showConfirmImport = false;
   let showPreferences = false;
@@ -74,7 +75,7 @@
   <!-- Brand -->
   <div class="flex items-center gap-3 px-1 pb-5 border-b border-surface/8 mb-3 overflow-hidden whitespace-nowrap">
     <div class="text-2xl shrink-0 w-10 h-10 flex items-center justify-center bg-transparent rounded-sm border-none">
-      <img src="/boveda.svg" alt="Logo" width="50" height="50" />
+      <IconShieldHalfFilled size={40} />
     </div>
     {#if !$sidebarCollapsed}
       <div class="flex flex-col">
@@ -161,13 +162,13 @@
   }
 
   .nav-item-btn:hover {
-    background-color: rgba(255, 255, 255, 0.07);
+    background-color: var(--color-surface-dim, rgba(255, 255, 255, 0.07));
     color: var(--color-text-primary);
   }
 
   .nav-item-btn.active {
     background-color: var(--color-accent-dim);
-    color: white;
+    color: var(--color-text-primary);
     border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
   }
 </style>

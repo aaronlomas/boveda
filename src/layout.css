@@ -55,6 +55,7 @@
     --panel: #000000;   /* deep panels are black with opacity in dark mode */
     --fallback-text-primary: #ffffff;
     --fallback-text-secondary: #9999a3;
+    --color-surface-dim: rgba(255, 255, 255, 0.07);
   }
   
   :root.light-mode {
@@ -62,6 +63,7 @@
     --panel: #ffffff;   /* deep panels are white with opacity in light mode */
     --fallback-text-primary: #0f172a;
     --fallback-text-secondary: #475569;
+    --color-surface-dim: rgba(0, 0, 0, 0.05);
   }
 
   /* ─── Dynamic Background ───────────────────────────────────────────────── */

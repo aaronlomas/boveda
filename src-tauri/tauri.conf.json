@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "boveda-password-manager",
+  "productName": "boveda",
   "version": "1.0.0",
   "identifier": "com.boveda.password-manager",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Bóveda — Password Manager",
+        "title": "Bóveda — Gestor de Credenciales",
         "width": 1100,
         "height": 720,
         "minWidth": 800,

@@ -8,7 +8,7 @@
     <div class="inline-flex items-center justify-center w-20 h-20 bg-accent/10 text-accent rounded-full mb-6 border border-accent/20 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
       <IconShieldCheck size={40} />
     </div>
-    <h1 class="text-[32px] font-bold text-white mb-2">
+    <h1 class="text-[32px] font-bold text-text-primary mb-2">
       {$_("about_view.title")}
     </h1>
     <p class="text-text-muted text-[16px]">

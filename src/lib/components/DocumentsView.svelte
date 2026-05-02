@@ -5,7 +5,7 @@
 
 <div class="max-w-[1100px] mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
   <div class="mb-8">
-    <h1 class="text-[26px] font-bold bg-linear-to-br from-white to-accent-light bg-clip-text text-transparent">
+    <h1 class="text-[26px] font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent">
       {$_("views.documents_title")}
     </h1>
     <p class="text-text-muted text-[14px] mt-1">

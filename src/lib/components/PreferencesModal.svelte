@@ -147,10 +147,10 @@
       {#if activeSection === "theme"}
         <!-- ─ Presets Section ─ -->
         <div class="space-y-4">
-          <h2 class="text-text-primary text-[15px] font-bold flex items-center gap-2">
+          <h1 class="text-text-primary text-xl font-bold flex items-center gap-2">
             <IconPalette size={18} class="text-accent" />
             {$_("settings.theme.presets_title")}
-          </h2>
+          </h1>
           <div class="flex overflow-x-auto gap-3 pb-2 custom-scrollbar">
             {#each PRESETS as preset}
               <button 
@@ -229,10 +229,10 @@
 
         <!-- ─ Text Colors Section ─ -->
         <div class="space-y-4 pt-2">
-          <h2 class="text-text-primary text-[15px] font-bold flex items-center gap-2">
-            <IconTypography size={18} class="text-accent" />
-            Personalización de Texto
-          </h2>
+          <h1 class="text-text-primary text-xl font-bold flex items-center gap-2">
+            <IconTypography size={20} class="text-accent" />
+            {$_("settings.theme.text_options")}
+          </h1>
           
           <div class="grid grid-cols-1 gap-3">
             <!-- Primary Text Color -->
@@ -288,10 +288,10 @@
 
         <!-- ─ Background Section ─ -->
         <div class="space-y-4">
-          <p class="text-xl font-bold text-text-primary flex items-center gap-2">
+          <h1 class="text-xl font-bold text-text-primary flex items-center gap-2">
             <IconPhoto size={20} class="text-accent" />
             {$_("settings.theme.bg_description")}
-          </p>
+          </h1>
 
           <div class="grid grid-cols-1 gap-3">
             <!-- Option: Gradient -->

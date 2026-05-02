@@ -80,7 +80,7 @@
     {#if !$sidebarCollapsed}
       <div class="flex flex-col">
         <span class="text-base font-bold text-text-primary block pointer-events-none">Bóveda</span>
-        <span class="text-[10px] text-text-muted uppercase tracking-[0.08em] pointer-events-none">{$_("sidebar.my_credentials")}</span>
+        <span class="text-xs text-text-muted uppercase tracking-wider pointer-events-none">{$_("sidebar.my_credentials")}</span>
       </div>
     {/if}
   </div>
@@ -153,7 +153,7 @@
     color: var(--color-text-muted);
     cursor: pointer;
     font-weight: 500;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     transition: all 0.2s;
     white-space: nowrap;
     overflow: hidden;

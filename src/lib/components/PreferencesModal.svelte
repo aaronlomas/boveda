@@ -110,7 +110,7 @@
   on:click={close}
 >
   <div
-    class="w-[min(540px,95vw)] max-h-[90vh] bg-surface/4 backdrop-blur-2xl border border-surface/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+    class="w-full max-w-xl max-h-[90vh] bg-surface/4 backdrop-blur-2xl border border-surface/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
     on:click|stopPropagation
   >
     <!-- Header -->
@@ -154,7 +154,7 @@
           <div class="flex overflow-x-auto gap-3 pb-2 custom-scrollbar">
             {#each PRESETS as preset}
               <button 
-                class="min-w-30 p-3 rounded-xl border transition-all flex flex-col gap-3 text-left
+                class="min-w-32 p-3 rounded-xl border transition-all flex flex-col gap-3 text-left
                   {$themeStore.activePresetId === preset.id ? 'border-accent bg-accent-dim' : 'border-surface/8 bg-surface/3 hover:bg-surface/5'}"
                 on:click={() => handleApplyPreset(preset)}
               >
@@ -273,11 +273,11 @@
 
         <div class="grid grid-cols-2 gap-3 mt-1">
             <div class="p-3 rounded-lg border border-surface/5 bg-surface/2 flex flex-col gap-1">
-                <span class="text-[10px] text-text-muted uppercase tracking-wider">{$_("settings.theme.preview_button")}</span>
+                <span class="text-xs text-text-muted uppercase tracking-wider">{$_("settings.theme.preview_button")}</span>
                 <button class="w-full py-2 bg-accent text-white rounded text-xs font-bold">{$_("settings.theme.preview_button_primary")}</button>
             </div>
             <div class="p-3 rounded-lg border border-surface/5 bg-surface/2 flex flex-col gap-1">
-                <span class="text-[10px] text-text-muted uppercase tracking-wider">{$_("settings.theme.preview_active")}</span>
+                <span class="text-xs text-text-muted uppercase tracking-wider">{$_("settings.theme.preview_active")}</span>
                 <div class="flex items-center gap-2 text-accent-light text-xs font-medium p-2 bg-accent-dim rounded">
                     <IconCheck size={14} /> {$_("settings.theme.preview_active_item")}
                 </div>
@@ -348,7 +348,7 @@
                 class="w-12 h-12 rounded-lg shrink-0 border border-surface/10 bg-bg-overlay flex items-center justify-center overflow-hidden"
               >
                 {#if imageFilename}
-                  <span class="text-[10px] text-text-muted text-center px-1 leading-tight">{imageFilename}</span>
+                  <span class="text-xs text-text-muted text-center px-1 leading-tight">{imageFilename}</span>
                 {:else}
                   <IconPhoto size={20} class="text-text-muted" />
                 {/if}

@@ -4,7 +4,7 @@
   import { activeView } from "$lib/stores";
 </script>
 
-<div class="max-w-[1100px] mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
+<div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
   <div class="mb-8 flex items-center gap-4">
     <button class="p-2 bg-surface/5 hover:bg-surface/10 rounded-lg text-text-muted hover:text-text-primary transition-colors" on:click={() => activeView.set('general')}>
       ← Volver

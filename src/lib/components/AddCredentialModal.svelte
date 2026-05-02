@@ -152,7 +152,7 @@
   aria-modal="true"
   tabindex="-1"
 >
-  <div class="w-full max-w-[440px] max-h-[90vh] bg-surface/4 backdrop-blur-2xl border border-surface/10 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
+  <div class="w-full max-w-md max-h-[90vh] bg-surface/4 backdrop-blur-2xl border border-surface/10 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
     <!-- Header -->
     <div class="flex items-center justify-between p-6 pb-4 border-b border-surface/5 shrink-0">
       <h2 class="text-lg font-bold text-text-primary">{$_("add_credential.title")}</h2>
@@ -224,13 +224,13 @@
         <!-- Strength bar -->
         {#if password}
           <div class="flex items-center gap-2.5 mt-1">
-            <div class="flex-1 h-[3px] rounded-sm bg-surface/10 overflow-hidden">
+            <div class="flex-1 h-1 rounded-sm bg-surface/10 overflow-hidden">
               <div
                 class="h-full rounded-sm transition-[width,background] duration-300"
                 style="width: {strength.score * 20}%; background: {strength.color}"
               ></div>
             </div>
-            <span class="text-[11px] font-bold min-w-[70px]" style="color: {strength.color}"
+            <span class="text-xs font-bold min-w-16" style="color: {strength.color}"
               >{strength.label}</span
             >
           </div>
@@ -279,14 +279,14 @@
             <div class="flex gap-2 justify-end mt-1 flex-wrap">
               <button
                 type="button"
-                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary"
+                class="inline-flex items-center justify-center h-9 px-4 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary"
                 on:click={copyGenerated}
               >
                 {genCopied ? $_("add_credential.copied_button") : $_("add_credential.copy_button")}
               </button>
               <button
                 type="button"
-                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-sm font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px"
+                class="inline-flex items-center justify-center h-9 px-4 rounded-sm text-sm font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px"
                 on:click={useGenerated}
               >
                 {$_("add_credential.use_password_button")}
@@ -301,7 +301,7 @@
         <label for="add-notes" class="text-xs font-medium text-text-secondary">{$_("add_credential.notes_label")}</label>
         <textarea
           id="add-notes"
-          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all resize-vertical min-h-[72px]"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all resize-vertical min-h-18"
           bind:value={notes}
           placeholder={$_("add_credential.notes_placeholder")}
           rows="3"
@@ -317,10 +317,10 @@
 
     <!-- Fixed Footer -->
     <div class="p-6 pt-4 border-t border-surface/5 flex gap-2.5 justify-end shrink-0">
-      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={close}
+      <button type="button" class="inline-flex items-center justify-center h-10 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-24" on:click={close}
         >{$_("add_credential.cancel_button")}</button
       >
-      <button form="add-credential-form" type="submit" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed min-w-[100px] gap-1.5" disabled={loading}>
+      <button form="add-credential-form" type="submit" class="inline-flex items-center justify-center h-10 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed min-w-24 gap-1.5" disabled={loading}>
         {#if loading}
           <span class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin"></span> {$_("add_credential.saving")}
         {:else}

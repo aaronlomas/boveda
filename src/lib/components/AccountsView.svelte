@@ -145,7 +145,7 @@
 </script>
 
 <div
-  class="max-w-[1100px] mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300"
+  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300"
 >
   <!-- Header -->
   <div class="flex items-center justify-between mb-7 gap-4">
@@ -219,7 +219,7 @@
           <!-- favicon / avatar -->
           <div class="flex items-center gap-3">
             <div
-              class="w-11 h-11 rounded-[10px] bg-surface/5 border border-surface/10 grid place-items-center shrink-0 text-lg font-bold text-text-primary relative overflow-hidden"
+              class="w-11 h-11 rounded-sm bg-surface/5 border border-surface/10 grid place-items-center shrink-0 text-lg font-bold text-text-primary relative overflow-hidden"
             >
               {#if account.favicon_url}
                 <img
@@ -253,7 +253,7 @@
           <!-- Password Field -->
           <div class="flex flex-col gap-1.5 mt-1">
             <span
-              class="text-[10px] text-text-muted uppercase tracking-[0.08em] font-bold ml-1"
+              class="text-xs text-text-muted uppercase tracking-wider font-bold ml-1"
               >Contraseña</span
             >
             <div
@@ -302,7 +302,7 @@
                     : $_("dashboard.copy_password_tooltip")}
                 >
                   {#if copyTimers[account.id] != null}
-                    <span class="text-[11px] font-bold min-w-4 text-center"
+                    <span class="text-xs font-bold min-w-4 text-center"
                       >{copyTimers[account.id]}</span
                     >
                   {:else}
@@ -316,7 +316,7 @@
           <!-- Username Field -->
           <div class="flex flex-col gap-1.5">
             <span
-              class="text-[10px] text-text-muted uppercase tracking-[0.08em] font-bold ml-1"
+              class="text-xs text-text-muted uppercase tracking-wider font-bold ml-1"
               >Usuario</span
             >
             <div
@@ -344,13 +344,13 @@
 
           {#if account.notes}
             <div
-              class="text-[12px] text-text-muted p-2 px-2.5 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-[60px] overflow-hidden"
+              class="text-xs text-text-muted p-2 px-2.5 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-15 overflow-hidden"
             >
               {account.notes}
             </div>
           {/if}
 
-          <div class="text-[11px] text-text-muted text-right">
+          <div class="text-xs text-text-muted text-right">
             {$_("dashboard.added_at", {
               values: { date: formatDate(account.created_at) },
             })}

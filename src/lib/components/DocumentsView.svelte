@@ -3,7 +3,7 @@
   import { IconFileDescription } from "@tabler/icons-svelte";
 </script>
 
-<div class="max-w-[1100px] mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
+<div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
   <div class="mb-8">
     <h1 class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent">
       {$_("views.documents_title")}

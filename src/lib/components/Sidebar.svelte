@@ -103,7 +103,7 @@
 
   <!-- Logout button -->
   <button
-    class="mt-auto flex items-center gap-3 p-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-[13px] transition-all whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
+    class="mt-auto flex items-center gap-3 p-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-sm transition-all whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
     on:click={logout}
     data-tooltip={$sidebarCollapsed ? $_("sidebar.logout") : undefined}
   >
@@ -115,13 +115,13 @@
 
   <!-- Collapse toggle -->
   <button 
-    class="flex items-center gap-2.5 p-2.5 px-3 border-none border-t border-surface/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-[12px] transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary" 
+    class="flex items-center gap-2.5 p-2.5 px-3 border-none border-t border-surface/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary" 
     on:click={toggle} 
     aria-label="Toggle sidebar"
   >
     <span class="text-lg inline-block transition-transform duration-300 shrink-0 w-5 text-center" class:rotate-180={$sidebarCollapsed}>‹</span>
     {#if !$sidebarCollapsed}
-      <span class="text-[12px]">{$_("sidebar.collapse")}</span>
+      <span class="text-xs">{$_("sidebar.collapse")}</span>
     {/if}
   </button>
 </aside>
@@ -150,7 +150,7 @@
     border: 1px solid transparent;
     border-radius: 0.5rem;
     background-color: transparent;
-    color: var(--color-text-secondary);
+    color: var(--color-text-muted);
     cursor: pointer;
     font-weight: 500;
     font-size: 0.8125rem;
@@ -163,12 +163,12 @@
 
   .nav-item-btn:hover {
     background-color: var(--color-surface-dim, rgba(255, 255, 255, 0.07));
-    color: var(--color-text-primary);
+    color: var(--color-accent);
   }
 
   .nav-item-btn.active {
     background-color: var(--color-accent-dim);
-    color: var(--color-text-primary);
+    color: var(--color-accent);
     border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
   }
 </style>

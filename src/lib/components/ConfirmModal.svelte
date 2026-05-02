@@ -44,16 +44,16 @@
     </div>
 
     <div class="py-3 pb-6">
-      <p class="text-text-secondary text-[14px] leading-relaxed">{message}</p>
+      <p class="text-text-secondary text-sm leading-relaxed">{message}</p>
     </div>
 
     <div class="flex gap-3 justify-end border-t border-surface/8 pt-4">
-      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={() => dispatch("cancel")}>
+      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={() => dispatch("cancel")}>
         {cancelText}
       </button>
       <button 
         type="button" 
-        class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border-none text-white min-w-[100px] shadow-lg hover:-translate-y-px active:scale-95 {type === 'danger' ? 'bg-danger shadow-danger/30 hover:bg-[#f87171]' : 'bg-accent shadow-accent/20 hover:brightness-110'}"
+        class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border-none text-white min-w-[100px] shadow-lg hover:-translate-y-px active:scale-95 {type === 'danger' ? 'bg-danger shadow-danger/30 hover:bg-[#f87171]' : 'bg-accent shadow-accent/20 hover:brightness-110'}"
         on:click={confirm}
       >
         {confirmText}

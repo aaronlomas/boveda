@@ -151,18 +151,18 @@
   <div class="flex items-center justify-between mb-7 gap-4">
     <div class="flex gap-x-4">
       <button
-        class="p-2 bg-surface/5 hover:bg-surface/10 rounded-lg text-text-muted hover:text-text-primary transition-colors row-span-2 my-auto"
+        class="p-2 bg-surface/5 hover:bg-surface/10 rounded-lg text-text-muted hover:text-text-primary transition-colors row-span-2 my-auto cursor-pointer"
         on:click={() => activeView.set("general")}
       >
-        ← Volver
+        ←
       </button>
       <div>
         <h1
-          class="text-[26px] font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent pointer-events-none"
+          class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent pointer-events-none"
         >
           {$_("dashboard.title")}
         </h1>
-        <p class="text-text-muted text-[13px] mt-0.5 pointer-events-none">
+        <p class="text-text-muted text-sm mt-0.5 pointer-events-none">
           {$_("dashboard.credentials_count", {
             values: { count: $accounts.length },
           })}
@@ -170,7 +170,7 @@
       </div>
     </div>
     <button
-      class="inline-flex items-center justify-center gap-2 h-[35px] px-4 rounded-lg text-[13px] font-medium cursor-pointer transition-all border border-transparent bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20"
+      class="inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium cursor-pointer transition-all border border-transparent bg-accent text-white hover:scale-[0.98] shadow-lg shadow-accent/20"
       on:click={() => showAddModal.set(true)}
     >
       <IconPlus size={16} />
@@ -179,14 +179,14 @@
   </div>
 
   <!-- Search -->
-  <div class="relative mb-6">
-    <div
-      class="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-lg pointer-events-none"
-    >
+  <div
+    class="flex items-center mb-6 border border-surface/10 rounded-lg text-text-primary px-4 py-3"
+  >
+    <div class="text-text-muted text-lg">
       <IconSearch size={18} />
     </div>
     <input
-      class="w-full px-4 py-3 pl-10 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
+      class="w-full pl-4 bg-none text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 transition-all"
       bind:value={search}
       placeholder={$_("dashboard.search_placeholder")}
     />
@@ -197,13 +197,13 @@
     <div
       class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary"
     >
-      <div class="text-[56px] mb-2">🔒</div>
+      <div class="text-5xl mb-2">🔒</div>
       <h3 class="text-lg text-text-primary font-semibold">
         {$_("dashboard.no_credentials")}
       </h3>
       <p class="text-text-muted">{$_("dashboard.no_credentials_desc")}</p>
       <button
-        class="inline-flex items-center justify-center gap-2 h-[35px] px-4 mt-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all border border-transparent bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2 mt-2 rounded-lg text-sm font-medium cursor-pointer transition-all border border-transparent bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20"
         on:click={() => showAddModal.set(true)}
       >
         <IconPlus size={16} />
@@ -238,9 +238,7 @@
                 class="block font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis"
                 >{account.site}</span
               >
-              <span class="text-text-muted text-[12px]"
-                >@{account.username}</span
-              >
+              <span class="text-text-muted text-xs">@{account.username}</span>
             </div>
             <button
               class="p-2 text-danger hover:bg-danger/10 rounded-md transition-colors"
@@ -262,7 +260,7 @@
               class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-lg p-2.5 px-3 transition-colors hover:bg-surface/[0.07]"
             >
               <code
-                class="flex-1 font-mono text-[13px] text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
+                class="flex-1 font-mono text-sm text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
                 class:text-white={revealed[account.id]}
               >
                 {revealed[account.id] ? account.password : "••••••••••••••••"}
@@ -304,7 +302,7 @@
                     : $_("dashboard.copy_password_tooltip")}
                 >
                   {#if copyTimers[account.id] != null}
-                    <span class="text-[11px] font-bold min-w-[16px] text-center"
+                    <span class="text-[11px] font-bold min-w-4 text-center"
                       >{copyTimers[account.id]}</span
                     >
                   {:else}
@@ -325,7 +323,7 @@
               class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-lg p-2.5 px-3 transition-colors hover:bg-surface/[0.07]"
             >
               <code
-                class="flex-1 font-mono text-[13px] text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
+                class="flex-1 font-mono text-sm text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
                 >{account.username}</code
               >
               <button

@@ -97,7 +97,7 @@
     "export_db": "Exportar DB",
     "search_placeholder": "Buscar por sitio o usuario…",
     "no_credentials": "No hay credenciales",
-    "no_credentials_desc": "Añade tu primera contraseña para empezar.",
+    "no_credentials_desc": "Añade una credencial.",
     "password_label": "Contraseña",
     "username_label": "Usuario",
     "delete_tooltip": "Eliminar",

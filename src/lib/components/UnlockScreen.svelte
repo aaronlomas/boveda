@@ -7,8 +7,8 @@
     IconEyeOff,
     IconSettings,
     IconLock,
-    IconDownload,
     IconShieldHalfFilled,
+    IconDatabaseImport
   } from "@tabler/icons-svelte";
   import { invoke } from "@tauri-apps/api/core";
   import { open } from "@tauri-apps/plugin-dialog";
@@ -24,7 +24,8 @@
   let loading = false;
   let isNew = false;
   let confirmPassword = "";
-  let showPw = false;
+  let showPassword = false;
+  let showConfirmPassword = false;
 
   onMount(async () => {
     try {
@@ -70,26 +71,27 @@
   }
 </script>
 
-<div class="min-h-screen grid grid-rows-[auto_1fr_60px] bg-transparent">
+<div class="min-h-screen grid grid-rows-[auto_1fr_auto]">
   <header
-    class=" bg-panel/30 rounded-2xl px-10 py-4 flex items-center justify-between m-2"
+    class=" bg-panel/30 rounded-2xl px-6 py-4 flex items-center justify-between m-2"
   >
     <div
       class="text-xl font-bold text-text-primary tracking-tight pointer-events-none"
     >
       Bóveda
     </div>
+
     <div class="flex items-center gap-3">
       <button
-        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-[13px] font-medium cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
+        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-xs cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
         type="button"
         on:click={handleImport}
       >
-        <IconDownload size={16} />
+        <IconDatabaseImport size={16} />
         <span>{$_("unlock_screen.header_import")}</span>
       </button>
       <button
-        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-[13px] font-medium cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
+        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-xs cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
         type="button"
         on:click={() => (showPreferences = true)}
       >
@@ -100,7 +102,7 @@
   </header>
 
   <div
-    class="m-auto p-10 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8"
+    class="max-w-90 m-auto p-8 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8"
   >
     <div class="flex mb-4">
       <!-- <img
@@ -112,7 +114,7 @@
       <IconShieldHalfFilled size={72} />
     </div>
     <p
-      class="text-text-primary text-[14px] text-center mb-6 leading-relaxed max-w-[280px] pointer-events-none"
+      class="text-text-primary text-sm text-center mb-6 max-w-70 pointer-events-none"
     >
       {isNew
         ? $_("unlock_screen.new_vault_desc")
@@ -121,27 +123,27 @@
 
     <form on:submit|preventDefault={submit} class="w-full flex flex-col gap-4">
       <div class="flex flex-col gap-1.5">
-        <label for="master-pw" class="text-[12px] font-medium text-text-primary"
+        <label for="master-pw" class="text-xs text-text-primary"
           >{$_("unlock_screen.master_password_label")}</label
         >
 
         <div
-          class="flex border border-surface/10 rounded-lg px-4 py-3 gap-x-2 bg-transparent"
+          class="flex border border-surface/10 rounded-lg px-4 py-2 gap-x-2 bg-transparent"
         >
           <input
             id="master-pw"
-            class="w-full border-0 text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:bg-transparent"
-            type={showPw ? "text" : "password"}
+            class="w-full border-0 text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:bg-transparent tracking-widest"
+            type={showPassword ? "text" : "password"}
             bind:value={password}
             placeholder={$_("unlock_screen.placeholder")}
             autocomplete="current-password"
           />
           <button
             type="button"
-            class="bg-none border-none cursor-pointer text-text-muted hover:text-text-primary opacity-60 hover:opacity-100 transition-all flex items-center"
-            on:click={() => (showPw = !showPw)}
+            class="bg-none border-none cursor-pointer text-text-muted hover:text-text-primary transition-all flex items-center"
+            on:click={() => (showPassword = !showPassword)}
           >
-            {#if showPw}
+            {#if showPassword}
               <IconEyeOff size={18} />
             {:else}
               <IconEye size={18} />
@@ -152,26 +154,38 @@
 
       {#if isNew}
         <div class="flex flex-col gap-1.5">
-          <label
-            for="confirm-pw"
-            class="text-[12px] font-medium text-text-secondary"
+          <label for="confirm-pw" class="text-xs text-text-primary"
             >{$_("unlock_screen.confirm_password_label")}</label
           >
-          <div class="relative">
+
+          <div
+            class="flex border border-surface/10 rounded-lg px-4 py-2 gap-x-2 bg-transparent"
+          >
             <input
               id="confirm-pw"
-              class="w-full px-4 py-3 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:bg-surface/8"
-              type={showPw ? "text" : "password"}
+              class="w-full border-0 text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:bg-transparent tracking-widest"
+              type={showConfirmPassword ? "text" : "password"}
               bind:value={confirmPassword}
               placeholder={$_("unlock_screen.placeholder")}
             />
+            <button
+              type="button"
+              class="bg-none border-none cursor-pointer text-text-muted hover:text-text-primary transition-all flex items-center"
+              on:click={() => (showConfirmPassword = !showConfirmPassword)}
+            >
+              {#if showConfirmPassword}
+                <IconEyeOff size={18} />
+              {:else}
+                <IconEye size={18} />
+              {/if}
+            </button>
           </div>
         </div>
       {/if}
 
       {#if error}
         <p
-          class="text-danger text-[12px] py-2 px-3 bg-danger/10 border border-danger/20 rounded-md"
+          class="text-danger text-xs py-2 px-3 bg-danger/10 border border-danger/20 rounded-md"
         >
           {error}
         </p>
@@ -179,7 +193,7 @@
 
       <button
         type="submit"
-        class="w-full justify-center py-3 px-4 text-[14px] font-semibold bg-accent hover:bg-accent-light text-white rounded-lg shadow-lg shadow-accent/20 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+        class="w-full justify-center py-2 px-4 text-sm font-semibold bg-accent hover:bg-accent-light text-white rounded-lg shadow-lg shadow-accent/20 transition-all active:scale-[0.98] disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
         disabled={loading}
       >
         {#if loading}
@@ -197,16 +211,14 @@
 
     {#if isNew}
       <p
-        class="text-[11px] text-warning text-center mt-2 p-2 px-3 bg-warning/10 rounded-md border border-warning/20"
+        class="text-xs text-warning text-center mt-2 p-2 px-3 bg-warning/10 rounded-md border border-warning/20"
       >
         {$_("unlock_screen.warning_new")}
       </p>
     {/if}
   </div>
 
-  <footer
-    class="absolute bottom-6 left-0 right-0 text-center text-text-muted text-[11px] tracking-wide"
-  >
+  <footer class="mb-4 text-center text-text-muted text-[11px] tracking-wide">
     <p>
       {$_("unlock_screen.footer_rights")} -
       <span class="font-semibold text-accent-light">v{version}</span>

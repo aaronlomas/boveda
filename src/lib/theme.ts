@@ -152,7 +152,7 @@ function createThemeStore() {
     root.style.setProperty("--text-secondary", state.textSecondary);
 
     // 4. Background
-    const defaultSolid = isDark ? "#07070e" : "#f3f4f6";
+    const defaultSolid = isDark ? "#141418" : "#f3f4f6";
     
     if (state.bgType === "gradient") {
       root.style.setProperty("--bg-image-layer", "none");

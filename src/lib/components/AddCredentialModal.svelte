@@ -163,10 +163,10 @@
       <form id="add-credential-form" class="flex flex-col gap-4" on:submit|preventDefault={submit}>
       <!-- Site -->
       <div class="flex flex-col gap-1.5">
-        <label for="add-site" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.site_label")}</label>
+        <label for="add-site" class="text-xs font-medium text-text-secondary">{$_("add_credential.site_label")}</label>
         <input
           id="add-site"
-          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
           bind:value={site}
           placeholder={$_("add_credential.site_placeholder")}
         />
@@ -174,10 +174,10 @@
 
       <!-- Username -->
       <div class="flex flex-col gap-1.5">
-        <label for="add-user" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.user_label")}</label>
+        <label for="add-user" class="text-xs font-medium text-text-secondary">{$_("add_credential.user_label")}</label>
         <input
           id="add-user"
-          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
           bind:value={username}
           placeholder={$_("add_credential.user_placeholder")}
           autocomplete="off"
@@ -187,10 +187,10 @@
       <!-- Password -->
       <div class="flex flex-col gap-1.5">
         <div class="flex items-center justify-between">
-          <label for="add-pw" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.password_label")}</label>
+          <label for="add-pw" class="text-xs font-medium text-text-secondary">{$_("add_credential.password_label")}</label>
           <button
             type="button"
-            class="bg-none border-none text-accent-light text-[12px] cursor-pointer transition-opacity hover:opacity-80"
+            class="bg-none border-none text-accent-light text-xs cursor-pointer transition-opacity hover:opacity-80"
             on:click={() => {
               showGenerator = !showGenerator;
               if (showGenerator && !genPreview) refreshPreview();
@@ -202,7 +202,7 @@
         <div class="relative">
           <input
             id="add-pw"
-            class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all pr-10"
+            class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all pr-10"
             type={showPw ? "text" : "password"}
             bind:value={password}
             placeholder={$_("add_credential.placeholder") || "•••••••••••••••"}
@@ -240,7 +240,7 @@
         {#if showGenerator}
           <div class="p-4 flex flex-col gap-3 rounded-xl border border-accent/20 bg-accent/10 backdrop-blur-md">
             <div class="flex items-center gap-2 bg-panel/30 rounded-sm p-2.5 px-3">
-              <code class="flex-1 font-mono text-[13px] text-accent-light break-all select-all"
+              <code class="flex-1 font-mono text-sm text-accent-light break-all select-all"
                 >{genLoading ? $_("add_credential.generating") : genPreview}</code>
               <button
                 type="button"
@@ -265,7 +265,7 @@
                   class="w-full accent-accent cursor-pointer"
                 />
               </div>
-              <label class="flex items-center gap-2 cursor-pointer text-text-secondary text-[12px]">
+              <label class="flex items-center gap-2 cursor-pointer text-text-secondary text-xs">
                 <input
                   type="checkbox"
                   class="accent-accent cursor-pointer"
@@ -279,14 +279,14 @@
             <div class="flex gap-2 justify-end mt-1 flex-wrap">
               <button
                 type="button"
-                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-[13px] font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary"
+                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary"
                 on:click={copyGenerated}
               >
                 {genCopied ? $_("add_credential.copied_button") : $_("add_credential.copy_button")}
               </button>
               <button
                 type="button"
-                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-[13px] font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px"
+                class="inline-flex items-center justify-center h-8.5 px-4 rounded-sm text-sm font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px"
                 on:click={useGenerated}
               >
                 {$_("add_credential.use_password_button")}
@@ -298,10 +298,10 @@
 
       <!-- Notes -->
       <div class="flex flex-col gap-1.5">
-        <label for="add-notes" class="text-[12px] font-medium text-text-secondary">{$_("add_credential.notes_label")}</label>
+        <label for="add-notes" class="text-xs font-medium text-text-secondary">{$_("add_credential.notes_label")}</label>
         <textarea
           id="add-notes"
-          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-[14px] placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all resize-vertical min-h-[72px]"
+          class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all resize-vertical min-h-[72px]"
           bind:value={notes}
           placeholder={$_("add_credential.notes_placeholder")}
           rows="3"
@@ -309,7 +309,7 @@
       </div>
 
       {#if error}
-        <p class="text-danger text-[12px] py-2 px-3 bg-danger/10 border border-danger/20 rounded-md">{error}</p>
+        <p class="text-danger text-xs py-2 px-3 bg-danger/10 border border-danger/20 rounded-md">{error}</p>
       {/if}
 
       </form>
@@ -317,7 +317,7 @@
 
     <!-- Fixed Footer -->
     <div class="p-6 pt-4 border-t border-surface/5 flex gap-2.5 justify-end shrink-0">
-      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={close}
+      <button type="button" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border border-surface/10 bg-surface/5 text-text-secondary hover:bg-surface/10 hover:text-text-primary min-w-[100px]" on:click={close}
         >{$_("add_credential.cancel_button")}</button
       >
       <button form="add-credential-form" type="submit" class="inline-flex items-center justify-center h-9.5 px-5 rounded-sm text-[14px] font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed min-w-[100px] gap-1.5" disabled={loading}>

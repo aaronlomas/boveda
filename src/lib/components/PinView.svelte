@@ -10,10 +10,10 @@
       ← Volver
     </button>
     <div>
-      <h1 class="text-[26px] font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent">
+      <h1 class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent">
         {$_("general_view.pin_title")}
       </h1>
-      <p class="text-text-muted text-[14px] mt-1">
+      <p class="text-text-muted text-sm mt-1">
         {$_("general_view.pin_desc")}
       </p>
     </div>

@@ -115,7 +115,7 @@
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-surface/8">
-      <h2 class="text-[16px] font-semibold text-text-primary">{$_("settings.title")}</h2>
+      <h2 class="text-sm font-semibold text-text-primary">{$_("settings.title")}</h2>
       <button
         class="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface/8 transition-all"
         on:click={() => dispatch("close")}
@@ -128,13 +128,13 @@
     <!-- Tabs -->
     <div class="flex border-b border-surface/8">
       <button
-        class="flex items-center gap-2 px-6 py-3 text-[13px] font-medium transition-all border-b-2 {activeSection === 'theme' ? 'border-accent text-accent-light' : 'border-transparent text-text-muted hover:text-text-secondary'}"
+        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 {activeSection === 'theme' ? 'border-accent text-accent-light' : 'border-transparent text-text-muted hover:text-text-secondary'}"
         on:click={() => (activeSection = "theme")}
       >
         <IconPalette size={15} /> {$_("settings.tabs.theme")}
       </button>
       <button
-        class="flex items-center gap-2 px-6 py-3 text-[13px] font-medium transition-all border-b-2 {activeSection === 'language' ? 'border-accent text-accent-light' : 'border-transparent text-text-muted hover:text-text-secondary'}"
+        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 {activeSection === 'language' ? 'border-accent text-accent-light' : 'border-transparent text-text-muted hover:text-text-secondary'}"
         on:click={() => (activeSection = "language")}
       >
         <IconLanguage size={15} /> {$_("settings.tabs.language")}
@@ -154,7 +154,7 @@
           <div class="flex overflow-x-auto gap-3 pb-2 custom-scrollbar">
             {#each PRESETS as preset}
               <button 
-                class="min-w-[120px] p-3 rounded-xl border transition-all flex flex-col gap-3 text-left
+                class="min-w-30 p-3 rounded-xl border transition-all flex flex-col gap-3 text-left
                   {$themeStore.activePresetId === preset.id ? 'border-accent bg-accent-dim' : 'border-surface/8 bg-surface/3 hover:bg-surface/5'}"
                 on:click={() => handleApplyPreset(preset)}
               >
@@ -162,7 +162,7 @@
                   <div class="w-6 h-6 rounded-full border border-surface/10" style="background-color: {preset.accentColor}"></div>
                   <div class="w-6 h-6 rounded-full border border-surface/10" style="background-color: {preset.bgType === 'solid' ? preset.bgValue : (preset.colorScheme === 'dark' ? '#07070e' : '#f3f4f6')}"></div>
                 </div>
-                <span class="text-[12px] font-medium text-text-primary leading-tight">{$_(preset.nameKey)}</span>
+                <span class="text-xs font-medium text-text-primary leading-tight">{$_(preset.nameKey)}</span>
               </button>
             {/each}
           </div>
@@ -182,15 +182,15 @@
           <div class="grid grid-cols-3 gap-3">
             <button class="p-3 rounded-xl border transition-all flex flex-col items-center gap-2 {colorScheme === 'light' ? 'border-accent bg-accent-dim text-accent' : 'border-surface/8 bg-surface/3 text-text-muted hover:border-surface/20 hover:text-text-primary'}" on:click={() => handleColorSchemeChange('light')}>
               <IconSun size={24} />
-              <span class="text-[12px] font-medium">{$_("settings.theme.mode_light")}</span>
+              <span class="text-xs font-medium">{$_("settings.theme.mode_light")}</span>
             </button>
             <button class="p-3 rounded-xl border transition-all flex flex-col items-center gap-2 {colorScheme === 'dark' ? 'border-accent bg-accent-dim text-accent' : 'border-surface/8 bg-surface/3 text-text-muted hover:border-surface/20 hover:text-text-primary'}" on:click={() => handleColorSchemeChange('dark')}>
               <IconMoon size={24} />
-              <span class="text-[12px] font-medium">{$_("settings.theme.mode_dark")}</span>
+              <span class="text-xs font-medium">{$_("settings.theme.mode_dark")}</span>
             </button>
             <button class="p-3 rounded-xl border transition-all flex flex-col items-center gap-2 {colorScheme === 'system' ? 'border-accent bg-accent-dim text-accent' : 'border-surface/8 bg-surface/3 text-text-muted hover:border-surface/20 hover:text-text-primary'}" on:click={() => handleColorSchemeChange('system')}>
               <IconDeviceDesktop size={24} />
-              <span class="text-[12px] font-medium">{$_("settings.theme.mode_system")}</span>
+              <span class="text-xs font-medium">{$_("settings.theme.mode_system")}</span>
             </button>
           </div>
         </div>
@@ -210,11 +210,11 @@
               style="background-color: {accentColor};"
             ></div>
             <div class="flex-1">
-              <p class="text-[14px] font-bold text-text-primary">{$_("settings.theme.color_label")}</p>
-              <p class="text-[11px] text-text-muted">{$_("settings.theme.color_desc")}</p>
+              <p class="text-sm font-bold text-text-primary">{$_("settings.theme.color_label")}</p>
+              <p class="text-xs text-text-muted">{$_("settings.theme.color_desc")}</p>
             </div>
             <div class="shrink-0 flex items-center gap-2 bg-surface/5 px-2.5 py-1.5 rounded-lg border border-surface/10 hover:bg-surface/10 transition-all">
-              <span class="text-[11px] font-mono text-text-secondary uppercase">{accentColor}</span>
+              <span class="text-xs font-mono text-text-secondary uppercase">{accentColor}</span>
               <input
                 type="color"
                 bind:value={accentColor}
@@ -238,11 +238,11 @@
             <!-- Primary Text Color -->
             <div class="flex items-center gap-4 p-4 rounded-xl border border-surface/8 bg-surface/3 hover:bg-surface/5 transition-all">
               <div class="flex-1">
-                <p class="text-[13px] font-semibold text-text-primary">{$_("settings.theme.text_primary_label")}</p>
-                <p class="text-[11px] text-text-muted">{$_("settings.theme.text_primary_desc")}</p>
+                <p class="text-sm font-semibold text-text-primary">{$_("settings.theme.text_primary_label")}</p>
+                <p class="text-xs text-text-muted">{$_("settings.theme.text_primary_desc")}</p>
               </div>
               <div class="shrink-0 flex items-center gap-2 bg-surface/5 px-2.5 py-1.5 rounded-lg border border-surface/10">
-                <span class="text-[11px] font-mono text-text-secondary uppercase">{textPrimary}</span>
+                <span class="text-xs font-mono text-text-secondary uppercase">{textPrimary}</span>
                 <input
                   type="color"
                   bind:value={textPrimary}
@@ -255,11 +255,11 @@
             <!-- Secondary Text Color -->
             <div class="flex items-center gap-4 p-4 rounded-xl border border-surface/8 bg-surface/3 hover:bg-surface/5 transition-all">
               <div class="flex-1">
-                <p class="text-[13px] font-semibold text-text-primary">{$_("settings.theme.text_secondary_label")}</p>
-                <p class="text-[11px] text-text-muted">{$_("settings.theme.text_secondary_desc")}</p>
+                <p class="text-sm font-semibold text-text-primary">{$_("settings.theme.text_secondary_label")}</p>
+                <p class="text-xs text-text-muted">{$_("settings.theme.text_secondary_desc")}</p>
               </div>
               <div class="shrink-0 flex items-center gap-2 bg-surface/5 px-2.5 py-1.5 rounded-lg border border-surface/10">
-                <span class="text-[11px] font-mono text-text-secondary uppercase">{textSecondary}</span>
+                <span class="text-xs font-mono text-text-secondary uppercase">{textSecondary}</span>
                 <input
                   type="color"
                   bind:value={textSecondary}
@@ -274,11 +274,11 @@
         <div class="grid grid-cols-2 gap-3 mt-1">
             <div class="p-3 rounded-lg border border-surface/5 bg-surface/2 flex flex-col gap-1">
                 <span class="text-[10px] text-text-muted uppercase tracking-wider">{$_("settings.theme.preview_button")}</span>
-                <button class="w-full py-2 bg-accent text-white rounded text-[12px] font-bold">{$_("settings.theme.preview_button_primary")}</button>
+                <button class="w-full py-2 bg-accent text-white rounded text-xs font-bold">{$_("settings.theme.preview_button_primary")}</button>
             </div>
             <div class="p-3 rounded-lg border border-surface/5 bg-surface/2 flex flex-col gap-1">
                 <span class="text-[10px] text-text-muted uppercase tracking-wider">{$_("settings.theme.preview_active")}</span>
-                <div class="flex items-center gap-2 text-accent-light text-[12px] font-medium p-2 bg-accent-dim rounded">
+                <div class="flex items-center gap-2 text-accent-light text-xs font-medium p-2 bg-accent-dim rounded">
                     <IconCheck size={14} /> {$_("settings.theme.preview_active_item")}
                 </div>
             </div>
@@ -302,8 +302,8 @@
             >
               <div class="w-12 h-12 rounded-lg shrink-0" style="background: #07070e;"></div>
               <div class="flex-1">
-                <p class="text-[13px] font-medium text-text-primary">{$_("settings.theme.bg_dark")}</p>
-                <p class="text-[11px] text-text-muted">{$_("settings.theme.bg_dark_desc")}</p>
+                <p class="text-sm font-medium text-text-primary">{$_("settings.theme.bg_dark")}</p>
+                <p class="text-xs text-text-muted">{$_("settings.theme.bg_dark_desc")}</p>
               </div>
               {#if bgType === "gradient"}
                 <IconCheck size={16} class="text-accent-light shrink-0" />
@@ -318,11 +318,11 @@
             >
               <div class="w-12 h-12 rounded-lg shrink-0 border border-surface/10" style="background: {solidColor};"></div>
               <div class="flex-1">
-                <p class="text-[13px] font-medium text-text-primary">{$_("settings.theme.bg_solid")}</p>
-                <p class="text-[11px] text-text-muted">{$_("settings.theme.bg_solid_desc")}</p>
+                <p class="text-sm font-medium text-text-primary">{$_("settings.theme.bg_solid")}</p>
+                <p class="text-xs text-text-muted">{$_("settings.theme.bg_solid_desc")}</p>
               </div>
               <div class="shrink-0 p-2 bg-surface/3 rounded-sm flex items-center gap-2" on:click|stopPropagation>
-                <p class="text-[12px]">{$_("settings.theme.bg_solid_change")}</p>
+                <p class="text-xs">{$_("settings.theme.bg_solid_change")}</p>
                 <input
                   type="color"
                   bind:value={solidColor}
@@ -354,8 +354,8 @@
                 {/if}
               </div>
               <div class="flex-1">
-                <p class="text-[13px] font-medium text-text-primary">{$_("settings.theme.bg_image")}</p>
-                <p class="text-[11px] text-text-muted">
+                <p class="text-sm font-medium text-text-primary">{$_("settings.theme.bg_image")}</p>
+                <p class="text-xs text-text-muted">
                   {loadingImage ? $_("settings.theme.bg_image_loading") : imageFilename ? $_("settings.theme.bg_image_click") : $_("settings.theme.bg_image_formats")}
                 </p>
               </div>
@@ -368,7 +368,7 @@
 
       {:else if activeSection === "language"}
         <!-- ─ Language Section ─ -->
-        <p class="text-[12px] text-text-muted">
+        <p class="text-xs text-text-muted">
           {$_("settings.language.description")}
         </p>
 
@@ -381,7 +381,7 @@
           >
             <div class="w-10 h-10 rounded-lg shrink-0 bg-surface/5 flex items-center justify-center text-lg">🇪🇸</div>
             <div class="flex-1">
-              <p class="text-[13px] font-medium text-text-primary">{$_("settings.language.spanish")}</p>
+              <p class="text-sm font-medium text-text-primary">{$_("settings.language.spanish")}</p>
             </div>
             {#if $locale === "es"}
               <IconCheck size={16} class="text-accent-light shrink-0" />
@@ -396,7 +396,7 @@
           >
             <div class="w-10 h-10 rounded-lg shrink-0 bg-surface/5 flex items-center justify-center text-lg">🇺🇸</div>
             <div class="flex-1">
-              <p class="text-[13px] font-medium text-text-primary">{$_("settings.language.english")}</p>
+              <p class="text-sm font-medium text-text-primary">{$_("settings.language.english")}</p>
             </div>
             {#if $locale === "en"}
               <IconCheck size={16} class="text-accent-light shrink-0" />
@@ -409,13 +409,13 @@
     <!-- Footer -->
     <div class="px-6 py-4 border-t border-surface/8 flex justify-end gap-3 bg-panel/40">
       <button
-        class="px-5 py-2 text-[13px] font-medium bg-surface/5 border border-surface/10 rounded-lg text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-all"
+        class="px-5 py-2 text-sm font-medium bg-surface/5 border border-surface/10 rounded-lg text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-all"
         on:click={handleRestore}
       >
         {$_("settings.restore")}
       </button>
       <button
-        class="px-5 py-2 text-[13px] font-medium bg-accent text-white rounded-lg hover:bg-accent-hover transition-all shadow-lg shadow-accent/20"
+        class="px-5 py-2 text-sm font-medium bg-accent text-white rounded-lg hover:bg-accent-hover transition-all shadow-lg shadow-accent/20"
         on:click={() => dispatch("close")}
       >
         {$_("settings.close")}

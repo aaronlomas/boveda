@@ -3,15 +3,15 @@
   import { IconShieldCheck, IconCode, IconDatabase } from "@tabler/icons-svelte";
 </script>
 
-<div class="max-w-[800px] mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10">
+<div class="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10">
   <div class="mb-10 text-center">
     <div class="inline-flex items-center justify-center w-20 h-20 bg-accent/10 text-accent rounded-full mb-6 border border-accent/20 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
       <IconShieldCheck size={40} />
     </div>
-    <h1 class="text-[32px] font-bold text-text-primary mb-2">
+    <h1 class="text-3xl font-bold text-text-primary mb-2">
       {$_("about_view.title")}
     </h1>
-    <p class="text-text-muted text-[16px]">
+    <p class="text-text-muted text-lg">
       {$_("about_view.subtitle")}
     </p>
   </div>
@@ -57,6 +57,6 @@
     </div>
   </div>
   <li class="py-2 my-4">
-    <p class="text-sm">Para Actualizar este programa, debe volver a descargar la última versión desde <a class="cursor-pointer hover:underline text-accent" href="https://github.com/aaronlomas/boveda/releases/" target="_blank">Github Releases</a></p>
+    <p class="text-sm">Para Actualizar este programa, debe volver a descargar la última versión desde <a class="cursor-pointer font-bold hover:underline text-accent" href="https://github.com/aaronlomas/boveda/releases/" target="_blank">Github Releases</a></p>
   </li>
 </div>

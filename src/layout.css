@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors — Violet (default theme) */
+  --color-bg-base: #07070e;
+  --color-bg-surface: #0d0d1a;
+  --color-bg-overlay: #12122a;
+
+  --color-accent: #7c3aed;
+  --color-accent-light: #ffffff;
+  --color-accent-glow: rgba(124, 58, 237, 0.35);
+  --color-accent-dim: rgba(124, 58, 237, 0.15);
+
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+
+  --color-text-primary: var(--text-primary, var(--fallback-text-primary));
+  --color-text-secondary: var(--text-secondary, var(--fallback-text-secondary));
+  --color-text-muted: var(--text-muted, #848487);
+
+  /* Semantic Surfaces */
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Animations */
+  --animate-spin-slow: spin 3s linear infinite;
+}
+
+@layer base {
+  /* ─── Reset ────────────────────────────────────────────────────────────── */
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Theming variables ────────────────────────────────────────────────── */
+  :root {
+    --surface: #ffffff; /* glass objects are white with opacity in dark mode */
+    --panel: #000000; /* deep panels are black with opacity in dark mode */
+    --fallback-text-primary: #ffffff;
+    --fallback-text-secondary: #9999a3;
+    --color-surface-dim: rgba(255, 255, 255, 0.07);
+  }
+
+  :root.light-mode {
+    --surface: #000000; /* glass objects are black with opacity in light mode */
+    --panel: #ffffff; /* deep panels are white with opacity in light mode */
+    --fallback-text-primary: #0f172a;
+    --fallback-text-secondary: #475569;
+    --color-surface-dim: rgba(0, 0, 0, 0.05);
+  }
+
+  /* ─── Dynamic Background ───────────────────────────────────────────────── */
+
+  /* Default: radial gradient (no custom background) */
+  body {
+    background: var(--bg-image-layer, none), var(--bg-solid-color, #07070e);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* ─── Custom Scrollbar ─────────────────────────────────────────────────── */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+  }
+
+  /* ─── Automatic Tooltips ───────────────────────────────────────────────── */
+  [data-tooltip] {
+    position: relative;
+    &::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 8px);
+      transform: translateX(-50%);
+      background: var(--color-bg-overlay);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--color-text-secondary);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 50;
+    }
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+}
+
+@layer components {
+  .app-layout {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 36px;
+    min-width: 0;
+    transition: padding-left 0.2s ease;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* ─── AccountsView Styles ─────────────────────────────────────────────── */
+  .virtual-list-wrapper {
+    height: calc(100vh - 260px);
+    min-height: 300px;
+  }
+
+  /* ─── Sidebar Styles ──────────────────────────────────────────────────── */
+  .nav-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item-btn:hover {
+    background-color: var(--color-surface-dim, rgba(255, 255, 255, 0.07));
+    color: var(--color-accent);
+  }
+
+  .nav-item-btn.active {
+    background-color: var(--color-accent-dim);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+}

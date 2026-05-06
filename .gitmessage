@@ -1,0 +1,16 @@
+<tipo>(<alcance>): <resumen corto en presente>
+
+# --- INSTRUCCIONES ---
+# El resumen debe ser breve (máximo 50 caracteres).
+# Deja una línea en blanco si quieres añadir una descripción más detallada abajo.
+
+# --- TIPOS DE COMMIT ---
+# feat:     Nueva funcionalidad (auth, api, sidebar)
+# fix:      Corrige un error/bug (login-error, typo, api-connection)
+# ui:       Cambios visuales, CSS, layouts (colors, mobile-nav, buttons)
+# refactor: Mejoras de código sin cambiar comportamiento (performance, clean-code)
+# ci:       GitHub Actions, despliegue, CI/CD (github-actions, deploy)
+# security: Parches de seguridad o librerías vulnerables (deps, auth-token)
+# chore:    Mantenimiento, package.json, Node (npm, version-bump)
+# docs:     Documentación y comentarios (readme, api-docs)
+# ---------------------

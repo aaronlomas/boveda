@@ -1,0 +1,43 @@
+# --- Rust & Tauri ---
+target/
+src-tauri/target/
+src-tauri/gen/schemas
+# Cargo.lock is NOT ignored for applications to ensure reproducible builds
+**/*.rs.bk
+
+# --- Bóveda Specific (Security) ---
+# Never commit actual vaults or cryptographic salts
+*.bvda
+*.db
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+vault.salt
+vault_meta.json
+
+# --- Frontend & Node (Legacy/Tauri) ---
+node_modules/
+.svelte-kit/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+build/
+dist/
+package/
+.env
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
+*.swp
+*~
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+

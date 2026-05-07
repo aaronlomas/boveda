@@ -234,7 +234,7 @@ pub async fn set_preference_tx(conn: &mut SqliteConnection, key: &str, value: &s
 
 pub async fn migrate_to_sqlcipher(
     unencrypted_pool: &SqlitePool,
-    key: &[u8],
+    key: &crate::crypto::secret::SecretKey,
     db_path: &std::path::Path,
 ) -> BovedaResult<()> {
     use base64::Engine;
@@ -261,12 +261,12 @@ pub async fn migrate_to_sqlcipher(
     attach_query.extend_from_slice(b"ATTACH DATABASE '");
     attach_query.extend_from_slice(path_str.as_bytes());
     attach_query.extend_from_slice(b"' AS encrypted KEY \"x'");
-    for &byte in key {
+    for &byte in key.as_bytes() {
         attach_query.push(HEX_CHARS[(byte >> 4) as usize]);
         attach_query.push(HEX_CHARS[(byte & 0x0f) as usize]);
     }
     attach_query.extend_from_slice(b"'\"");
-    let attach_query_str = String::from_utf8(attach_query).expect("Valid string");
+    let attach_query_str = crate::crypto::secret::SecretString::new(String::from_utf8(attach_query).expect("Valid string"));
     
     let mut conn = unencrypted_pool.acquire().await?;
     

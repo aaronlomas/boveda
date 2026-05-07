@@ -9,7 +9,7 @@ mod tests;
 pub use vault::BovedaEngine;
 pub use vault::MasterKey;
 pub use storage::models::Account;
-pub use crypto::secret::{SecretBytes, SecretString};
+pub use crypto::secret::{SecretKey, SecretString};
 pub use error::{BovedaError, BovedaResult};
 
 /// Applies OS-level anti-forensic protections to the current process.

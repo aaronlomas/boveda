@@ -32,6 +32,36 @@ impl fmt::Debug for SecretBytes {
     }
 }
 
+/// A wrapper for fixed-size 32-byte cryptographic keys to prevent heap reallocations.
+#[derive(Clone, PartialEq)]
+pub struct SecretKey([u8; 32]);
+
+impl SecretKey {
+    pub fn new(key: [u8; 32]) -> Self {
+        Self(key)
+    }
+
+    pub fn as_bytes(&self) -> &[u8; 32] {
+        &self.0
+    }
+
+    pub fn as_mut_bytes(&mut self) -> &mut [u8; 32] {
+        &mut self.0
+    }
+}
+
+impl Drop for SecretKey {
+    fn drop(&mut self) {
+        self.0.zeroize();
+    }
+}
+
+impl fmt::Debug for SecretKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "SecretKey([REDACTED])")
+    }
+}
+
 /// A wrapper for sensitive strings that zeroizes its contents upon drop.
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(transparent)]

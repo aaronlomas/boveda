@@ -5,17 +5,17 @@ use std::sync::{Arc, Mutex};
 use sqlx::{sqlite::{SqliteConnectOptions, SqlitePoolOptions}, SqlitePool};
 use std::str::FromStr;
 use std::path::PathBuf;
-use crate::crypto::secret::{SecretBytes, SecretString};
+use crate::crypto::secret::{SecretKey, SecretString};
 use crate::crypto;
 use crate::storage;
 use crate::error::{BovedaError, BovedaResult};
 
 /// Wrapper around the 256-bit AES-GCM master key.
 /// Allocates key on the heap, and uses mlock/VirtualLock to prevent swapping to disk.
-pub struct MasterKey(SecretBytes);
+pub struct MasterKey(SecretKey);
 
 impl MasterKey {
-    pub fn new(key: SecretBytes) -> Self {
+    pub fn new(key: SecretKey) -> Self {
         #[cfg(unix)]
         unsafe {
             let ptr = key.as_bytes().as_ptr() as *const libc::c_void;
@@ -35,7 +35,7 @@ impl MasterKey {
     }
 
     pub fn as_bytes(&self) -> &[u8; 32] {
-        self.0.as_bytes().try_into().unwrap()
+        self.0.as_bytes()
     }
 }
 
@@ -108,7 +108,7 @@ impl BovedaEngine {
         // Normal path: Derive key from salt and password
         let key = crypto::derive_key(password, &salt).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
 
-        let engine = Self::open_encrypted(db_path, key.as_bytes()).await
+        let engine = Self::open_encrypted(db_path, &key).await
             .map_err(|_| BovedaError::InvalidPassword)?;
 
         // Verify the key by initializing schema (if key is wrong, this will fail)
@@ -135,14 +135,14 @@ impl BovedaEngine {
         // Verification logic
         let mut verified = false;
         if let Some(challenge) = challenge_opt {
-            if let Ok(dec) = crypto::decrypt(&challenge, key.as_bytes().try_into().unwrap()) {
+            if let Ok(dec) = crypto::decrypt(&challenge, &key) {
                 if dec == "boveda_auth" { verified = true; }
             }
         } else {
             // Fallback: try to decrypt first account
             let accounts = storage::get_accounts(&unencrypted_engine.db).await.unwrap_or_default();
             if let Some(acc) = accounts.first() {
-                if crypto::decrypt(&acc.encrypted_password, key.as_bytes().try_into().unwrap()).is_err() {
+                if crypto::decrypt(&acc.encrypted_password, &key).is_err() {
                     return Err(BovedaError::InvalidPassword);
                 }
                 verified = true;
@@ -157,10 +157,10 @@ impl BovedaEngine {
         }
 
         // Perform migration
-        storage::migrate_to_sqlcipher(&unencrypted_engine.db, key.as_bytes(), db_path).await?;
+        storage::migrate_to_sqlcipher(&unencrypted_engine.db, &key, db_path).await?;
 
         // Open newly encrypted database
-        let engine = Self::open_encrypted(db_path, key.as_bytes()).await?;
+        let engine = Self::open_encrypted(db_path, &key).await?;
         {
             let mut key_lock = engine.master_key.lock().unwrap();
             *key_lock = Some(MasterKey::new(key));
@@ -183,11 +183,11 @@ impl BovedaEngine {
     }
 
     /// Safe helper to format the master key into a hex string for SQLCipher PRAGMA
-    fn generate_pragma_key(key: &[u8]) -> SecretString {
+    fn generate_pragma_key(key: &SecretKey) -> SecretString {
         const HEX_CHARS: &[u8] = b"0123456789abcdef";
         let mut pragma = Vec::with_capacity(64 + 4);
         pragma.extend_from_slice(b"\"x'");
-        for &byte in key {
+        for &byte in key.as_bytes() {
             pragma.push(HEX_CHARS[(byte >> 4) as usize]);
             pragma.push(HEX_CHARS[(byte & 0x0f) as usize]);
         }
@@ -197,7 +197,7 @@ impl BovedaEngine {
     }
 
     /// Opens the database utilizing SQLCipher with the derived key.
-    pub async fn open_encrypted(db_path: &PathBuf, key: &[u8]) -> BovedaResult<Self> {
+    pub async fn open_encrypted(db_path: &PathBuf, key: &SecretKey) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let mut options = SqliteConnectOptions::from_str(&url)?;
         
@@ -235,11 +235,11 @@ impl BovedaEngine {
     /// Internal helper to execute a closure with the master key if unlocked.
     fn with_key<F, R>(&self, f: F) -> BovedaResult<R>
     where
-        F: FnOnce(&[u8; 32]) -> R,
+        F: FnOnce(&SecretKey) -> R,
     {
         let lock = self.master_key.lock().unwrap();
         lock.as_ref()
-            .map(|mk| f(mk.as_bytes()))
+            .map(|mk| f(&mk.0))
             .ok_or(BovedaError::VaultLocked)
     }
 

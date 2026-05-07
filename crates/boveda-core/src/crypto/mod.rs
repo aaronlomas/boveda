@@ -9,12 +9,12 @@ use base64::{engine::general_purpose::STANDARD as B64, Engine};
 use anyhow::{anyhow, Result};
 use rand::Rng;
 use zeroize::Zeroize;
-use self::secret::{SecretBytes, SecretString};
+use self::secret::{SecretKey, SecretString};
 
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
-/// Returns a Boxed array to prevent leaving copies on the stack.
+/// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
-pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretBytes> {
+pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretKey> {
     let params = Params::new(
         65536, // memory (KiB)
         3,     // iterations
@@ -24,7 +24,7 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretBytes> {
     .map_err(|e| anyhow!("Argon2 params error: {e}"))?;
 
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
-    let mut key = SecretBytes::new(vec![0u8; 32]);
+    let mut key = SecretKey::new([0u8; 32]);
     argon2
         .hash_password_into(password.as_str().as_bytes(), salt, key.as_mut_bytes())
         .map_err(|e| {
@@ -36,8 +36,8 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretBytes> {
 
 /// Encrypt `plaintext` with ChaCha20-Poly1305 using `key`.
 /// Returns Base64(nonce || ciphertext_with_tag).
-pub fn encrypt(plaintext: &SecretString, key: &[u8; 32]) -> Result<String> {
-    let chacha_key = Key::from_slice(key);
+pub fn encrypt(plaintext: &SecretString, key: &SecretKey) -> Result<String> {
+    let chacha_key = Key::from_slice(key.as_bytes());
     let cipher = ChaCha20Poly1305::new(chacha_key);
     let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng); // 96-bit random nonce
 
@@ -54,7 +54,7 @@ pub fn encrypt(plaintext: &SecretString, key: &[u8; 32]) -> Result<String> {
 
 /// Decrypt a Base64-encoded ChaCha20-Poly1305 blob produced by `encrypt`.
 /// Returns a `SecretString` to ensure the plaintext is zeroized on drop.
-pub fn decrypt(encoded: &str, key: &[u8; 32]) -> Result<SecretString> {
+pub fn decrypt(encoded: &str, key: &SecretKey) -> Result<SecretString> {
     let payload = B64.decode(encoded)?;
     if payload.len() < 12 {
         return Err(anyhow!("Ciphertext too short"));
@@ -63,7 +63,7 @@ pub fn decrypt(encoded: &str, key: &[u8; 32]) -> Result<SecretString> {
     let (nonce_bytes, ciphertext) = payload.split_at(12);
     let nonce = Nonce::from_slice(nonce_bytes);
 
-    let chacha_key = Key::from_slice(key);
+    let chacha_key = Key::from_slice(key.as_bytes());
     let cipher = ChaCha20Poly1305::new(chacha_key);
 
     let plaintext = cipher
@@ -133,7 +133,7 @@ mod tests {
         let salt = b"random_salt_123456";
         let key1 = derive_key(&password, salt).unwrap();
         let key2 = derive_key(&password, salt).unwrap();
-        assert_eq!(key1, key2);
+        assert_eq!(key1.as_bytes(), key2.as_bytes());
     }
 
     #[test]
@@ -141,12 +141,12 @@ mod tests {
         let salt = b"random_salt_123456";
         let key1 = derive_key(&SecretString::new("password_1".to_string()), salt).unwrap();
         let key2 = derive_key(&SecretString::new("password_2".to_string()), salt).unwrap();
-        assert_ne!(key1, key2);
+        assert_ne!(key1.as_bytes(), key2.as_bytes());
     }
 
     #[test]
     fn test_encrypt_decrypt_success() {
-        let key = [42u8; 32];
+        let key = SecretKey::new([42u8; 32]);
         let plaintext = SecretString::new("Hello, Bóveda!".to_string());
         let ciphertext = encrypt(&plaintext, &key).unwrap();
         assert_ne!(plaintext.as_str(), ciphertext); // Not plaintext
@@ -157,8 +157,8 @@ mod tests {
 
     #[test]
     fn test_decrypt_wrong_key_fails() {
-        let key1 = [42u8; 32];
-        let key2 = [43u8; 32];
+        let key1 = SecretKey::new([42u8; 32]);
+        let key2 = SecretKey::new([43u8; 32]);
         let plaintext = SecretString::new("Hello, Bóveda!".to_string());
         let ciphertext = encrypt(&plaintext, &key1).unwrap();
         
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn test_decrypt_tampered_ciphertext_fails() {
-        let key = [42u8; 32];
+        let key = SecretKey::new([42u8; 32]);
         let plaintext = SecretString::new("Hello, Bóveda!".to_string());
         let mut ciphertext = encrypt(&plaintext, &key).unwrap();
         

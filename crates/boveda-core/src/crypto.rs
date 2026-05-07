@@ -7,12 +7,12 @@ use base64::{engine::general_purpose::STANDARD as B64, Engine};
 use anyhow::{anyhow, Result};
 use rand::Rng;
 use zeroize::Zeroize;
-use crate::secret::SecretString;
+use crate::secret::{SecretBytes, SecretString};
 
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a Boxed array to prevent leaving copies on the stack.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
-pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<Box<[u8; 32]>> {
+pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretBytes> {
     let params = Params::new(
         65536, // memory (KiB)
         3,     // iterations
@@ -22,11 +22,11 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<Box<[u8; 32]>>
     .map_err(|e| anyhow!("Argon2 params error: {e}"))?;
 
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
-    let mut key = Box::new([0u8; 32]);
+    let mut key = SecretBytes::new(vec![0u8; 32]);
     argon2
-        .hash_password_into(password.as_str().as_bytes(), salt, key.as_mut_slice())
+        .hash_password_into(password.as_str().as_bytes(), salt, key.as_mut_bytes())
         .map_err(|e| {
-            key.zeroize();
+            // key will be automatically zeroized upon drop if error occurs
             anyhow!("Argon2 KDF error: {e}")
         })?;
     Ok(key)
@@ -131,7 +131,7 @@ mod tests {
         let salt = b"random_salt_123456";
         let key1 = derive_key(&password, salt).unwrap();
         let key2 = derive_key(&password, salt).unwrap();
-        assert_eq!(*key1, *key2);
+        assert_eq!(key1, key2);
     }
 
     #[test]
@@ -139,7 +139,7 @@ mod tests {
         let salt = b"random_salt_123456";
         let key1 = derive_key(&SecretString::new("password_1".to_string()), salt).unwrap();
         let key2 = derive_key(&SecretString::new("password_2".to_string()), salt).unwrap();
-        assert_ne!(*key1, *key2);
+        assert_ne!(key1, key2);
     }
 
     #[test]

@@ -1,22 +1,21 @@
 use std::sync::{Arc, Mutex};
-use zeroize::Zeroize;
+
 use sqlx::{sqlite::{SqliteConnectOptions, SqlitePoolOptions}, SqlitePool};
 use std::str::FromStr;
 use std::path::PathBuf;
-use crate::secret::SecretString;
+use crate::secret::{SecretBytes, SecretString};
 use crate::{crypto, db};
 use anyhow::{anyhow, Result};
 
 /// Wrapper around the 256-bit AES-GCM master key.
 /// Allocates key on the heap, and uses mlock/VirtualLock to prevent swapping to disk.
-pub struct MasterKey(Box<[u8; 32]>);
+pub struct MasterKey(SecretBytes);
 
 impl MasterKey {
-    pub fn new(key: [u8; 32]) -> Self {
-        let boxed = Box::new(key);
+    pub fn new(key: SecretBytes) -> Self {
         #[cfg(unix)]
         unsafe {
-            let ptr = boxed.as_ptr() as *const libc::c_void;
+            let ptr = key.as_bytes().as_ptr() as *const libc::c_void;
             if libc::mlock(ptr, std::mem::size_of::<[u8; 32]>()) != 0 {
                 eprintln!("Warning: Failed to mlock master key memory");
             }
@@ -24,31 +23,30 @@ impl MasterKey {
         #[cfg(windows)]
         unsafe {
             use windows_sys::Win32::System::Memory::VirtualLock;
-            let ptr = boxed.as_ptr() as *const std::ffi::c_void;
+            let ptr = key.as_bytes().as_ptr() as *const std::ffi::c_void;
             if VirtualLock(ptr, std::mem::size_of::<[u8; 32]>()) == 0 {
                 eprintln!("Warning: Failed to VirtualLock master key memory");
             }
         }
-        Self(boxed)
+        Self(key)
     }
 
     pub fn as_bytes(&self) -> &[u8; 32] {
-        &self.0
+        self.0.as_bytes().try_into().unwrap()
     }
 }
 
 impl Drop for MasterKey {
     fn drop(&mut self) {
-        self.0.zeroize();
         #[cfg(unix)]
         unsafe {
-            let ptr = self.0.as_ptr() as *const libc::c_void;
+            let ptr = self.0.as_bytes().as_ptr() as *const libc::c_void;
             libc::munlock(ptr, std::mem::size_of::<[u8; 32]>());
         }
         #[cfg(windows)]
         unsafe {
             use windows_sys::Win32::System::Memory::VirtualUnlock;
-            let ptr = self.0.as_ptr() as *const std::ffi::c_void;
+            let ptr = self.0.as_bytes().as_ptr() as *const std::ffi::c_void;
             VirtualUnlock(ptr, std::mem::size_of::<[u8; 32]>());
         }
     }
@@ -102,14 +100,8 @@ impl BovedaEngine {
 
         // Normal path: Derive key from salt and password
         let key = crypto::derive_key(password, &salt)?;
-        let mut hex_key_str = String::with_capacity(64);
-        for b in key.iter() {
-            use std::fmt::Write;
-            write!(&mut hex_key_str, "{:02x}", b).unwrap();
-        }
-        let hex_key = SecretString::from(hex_key_str);
 
-        let engine = Self::open_encrypted(db_path, &hex_key).await
+        let engine = Self::open_encrypted(db_path, key.as_bytes()).await
             .map_err(|_| anyhow!("Contraseña incorrecta o archivo dañado"))?;
 
         // Verify the key by initializing schema (if key is wrong, this will fail)
@@ -118,7 +110,7 @@ impl BovedaEngine {
         // Store the master key in the engine
         {
             let mut key_lock = engine.master_key.lock().unwrap();
-            *key_lock = Some(MasterKey::new(*key));
+            *key_lock = Some(MasterKey::new(key));
         }
 
         Ok(engine)
@@ -136,14 +128,14 @@ impl BovedaEngine {
         // Verification logic
         let mut verified = false;
         if let Some(challenge) = challenge_opt {
-            if let Ok(dec) = crypto::decrypt(&challenge, &key) {
+            if let Ok(dec) = crypto::decrypt(&challenge, key.as_bytes().try_into().unwrap()) {
                 if dec == "boveda_auth" { verified = true; }
             }
         } else {
             // Fallback: try to decrypt first account
             let accounts = db::get_accounts(&unencrypted_engine.db).await.unwrap_or_default();
             if let Some(acc) = accounts.first() {
-                if crypto::decrypt(&acc.encrypted_password, &key).is_err() {
+                if crypto::decrypt(&acc.encrypted_password, key.as_bytes().try_into().unwrap()).is_err() {
                     return Err(anyhow!("Contraseña incorrecta"));
                 }
                 verified = true;
@@ -157,21 +149,14 @@ impl BovedaEngine {
             return Err(anyhow!("Contraseña incorrecta"));
         }
 
-        let mut hex_key_str = String::with_capacity(64);
-        for b in key.iter() {
-            use std::fmt::Write;
-            write!(&mut hex_key_str, "{:02x}", b).unwrap();
-        }
-        let hex_key = SecretString::from(hex_key_str);
-
         // Perform migration
-        db::migrate_to_sqlcipher(&unencrypted_engine.db, &hex_key, db_path).await?;
+        db::migrate_to_sqlcipher(&unencrypted_engine.db, key.as_bytes(), db_path).await?;
 
         // Open newly encrypted database
-        let engine = Self::open_encrypted(db_path, &hex_key).await?;
+        let engine = Self::open_encrypted(db_path, key.as_bytes()).await?;
         {
             let mut key_lock = engine.master_key.lock().unwrap();
-            *key_lock = Some(MasterKey::new(*key));
+            *key_lock = Some(MasterKey::new(key));
         }
 
         Ok(engine)
@@ -190,14 +175,27 @@ impl BovedaEngine {
         })
     }
 
+    /// Safe helper to format the master key into a hex string for SQLCipher PRAGMA
+    fn generate_pragma_key(key: &[u8]) -> SecretString {
+        const HEX_CHARS: &[u8] = b"0123456789abcdef";
+        let mut pragma = Vec::with_capacity(64 + 4);
+        pragma.extend_from_slice(b"\"x'");
+        for &byte in key {
+            pragma.push(HEX_CHARS[(byte >> 4) as usize]);
+            pragma.push(HEX_CHARS[(byte & 0x0f) as usize]);
+        }
+        pragma.push(b'\'');
+        pragma.push(b'"');
+        SecretString::new(String::from_utf8(pragma).expect("Valid ASCII"))
+    }
+
     /// Opens the database utilizing SQLCipher with the derived key.
-    pub async fn open_encrypted(db_path: &PathBuf, hex_key: &SecretString) -> Result<Self> {
+    pub async fn open_encrypted(db_path: &PathBuf, key: &[u8]) -> Result<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let mut options = SqliteConnectOptions::from_str(&url)?;
         
         // Send the PRAGMA key right upon connecting
-        let pragma_key = format!("\"x'{}'\"", hex_key.as_str());
-        let pragma_key_secret = SecretString::new(pragma_key);
+        let pragma_key_secret = Self::generate_pragma_key(key);
         
         options = options.pragma("key", pragma_key_secret.as_str().to_string());
 

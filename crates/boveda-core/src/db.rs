@@ -268,7 +268,7 @@ pub async fn set_preference(pool: &SqlitePool, key: &str, value: &str) -> Result
 /// Migrate a plain SQLite database to SQLCipher
 pub async fn migrate_to_sqlcipher(
     unencrypted_pool: &SqlitePool,
-    hex_key: &SecretString,
+    key: &[u8],
     db_path: &std::path::Path,
 ) -> Result<()> {
     // 1. Get salt from vault_meta
@@ -289,8 +289,19 @@ pub async fn migrate_to_sqlcipher(
         std::fs::remove_file(&encrypted_path)?;
     }
 
-    let attach_query = format!("ATTACH DATABASE '{}' AS encrypted KEY \"x'{}'\"", encrypted_path.to_string_lossy(), hex_key.as_str());
-    let attach_query_secret = SecretString::new(attach_query);
+    const HEX_CHARS: &[u8] = b"0123456789abcdef";
+    let path_str = encrypted_path.to_string_lossy();
+    let mut attach_query = Vec::with_capacity(128 + path_str.len());
+    attach_query.extend_from_slice(b"ATTACH DATABASE '");
+    attach_query.extend_from_slice(path_str.as_bytes());
+    attach_query.extend_from_slice(b"' AS encrypted KEY \"x'");
+    for &byte in key {
+        attach_query.push(HEX_CHARS[(byte >> 4) as usize]);
+        attach_query.push(HEX_CHARS[(byte & 0x0f) as usize]);
+    }
+    attach_query.extend_from_slice(b"'\"");
+    let attach_query_secret = SecretString::new(String::from_utf8(attach_query).expect("Valid string"));
+    
     let mut conn = unencrypted_pool.acquire().await?;
     
     use sqlx::Executor;

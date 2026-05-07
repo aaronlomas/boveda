@@ -2,7 +2,7 @@ use std::fmt;
 use zeroize::Zeroize;
 
 /// A wrapper for sensitive byte arrays that zeroizes its contents upon drop.
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct SecretBytes(Vec<u8>);
 
 impl SecretBytes {

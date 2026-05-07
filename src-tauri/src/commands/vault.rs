@@ -1,7 +1,7 @@
 use tauri::State;
 use crate::state::AppState;
 use boveda_core::{BovedaEngine, crypto, db, SecretString};
-use zeroize::Zeroize;
+
 
 /// Returns true if the vault DB has already been initialized (has a salt).
 #[tauri::command]
@@ -10,14 +10,10 @@ pub async fn is_vault_initialized(state: State<'_, AppState>) -> Result<bool, St
 }
 
 #[tauri::command]
-pub async fn unlock_vault(mut password: String, state: State<'_, AppState>) -> Result<bool, String> {
-    let password_secret = SecretString::from(password.clone());
-    
-    let engine = BovedaEngine::unlock(&state.db_path, &password_secret)
+pub async fn unlock_vault(password: SecretString, state: State<'_, AppState>) -> Result<bool, String> {
+    let engine = BovedaEngine::unlock(&state.db_path, &password)
         .await
         .map_err(|e| e.to_string())?;
-
-    password.zeroize();
 
     let mut engine_lock = state.engine.lock().unwrap();
     *engine_lock = Some(engine);
@@ -34,10 +30,10 @@ pub fn lock_vault(state: State<'_, AppState>) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn add_account(
-    site: String,
-    username: String,
-    password: String,
-    notes: String,
+    site: SecretString,
+    username: SecretString,
+    password: SecretString,
+    notes: SecretString,
     state: State<'_, AppState>,
 ) -> Result<String, String> {
     let engine = {
@@ -45,9 +41,9 @@ pub async fn add_account(
         engine_lock.as_ref().cloned().ok_or("Vault is locked")?
     };
     
-    let notes_opt = if notes.is_empty() { None } else { Some(notes.as_str()) };
+    let notes_opt = if notes.as_str().is_empty() { None } else { Some(notes) };
     
-    engine.add_account(&site, &username, &password, notes_opt)
+    engine.add_account(site, username, password, notes_opt)
         .await
         .map_err(|e| e.to_string())
 }

@@ -241,8 +241,8 @@ impl BovedaEngine {
             
             accounts.push(crate::models::Account {
                 id: row.id,
-                site: dec_site.as_str().to_string(),
-                username: dec_username.as_str().to_string(),
+                site: dec_site,
+                username: dec_username,
                 password_cipher: row.encrypted_password,
                 notes_cipher: row.encrypted_notes,
                 favicon_url: None, // Google Favicon fetch disabled for privacy
@@ -253,23 +253,23 @@ impl BovedaEngine {
         }
         
         // Sort by site
-        accounts.sort_by(|a, b| a.site.to_lowercase().cmp(&b.site.to_lowercase()));
+        accounts.sort_by(|a, b| a.site.as_str().to_lowercase().cmp(&b.site.as_str().to_lowercase()));
         Ok(accounts)
     }
 
     /// Adds a new account, encrypting sensitive fields automatically.
     pub async fn add_account(
         &self,
-        site: &str,
-        username: &str,
-        password: &str,
-        notes: Option<&str>,
+        site: SecretString,
+        username: SecretString,
+        password: SecretString,
+        notes: Option<SecretString>,
     ) -> Result<String> {
         let (enc_site, enc_username, enc_password, enc_notes) = self.with_key(|key| {
-            let s = crypto::encrypt(&SecretString::from(site), key)?;
-            let u = crypto::encrypt(&SecretString::from(username), key)?;
-            let p = crypto::encrypt(&SecretString::from(password), key)?;
-            let n = notes.map(|n| crypto::encrypt(&SecretString::from(n), key)).transpose()?;
+            let s = crypto::encrypt(&site, key)?;
+            let u = crypto::encrypt(&username, key)?;
+            let p = crypto::encrypt(&password, key)?;
+            let n = notes.as_ref().map(|n| crypto::encrypt(n, key)).transpose()?;
             Ok::<_, anyhow::Error>((s, u, p, n))
         })??;
 

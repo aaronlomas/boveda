@@ -1,4 +1,5 @@
 use std::fmt;
+use serde::{Deserialize, Serialize};
 use zeroize::Zeroize;
 
 /// A wrapper for sensitive byte arrays that zeroizes its contents upon drop.
@@ -32,7 +33,8 @@ impl fmt::Debug for SecretBytes {
 }
 
 /// A wrapper for sensitive strings that zeroizes its contents upon drop.
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct SecretString(String);
 
 impl SecretString {

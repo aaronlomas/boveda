@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 use std::path::PathBuf;
-pub use boveda_core::engine::BovedaEngine;
+pub use boveda_core::BovedaEngine;
 
 pub struct AppState {
     pub db_path: PathBuf,

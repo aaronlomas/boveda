@@ -1,9 +1,11 @@
-use anyhow::Result;
+pub mod models;
+
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use sqlx::SqlitePool;
+use sqlx::{SqlitePool, SqliteConnection, Executor};
 use uuid::Uuid;
-use crate::secret::SecretString;
+use base64::Engine;
+use crate::error::BovedaResult;
 
 /// A row from the `accounts` table as returned to the frontend.
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
@@ -20,7 +22,7 @@ pub struct AccountRow {
 }
 
 /// Initialize the SQLite database schema.
-pub async fn init_db(pool: &SqlitePool) -> Result<()> {
+pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS vault_meta (
@@ -44,17 +46,17 @@ pub async fn init_db(pool: &SqlitePool) -> Result<()> {
     .execute(pool)
     .await?;
 
-    // Attempt to add challenge_text column for backward compatibility with existing databases
+    // Attempt to add challenge_text column for backward compatibility
     let _ = sqlx::query("ALTER TABLE vault_meta ADD COLUMN challenge_text TEXT")
         .execute(pool)
         .await;
 
-    // Attempt to add group_name column for backward compatibility with existing databases
+    // Attempt to add group_name column for backward compatibility
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT")
         .execute(pool)
         .await;
 
-    // Preferences table for user settings (theme, background, etc.)
+    // Preferences table
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS preferences (
             key   TEXT PRIMARY KEY,
@@ -68,7 +70,7 @@ pub async fn init_db(pool: &SqlitePool) -> Result<()> {
 }
 
 /// Retrieve the persisted Argon2id salt and challenge text.
-pub async fn get_vault_meta(pool: &SqlitePool) -> Result<Option<(Vec<u8>, Option<String>)>> {
+pub async fn get_vault_meta(pool: &SqlitePool) -> BovedaResult<Option<(Vec<u8>, Option<String>)>> {
     let row: Option<(String, Option<String>)> =
         sqlx::query_as("SELECT salt, challenge_text FROM vault_meta WHERE id = 1")
             .fetch_optional(pool)
@@ -76,43 +78,12 @@ pub async fn get_vault_meta(pool: &SqlitePool) -> Result<Option<(Vec<u8>, Option
 
     if let Some((encoded, challenge)) = row {
         let bytes = base64::engine::general_purpose::STANDARD
-            .decode(&encoded)?;
+            .decode(&encoded)
+            .map_err(|e| crate::error::BovedaError::Other(format!("Base64 decode error: {}", e)))?;
         Ok(Some((bytes, challenge)))
     } else {
         Ok(None)
     }
-}
-
-/// Create the initial vault metadata with salt and challenge text.
-pub async fn create_vault_meta(pool: &SqlitePool, salt: &[u8], challenge_text: &str) -> Result<()> {
-    let encoded = base64::engine::general_purpose::STANDARD.encode(salt);
-    let now = Utc::now().to_rfc3339();
-
-    sqlx::query("INSERT INTO vault_meta (id, salt, challenge_text, created_at) VALUES (1, ?, ?, ?)")
-        .bind(&encoded)
-        .bind(challenge_text)
-        .bind(&now)
-        .execute(pool)
-        .await?;
-
-    Ok(())
-}
-
-/// Update the challenge text for legacy vaults.
-pub async fn update_challenge_text(pool: &SqlitePool, challenge_text: &str) -> Result<()> {
-    sqlx::query("UPDATE vault_meta SET challenge_text = ? WHERE id = 1")
-        .bind(challenge_text)
-        .execute(pool)
-        .await?;
-    Ok(())
-}
-
-/// Check whether the vault has been initialized (salt exists).
-pub async fn is_initialized(pool: &SqlitePool) -> Result<bool> {
-    let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM vault_meta")
-        .fetch_one(pool)
-        .await?;
-    Ok(count.0 > 0)
 }
 
 /// Insert a new account into the database.
@@ -123,7 +94,7 @@ pub async fn add_account(
     encrypted_password: &str,
     encrypted_notes: Option<&str>,
     favicon_url: Option<&str>,
-) -> Result<String> {
+) -> BovedaResult<String> {
     let id = Uuid::new_v4().to_string();
     let now = Utc::now().to_rfc3339();
 
@@ -146,8 +117,8 @@ pub async fn add_account(
     Ok(id)
 }
 
-/// Fetch all account rows (still encrypted — decryption happens in Tauri commands).
-pub async fn get_accounts(pool: &SqlitePool) -> Result<Vec<AccountRow>> {
+/// Fetch all account rows.
+pub async fn get_accounts(pool: &SqlitePool) -> BovedaResult<Vec<AccountRow>> {
     let rows = sqlx::query_as::<_, AccountRow>(
         r#"SELECT id, site, username, encrypted_password,
                   encrypted_notes, favicon_url, group_name, created_at, updated_at
@@ -158,28 +129,8 @@ pub async fn get_accounts(pool: &SqlitePool) -> Result<Vec<AccountRow>> {
     Ok(rows)
 }
 
-/// Update site and username (used for migrating plaintext to ciphertext).
-/// Also clears the favicon_url as it's no longer persisted.
-pub async fn update_account_metadata(
-    pool: &SqlitePool,
-    id: &str,
-    encrypted_site: &str,
-    encrypted_username: &str,
-) -> Result<()> {
-    sqlx::query(
-        "UPDATE accounts SET site = ?, username = ?, favicon_url = NULL, updated_at = ? WHERE id = ?"
-    )
-    .bind(encrypted_site)
-    .bind(encrypted_username)
-    .bind(Utc::now().to_rfc3339())
-    .bind(id)
-    .execute(pool)
-    .await?;
-    Ok(())
-}
-
 /// Delete an account by ID.
-pub async fn delete_account(pool: &SqlitePool, id: &str) -> Result<()> {
+pub async fn delete_account(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
     sqlx::query("DELETE FROM accounts WHERE id = ?")
         .bind(id)
         .execute(pool)
@@ -192,7 +143,7 @@ pub async fn update_account_group(
     pool: &SqlitePool,
     id: &str,
     group_name: Option<&str>,
-) -> Result<()> {
+) -> BovedaResult<()> {
     sqlx::query("UPDATE accounts SET group_name = ?, updated_at = ? WHERE id = ?")
         .bind(group_name)
         .bind(Utc::now().to_rfc3339())
@@ -202,33 +153,33 @@ pub async fn update_account_group(
     Ok(())
 }
 
-/// Rename all accounts belonging to `old_name` to `new_name`.
-pub async fn rename_group(pool: &SqlitePool, old_name: &str, new_name: &str) -> Result<()> {
+/// Rename all accounts belonging to `old_name` to `new_name` (Transactional).
+pub async fn rename_group_tx(conn: &mut SqliteConnection, old_name: &str, new_name: &str) -> BovedaResult<()> {
     sqlx::query(
         "UPDATE accounts SET group_name = ?, updated_at = ? WHERE group_name = ?",
     )
     .bind(new_name)
     .bind(Utc::now().to_rfc3339())
     .bind(old_name)
-    .execute(pool)
+    .execute(conn)
     .await?;
     Ok(())
 }
 
-/// Remove group association from all accounts belonging to `name`.
-pub async fn delete_group(pool: &SqlitePool, name: &str) -> Result<()> {
+/// Remove group association from all accounts belonging to `name` (Transactional).
+pub async fn delete_group_tx(conn: &mut SqliteConnection, name: &str) -> BovedaResult<()> {
     sqlx::query(
         "UPDATE accounts SET group_name = NULL, updated_at = ? WHERE group_name = ?",
     )
     .bind(Utc::now().to_rfc3339())
     .bind(name)
-    .execute(pool)
+    .execute(conn)
     .await?;
     Ok(())
 }
 
 /// Count how many accounts belong to a given group.
-pub async fn count_accounts_in_group(pool: &SqlitePool, group_name: &str) -> Result<i64> {
+pub async fn count_accounts_in_group(pool: &SqlitePool, group_name: &str) -> BovedaResult<i64> {
     let row: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM accounts WHERE group_name = ?")
             .bind(group_name)
@@ -237,11 +188,8 @@ pub async fn count_accounts_in_group(pool: &SqlitePool, group_name: &str) -> Res
     Ok(row.0)
 }
 
-// Re-export base64 for db.rs internal use
-use base64::Engine;
-
 /// Get a user preference by key.
-pub async fn get_preference(pool: &SqlitePool, key: &str) -> Result<Option<String>> {
+pub async fn get_preference(pool: &SqlitePool, key: &str) -> BovedaResult<Option<String>> {
     let row: Option<(String,)> = sqlx::query_as("SELECT value FROM preferences WHERE key = ?")
         .bind(key)
         .fetch_optional(pool)
@@ -249,8 +197,16 @@ pub async fn get_preference(pool: &SqlitePool, key: &str) -> Result<Option<Strin
     Ok(row.map(|(v,)| v))
 }
 
+pub async fn get_preference_tx(conn: &mut SqliteConnection, key: &str) -> BovedaResult<Option<String>> {
+    let row: Option<(String,)> = sqlx::query_as("SELECT value FROM preferences WHERE key = ?")
+        .bind(key)
+        .fetch_optional(conn)
+        .await?;
+    Ok(row.map(|(v,)| v))
+}
+
 /// Set (upsert) a user preference.
-pub async fn set_preference(pool: &SqlitePool, key: &str, value: &str) -> Result<()> {
+pub async fn set_preference(pool: &SqlitePool, key: &str, value: &str) -> BovedaResult<()> {
     sqlx::query(
         "INSERT INTO preferences (key, value) VALUES (?, ?)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value",
@@ -262,28 +218,38 @@ pub async fn set_preference(pool: &SqlitePool, key: &str, value: &str) -> Result
     Ok(())
 }
 
-// ─── TEMPORAL MIGRATION LOGIC ──────────────────────────────────────────────────
-// This function will be removed once the migration to SQLCipher is complete.
+pub async fn set_preference_tx(conn: &mut SqliteConnection, key: &str, value: &str) -> BovedaResult<()> {
+    sqlx::query(
+        "INSERT INTO preferences (key, value) VALUES (?, ?)
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+    )
+    .bind(key)
+    .bind(value)
+    .execute(conn)
+    .await?;
+    Ok(())
+}
 
-/// Migrate a plain SQLite database to SQLCipher
+// ─── TEMPORAL MIGRATION LOGIC ──────────────────────────────────────────────────
+
 pub async fn migrate_to_sqlcipher(
     unencrypted_pool: &SqlitePool,
     key: &[u8],
     db_path: &std::path::Path,
-) -> Result<()> {
-    // 1. Get salt from vault_meta
+) -> BovedaResult<()> {
+    use base64::Engine;
+    
     let salt_row: Option<(String,)> = sqlx::query_as("SELECT salt FROM vault_meta WHERE id = 1")
         .fetch_optional(unencrypted_pool)
         .await?;
         
     let salt_bytes = if let Some((encoded,)) = salt_row {
-        base64::engine::general_purpose::STANDARD.decode(&encoded)?
+        base64::engine::general_purpose::STANDARD.decode(&encoded)
+            .map_err(|e| crate::error::BovedaError::Other(format!("Base64 decode error: {}", e)))?
     } else {
-        return Err(anyhow::anyhow!("No salt found in vault_meta"));
+        return Err(crate::error::BovedaError::Other("No salt found in vault_meta".to_string()));
     };
 
-
-    // 2. Export database
     let encrypted_path = db_path.with_file_name("vault_encrypted.bvda");
     if encrypted_path.exists() {
         std::fs::remove_file(&encrypted_path)?;
@@ -300,21 +266,17 @@ pub async fn migrate_to_sqlcipher(
         attach_query.push(HEX_CHARS[(byte & 0x0f) as usize]);
     }
     attach_query.extend_from_slice(b"'\"");
-    let attach_query_secret = SecretString::new(String::from_utf8(attach_query).expect("Valid string"));
+    let attach_query_str = String::from_utf8(attach_query).expect("Valid string");
     
     let mut conn = unencrypted_pool.acquire().await?;
     
-    use sqlx::Executor;
-    conn.execute(attach_query_secret.as_str()).await?;
+    conn.execute(attach_query_str.as_str()).await?;
     conn.execute("SELECT sqlcipher_export('encrypted')").await?;
     conn.execute("DETACH DATABASE encrypted").await?;
     
-    drop(conn); // Release connection back to pool before closing it
-
-    // 3. Close the pool
+    drop(conn);
     unencrypted_pool.close().await;
 
-    // 4. Cleanup
     std::fs::rename(&encrypted_path, db_path)?;
     #[cfg(unix)]
     {
@@ -322,9 +284,8 @@ pub async fn migrate_to_sqlcipher(
         let _ = std::fs::set_permissions(db_path, std::fs::Permissions::from_mode(0o600));
     }
 
-    // 5. Save salt to vault.salt ONLY after successful migration
     let salt_path = db_path.with_file_name("vault.salt");
-    std::fs::write(&salt_path, &salt_bytes).map_err(|e| anyhow::anyhow!("Error writing salt: {e}"))?;
+    std::fs::write(&salt_path, &salt_bytes)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

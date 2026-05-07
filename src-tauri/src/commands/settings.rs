@@ -11,7 +11,7 @@ pub async fn get_preference(key: String, state: State<'_, AppState>) -> Result<O
     };
     engine.get_preference(&key)
         .await
-        .map_err(|e| e.to_string())
+        .map_err(|e: boveda_core::BovedaError| e.to_string())
 }
 
 #[tauri::command]
@@ -22,7 +22,7 @@ pub async fn set_preference(key: String, value: String, state: State<'_, AppStat
     };
     engine.set_preference(&key, &value)
         .await
-        .map_err(|e| e.to_string())
+        .map_err(|e: boveda_core::BovedaError| e.to_string())
 }
 
 // ─── Background Image ─────────────────────────────────────────────────────────

@@ -1,3 +1,5 @@
+pub mod secret;
+
 use aes_gcm::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     Aes256Gcm, Key, Nonce,
@@ -7,7 +9,7 @@ use base64::{engine::general_purpose::STANDARD as B64, Engine};
 use anyhow::{anyhow, Result};
 use rand::Rng;
 use zeroize::Zeroize;
-use crate::secret::{SecretBytes, SecretString};
+use self::secret::{SecretBytes, SecretString};
 
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a Boxed array to prevent leaving copies on the stack.
@@ -191,4 +193,3 @@ mod tests {
         assert_ne!(pw1.as_str(), pw2.as_str());
     }
 }
-

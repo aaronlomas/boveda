@@ -1,12 +1,16 @@
 pub mod crypto;
-pub mod db;
-pub mod models;
-pub mod engine;
-pub mod secret;
+pub mod storage;
+pub mod vault;
+pub mod error;
 
-pub use engine::{BovedaEngine, MasterKey};
-pub use models::Account;
-pub use secret::{SecretBytes, SecretString};
+#[cfg(test)]
+mod tests;
+
+pub use vault::BovedaEngine;
+pub use vault::MasterKey;
+pub use storage::models::Account;
+pub use crypto::secret::{SecretBytes, SecretString};
+pub use error::{BovedaError, BovedaResult};
 
 /// Applies OS-level anti-forensic protections to the current process.
 /// Disables core dumps on Linux to prevent memory from being written to disk upon crash.

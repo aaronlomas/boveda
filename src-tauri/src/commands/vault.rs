@@ -1,6 +1,7 @@
 use tauri::State;
 use crate::state::AppState;
-use boveda_core::{BovedaEngine, crypto, SecretString};
+use boveda_core::{BovedaEngine, SecretString, Account};
+use boveda_core::crypto;
 
 
 /// Returns true if the vault DB has already been initialized (has a salt).
@@ -49,7 +50,7 @@ pub async fn add_account(
 }
 
 #[tauri::command]
-pub async fn get_accounts(state: State<'_, AppState>) -> Result<Vec<boveda_core::Account>, String> {
+pub async fn get_accounts(state: State<'_, AppState>) -> Result<Vec<Account>, String> {
     let engine = {
         let engine_lock = state.engine.lock().unwrap();
         engine_lock.as_ref().cloned().ok_or("Vault is locked")?
@@ -88,8 +89,8 @@ pub fn decrypt_secret(ciphertext: String, state: State<'_, AppState>) -> Result<
     };
     
     engine.decrypt_secret(&ciphertext)
-        .map(|s| s.as_str().to_string())
-        .map_err(|e| e.to_string())
+        .map(|s: SecretString| s.as_str().to_string())
+        .map_err(|e: boveda_core::BovedaError| e.to_string())
 }
 
 // ─── Group commands ───────────────────────────────────────────────────────────
@@ -121,12 +122,7 @@ pub async fn rename_group(
         engine_lock.as_ref().cloned().ok_or("Vault is locked")?
     };
     
-    let trimmed = new_name.trim().to_string();
-    if trimmed.is_empty() {
-        return Err("El nombre del grupo no puede estar vacío.".to_string());
-    }
-    
-    engine.rename_group(&old_name, &trimmed)
+    engine.rename_group(&old_name, &new_name)
         .await
         .map_err(|e| e.to_string())
 }
@@ -145,4 +141,3 @@ pub async fn delete_group(
         .await
         .map_err(|e| e.to_string())
 }
-

@@ -1,11 +1,14 @@
+pub mod validation;
+
 use std::sync::{Arc, Mutex};
 
 use sqlx::{sqlite::{SqliteConnectOptions, SqlitePoolOptions}, SqlitePool};
 use std::str::FromStr;
 use std::path::PathBuf;
-use crate::secret::{SecretBytes, SecretString};
-use crate::{crypto, db};
-use anyhow::{anyhow, Result};
+use crate::crypto::secret::{SecretBytes, SecretString};
+use crate::crypto;
+use crate::storage;
+use crate::error::{BovedaError, BovedaResult};
 
 /// Wrapper around the 256-bit AES-GCM master key.
 /// Allocates key on the heap, and uses mlock/VirtualLock to prevent swapping to disk.
@@ -56,9 +59,9 @@ impl Drop for MasterKey {
 #[derive(Clone)]
 pub struct BovedaEngine {
     /// SQLite connection pool.
-    db: SqlitePool,
+    pub(crate) db: SqlitePool,
     /// The derived master key, present only when the vault is unlocked.
-    pub master_key: Arc<Mutex<Option<MasterKey>>>,
+    master_key: Arc<Mutex<Option<MasterKey>>>,
 }
 
 impl BovedaEngine {
@@ -68,14 +71,18 @@ impl BovedaEngine {
         salt_path.exists() || db_path.exists()
     }
 
+    pub fn is_locked(&self) -> bool {
+        self.master_key.lock().unwrap().is_none()
+    }
+
     /// High-level method to unlock the vault.
     /// Handles salt detection, migration, key derivation, and database opening.
-    pub async fn unlock(db_path: &PathBuf, password: &SecretString) -> Result<Self> {
+    pub async fn unlock(db_path: &PathBuf, password: &SecretString) -> BovedaResult<Self> {
         let salt_path = db_path.with_file_name("vault.salt");
         let mut is_legacy_migration = false;
 
         let salt = if salt_path.exists() {
-            std::fs::read(&salt_path).map_err(|e| anyhow!("Failed to read salt: {}", e))?
+            std::fs::read(&salt_path).map_err(|e| BovedaError::IoError(format!("Error al leer salt: {}", e)))?
         } else if db_path.exists() {
             // Unencrypted database exists, need migration
             is_legacy_migration = true;
@@ -85,7 +92,7 @@ impl BovedaEngine {
             use rand::RngCore;
             let mut new_salt = vec![0u8; 32];
             rand::rngs::OsRng.fill_bytes(&mut new_salt);
-            std::fs::write(&salt_path, &new_salt).map_err(|e| anyhow!("Failed to write salt: {}", e))?;
+            std::fs::write(&salt_path, &new_salt).map_err(|e| BovedaError::IoError(format!("Error al escribir salt: {}", e)))?;
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
@@ -99,13 +106,13 @@ impl BovedaEngine {
         }
 
         // Normal path: Derive key from salt and password
-        let key = crypto::derive_key(password, &salt)?;
+        let key = crypto::derive_key(password, &salt).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
 
         let engine = Self::open_encrypted(db_path, key.as_bytes()).await
-            .map_err(|_| anyhow!("Contraseña incorrecta o archivo dañado"))?;
+            .map_err(|_| BovedaError::InvalidPassword)?;
 
         // Verify the key by initializing schema (if key is wrong, this will fail)
-        db::init_db(&engine.db).await.map_err(|_| anyhow!("Contraseña incorrecta"))?;
+        storage::init_db(&engine.db).await.map_err(|_| BovedaError::InvalidPassword)?;
 
         // Store the master key in the engine
         {
@@ -117,13 +124,13 @@ impl BovedaEngine {
     }
 
     /// Internal helper to handle legacy migration flow.
-    async fn unlock_legacy_migration(db_path: &PathBuf, password: &SecretString) -> Result<Self> {
+    async fn unlock_legacy_migration(db_path: &PathBuf, password: &SecretString) -> BovedaResult<Self> {
         let unencrypted_engine = Self::open_unencrypted(db_path).await?;
-        let meta = db::get_vault_meta(&unencrypted_engine.db).await?
-            .ok_or_else(|| anyhow!("Legacy vault has no metadata"))?;
+        let meta = storage::get_vault_meta(&unencrypted_engine.db).await?
+            .ok_or_else(|| BovedaError::Other("Legacy vault has no metadata".to_string()))?;
         
         let (legacy_salt, challenge_opt) = meta;
-        let key = crypto::derive_key(password, &legacy_salt)?;
+        let key = crypto::derive_key(password, &legacy_salt).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
         
         // Verification logic
         let mut verified = false;
@@ -133,10 +140,10 @@ impl BovedaEngine {
             }
         } else {
             // Fallback: try to decrypt first account
-            let accounts = db::get_accounts(&unencrypted_engine.db).await.unwrap_or_default();
+            let accounts = storage::get_accounts(&unencrypted_engine.db).await.unwrap_or_default();
             if let Some(acc) = accounts.first() {
                 if crypto::decrypt(&acc.encrypted_password, key.as_bytes().try_into().unwrap()).is_err() {
-                    return Err(anyhow!("Contraseña incorrecta"));
+                    return Err(BovedaError::InvalidPassword);
                 }
                 verified = true;
             } else {
@@ -146,11 +153,11 @@ impl BovedaEngine {
         }
 
         if !verified {
-            return Err(anyhow!("Contraseña incorrecta"));
+            return Err(BovedaError::InvalidPassword);
         }
 
         // Perform migration
-        db::migrate_to_sqlcipher(&unencrypted_engine.db, key.as_bytes(), db_path).await?;
+        storage::migrate_to_sqlcipher(&unencrypted_engine.db, key.as_bytes(), db_path).await?;
 
         // Open newly encrypted database
         let engine = Self::open_encrypted(db_path, key.as_bytes()).await?;
@@ -163,7 +170,7 @@ impl BovedaEngine {
     }
 
     /// Opens the database without a key (useful for initial migration check).
-    pub async fn open_unencrypted(db_path: &PathBuf) -> Result<Self> {
+    pub async fn open_unencrypted(db_path: &PathBuf) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
@@ -190,7 +197,7 @@ impl BovedaEngine {
     }
 
     /// Opens the database utilizing SQLCipher with the derived key.
-    pub async fn open_encrypted(db_path: &PathBuf, key: &[u8]) -> Result<Self> {
+    pub async fn open_encrypted(db_path: &PathBuf, key: &[u8]) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let mut options = SqliteConnectOptions::from_str(&url)?;
         
@@ -216,20 +223,30 @@ impl BovedaEngine {
         *lock = None;
     }
 
+    /// Internal helper to check if unlocked and return error if not.
+    fn check_unlocked(&self) -> BovedaResult<()> {
+        if self.is_locked() {
+            Err(BovedaError::VaultLocked)
+        } else {
+            Ok(())
+        }
+    }
+
     /// Internal helper to execute a closure with the master key if unlocked.
-    fn with_key<F, R>(&self, f: F) -> Result<R>
+    fn with_key<F, R>(&self, f: F) -> BovedaResult<R>
     where
         F: FnOnce(&[u8; 32]) -> R,
     {
         let lock = self.master_key.lock().unwrap();
         lock.as_ref()
             .map(|mk| f(mk.as_bytes()))
-            .ok_or_else(|| anyhow!("Vault is locked"))
+            .ok_or(BovedaError::VaultLocked)
     }
 
     /// Retrieves and decrypts all accounts.
-    pub async fn get_accounts(&self) -> Result<Vec<crate::models::Account>> {
-        let rows = db::get_accounts(&self.db).await?;
+    pub async fn get_accounts(&self) -> BovedaResult<Vec<crate::storage::models::Account>> {
+        self.check_unlocked()?;
+        let rows = storage::get_accounts(&self.db).await?;
         
         let mut accounts = Vec::with_capacity(rows.len());
         for row in rows {
@@ -239,13 +256,13 @@ impl BovedaEngine {
                 (s, u)
             })?;
             
-            accounts.push(crate::models::Account {
+            accounts.push(crate::storage::models::Account {
                 id: row.id,
                 site: dec_site,
                 username: dec_username,
                 password_cipher: row.encrypted_password,
                 notes_cipher: row.encrypted_notes,
-                favicon_url: None, // Google Favicon fetch disabled for privacy
+                favicon_url: None,
                 group_name: row.group_name,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
@@ -264,46 +281,67 @@ impl BovedaEngine {
         username: SecretString,
         password: SecretString,
         notes: Option<SecretString>,
-    ) -> Result<String> {
+    ) -> BovedaResult<String> {
+        self.check_unlocked()?;
+        
+        // Validation
+        validation::validate_string(site.as_str(), "Sitio", validation::MAX_SITE_LEN)?;
+        validation::validate_string(username.as_str(), "Usuario", validation::MAX_USERNAME_LEN)?;
+        validation::validate_string(password.as_str(), "Contraseña", validation::MAX_PASSWORD_LEN)?;
+        if let Some(n) = &notes {
+            validation::validate_string(n.as_str(), "Notas", validation::MAX_NOTES_LEN)?;
+        }
+
         let (enc_site, enc_username, enc_password, enc_notes) = self.with_key(|key| {
-            let s = crypto::encrypt(&site, key)?;
-            let u = crypto::encrypt(&username, key)?;
-            let p = crypto::encrypt(&password, key)?;
-            let n = notes.as_ref().map(|n| crypto::encrypt(n, key)).transpose()?;
-            Ok::<_, anyhow::Error>((s, u, p, n))
+            let s = crypto::encrypt(&site, key).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
+            let u = crypto::encrypt(&username, key).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
+            let p = crypto::encrypt(&password, key).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
+            let n = notes.as_ref().map(|n| crypto::encrypt(n, key).map_err(|e| BovedaError::CryptoError(e.to_string()))).transpose()?;
+            Ok::<_, BovedaError>((s, u, p, n))
         })??;
 
-        db::add_account(
+        storage::add_account(
             &self.db,
             &enc_site,
             &enc_username,
             &enc_password,
             enc_notes.as_deref(),
             None,
-        ).await
+        ).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
     }
 
     /// Decrypts a single ciphertext on-demand.
-    pub fn decrypt_secret(&self, ciphertext: &str) -> Result<SecretString> {
-        self.with_key(|key| crypto::decrypt(ciphertext, key))?
+    pub fn decrypt_secret(&self, ciphertext: &str) -> BovedaResult<SecretString> {
+        self.with_key(|key| crypto::decrypt(ciphertext, key).map_err(|e| BovedaError::CryptoError(e.to_string())))?
     }
 
     /// Deletes an account by ID.
-    pub async fn delete_account(&self, id: &str) -> Result<()> {
-        db::delete_account(&self.db, id).await
+    pub async fn delete_account(&self, id: &str) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        storage::delete_account(&self.db, id).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
     }
 
     // ─── Group Management ─────────────────────────────────────────────────────
 
-    pub async fn update_account_group(&self, id: &str, group_name: Option<&str>) -> Result<()> {
-        db::update_account_group(&self.db, id, group_name).await
+    pub async fn update_account_group(&self, id: &str, group_name: Option<&str>) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        if let Some(name) = group_name {
+            validation::validate_string(name, "Grupo", validation::MAX_GROUP_NAME_LEN)?;
+        }
+        storage::update_account_group(&self.db, id, group_name).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
     }
 
-    pub async fn rename_group(&self, old_name: &str, new_name: &str) -> Result<()> {
-        db::rename_group(&self.db, old_name, new_name).await?;
+    pub async fn rename_group(&self, old_name: &str, new_name: &str) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        validation::validate_string(new_name, "Grupo", validation::MAX_GROUP_NAME_LEN)?;
+
+        // Use a transaction for atomic update
+        let mut tx = self.db.begin().await?;
+
+        storage::rename_group_tx(&mut *tx, old_name, new_name).await?;
 
         // Update the groups list in preferences
-        let raw = db::get_preference(&self.db, "groups").await?;
+        let raw = storage::get_preference_tx(&mut *tx, "groups").await?;
         let mut groups: Vec<String> = raw
             .as_deref()
             .and_then(|s| serde_json::from_str(s).ok())
@@ -314,25 +352,28 @@ impl BovedaEngine {
         }
         
         let serialized = serde_json::to_string(&groups)
-            .map_err(|e| anyhow!("Failed to serialize groups: {}", e))?;
-        db::set_preference(&self.db, "groups", &serialized).await?;
+            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
+        storage::set_preference_tx(&mut *tx, "groups", &serialized).await?;
         
+        tx.commit().await?;
         Ok(())
     }
 
-    pub async fn delete_group(&self, name: &str) -> Result<()> {
-        let count = db::count_accounts_in_group(&self.db, name).await?;
+    pub async fn delete_group(&self, name: &str) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        let count = storage::count_accounts_in_group(&self.db, name).await?;
         if count > 0 {
-            return Err(anyhow!(
+            return Err(BovedaError::Other(format!(
                 "El grupo \"{}\" tiene {} cuenta(s) asignada(s). Mueve las cuentas antes de eliminarlo.",
                 name, count
-            ));
+            )));
         }
 
-        db::delete_group(&self.db, name).await?;
+        let mut tx = self.db.begin().await?;
+        storage::delete_group_tx(&mut *tx, name).await?;
 
         // Update the groups list in preferences
-        let raw = db::get_preference(&self.db, "groups").await?;
+        let raw = storage::get_preference_tx(&mut *tx, "groups").await?;
         let mut groups: Vec<String> = raw
             .as_deref()
             .and_then(|s| serde_json::from_str(s).ok())
@@ -340,20 +381,25 @@ impl BovedaEngine {
             
         groups.retain(|g| g != name);
         let serialized = serde_json::to_string(&groups)
-            .map_err(|e| anyhow!("Failed to serialize groups: {}", e))?;
-        db::set_preference(&self.db, "groups", &serialized).await?;
+            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
+        storage::set_preference_tx(&mut *tx, "groups", &serialized).await?;
         
+        tx.commit().await?;
         Ok(())
     }
 
     // ─── Preferences ───────────────────────────────────────────────────────────
 
-    pub async fn get_preference(&self, key: &str) -> Result<Option<String>> {
-        db::get_preference(&self.db, key).await
+    pub async fn get_preference(&self, key: &str) -> BovedaResult<Option<String>> {
+        self.check_unlocked()?;
+        storage::get_preference(&self.db, key).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
     }
 
-    pub async fn set_preference(&self, key: &str, value: &str) -> Result<()> {
-        db::set_preference(&self.db, key, value).await
+    pub async fn set_preference(&self, key: &str, value: &str) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
+        validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN)?;
+        storage::set_preference(&self.db, key, value).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
     }
 
     // ─── Connection Management ─────────────────────────────────────────────────
@@ -362,7 +408,3 @@ impl BovedaEngine {
         self.db.close().await;
     }
 }
-
-
-
-

@@ -25,10 +25,14 @@ anyhow = "1"
 # Memory Protection
 region = "3"
 libc = "0.2"
+thiserror = "2.0.18"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
 version = "0.52"
 features = ["Win32_System_Memory", "Win32_Foundation"]
+
+[dev-dependencies]
+tokio = { version = "1.52.2", features = ["full"] }
 
 [dependencies.libsqlite3-sys]
 version = "0.27"

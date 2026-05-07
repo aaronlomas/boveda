@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::secret::SecretString;
+use crate::crypto::secret::SecretString;
 
 /// A decrypted account entry as returned to the frontend.
 /// Passwords and notes are decrypted in memory before serialization —

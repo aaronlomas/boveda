@@ -1,29 +1,26 @@
 use tauri::State;
 use crate::state::AppState;
-use boveda_core::db;
 
 // ─── User Preferences ─────────────────────────────────────────────────────────
 
 #[tauri::command]
 pub async fn get_preference(key: String, state: State<'_, AppState>) -> Result<Option<String>, String> {
-    let pool = {
+    let engine = {
         let engine_lock = state.engine.lock().unwrap();
-        let engine = engine_lock.as_ref().ok_or("Vault is locked")?;
-        engine.db.clone()
+        engine_lock.as_ref().cloned().ok_or("Vault is locked")?
     };
-    db::get_preference(&pool, &key)
+    engine.get_preference(&key)
         .await
         .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub async fn set_preference(key: String, value: String, state: State<'_, AppState>) -> Result<(), String> {
-    let pool = {
+    let engine = {
         let engine_lock = state.engine.lock().unwrap();
-        let engine = engine_lock.as_ref().ok_or("Vault is locked")?;
-        engine.db.clone()
+        engine_lock.as_ref().cloned().ok_or("Vault is locked")?
     };
-    db::set_preference(&pool, &key, &value)
+    engine.set_preference(&key, &value)
         .await
         .map_err(|e| e.to_string())
 }
@@ -158,16 +155,12 @@ pub async fn import_db(
     }
 
     // Close the pool to release the file lock before overwriting
-    let pool = {
+    let engine = {
         let mut engine_lock = state.engine.lock().unwrap();
-        if let Some(engine) = engine_lock.take() {
-            Some(engine.db.clone())
-        } else {
-            None
-        }
+        engine_lock.take()
     };
-    if let Some(p) = pool {
-        p.close().await;
+    if let Some(e) = engine {
+        e.close().await;
     }
     tokio::time::sleep(std::time::Duration::from_millis(200)).await;
 

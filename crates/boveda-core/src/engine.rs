@@ -56,7 +56,7 @@ impl Drop for MasterKey {
 #[derive(Clone)]
 pub struct BovedaEngine {
     /// SQLite connection pool.
-    pub db: SqlitePool,
+    db: SqlitePool,
     /// The derived master key, present only when the vault is unlocked.
     pub master_key: Arc<Mutex<Option<MasterKey>>>,
 }
@@ -300,13 +300,69 @@ impl BovedaEngine {
     }
 
     pub async fn rename_group(&self, old_name: &str, new_name: &str) -> Result<()> {
-        db::rename_group(&self.db, old_name, new_name).await
+        db::rename_group(&self.db, old_name, new_name).await?;
+
+        // Update the groups list in preferences
+        let raw = db::get_preference(&self.db, "groups").await?;
+        let mut groups: Vec<String> = raw
+            .as_deref()
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
+            
+        if let Some(pos) = groups.iter().position(|g| g == old_name) {
+            groups[pos] = new_name.to_string();
+        }
+        
+        let serialized = serde_json::to_string(&groups)
+            .map_err(|e| anyhow!("Failed to serialize groups: {}", e))?;
+        db::set_preference(&self.db, "groups", &serialized).await?;
+        
+        Ok(())
     }
 
     pub async fn delete_group(&self, name: &str) -> Result<()> {
-        db::delete_group(&self.db, name).await
+        let count = db::count_accounts_in_group(&self.db, name).await?;
+        if count > 0 {
+            return Err(anyhow!(
+                "El grupo \"{}\" tiene {} cuenta(s) asignada(s). Mueve las cuentas antes de eliminarlo.",
+                name, count
+            ));
+        }
+
+        db::delete_group(&self.db, name).await?;
+
+        // Update the groups list in preferences
+        let raw = db::get_preference(&self.db, "groups").await?;
+        let mut groups: Vec<String> = raw
+            .as_deref()
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
+            
+        groups.retain(|g| g != name);
+        let serialized = serde_json::to_string(&groups)
+            .map_err(|e| anyhow!("Failed to serialize groups: {}", e))?;
+        db::set_preference(&self.db, "groups", &serialized).await?;
+        
+        Ok(())
+    }
+
+    // ─── Preferences ───────────────────────────────────────────────────────────
+
+    pub async fn get_preference(&self, key: &str) -> Result<Option<String>> {
+        db::get_preference(&self.db, key).await
+    }
+
+    pub async fn set_preference(&self, key: &str, value: &str) -> Result<()> {
+        db::set_preference(&self.db, key, value).await
+    }
+
+    // ─── Connection Management ─────────────────────────────────────────────────
+
+    pub async fn close(&self) {
+        self.db.close().await;
     }
 }
+
 
 
 

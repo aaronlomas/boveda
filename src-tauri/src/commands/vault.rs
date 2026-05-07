@@ -1,6 +1,6 @@
 use tauri::State;
 use crate::state::AppState;
-use boveda_core::{BovedaEngine, crypto, db, SecretString};
+use boveda_core::{BovedaEngine, crypto, SecretString};
 
 
 /// Returns true if the vault DB has already been initialized (has a salt).
@@ -128,25 +128,6 @@ pub async fn rename_group(
     
     engine.rename_group(&old_name, &trimmed)
         .await
-        .map_err(|e| e.to_string())?;
-
-    // Update the groups list in preferences (this is still a backend responsibility but could also be moved to engine)
-    let raw = db::get_preference(&engine.db, "groups")
-        .await
-        .map_err(|e| e.to_string())?;
-    
-    let mut groups: Vec<String> = raw
-        .as_deref()
-        .and_then(|s| serde_json::from_str(s).ok())
-        .unwrap_or_default();
-        
-    if let Some(pos) = groups.iter().position(|g| g == &old_name) {
-        groups[pos] = trimmed;
-    }
-    
-    let serialized = serde_json::to_string(&groups).map_err(|e| e.to_string())?;
-    db::set_preference(&engine.db, "groups", &serialized)
-        .await
         .map_err(|e| e.to_string())
 }
 
@@ -160,33 +141,7 @@ pub async fn delete_group(
         engine_lock.as_ref().cloned().ok_or("Vault is locked")?
     };
     
-    let count = db::count_accounts_in_group(&engine.db, &name)
-        .await
-        .map_err(|e| e.to_string())?;
-        
-    if count > 0 {
-        return Err(format!(
-            "El grupo \"{}\" tiene {} cuenta(s) asignada(s). Mueve las cuentas antes de eliminarlo.",
-            name, count
-        ));
-    }
-    
     engine.delete_group(&name)
-        .await
-        .map_err(|e| e.to_string())?;
-        
-    let raw = db::get_preference(&engine.db, "groups")
-        .await
-        .map_err(|e| e.to_string())?;
-        
-    let mut groups: Vec<String> = raw
-        .as_deref()
-        .and_then(|s| serde_json::from_str(s).ok())
-        .unwrap_or_default();
-        
-    groups.retain(|g| g != &name);
-    let serialized = serde_json::to_string(&groups).map_err(|e| e.to_string())?;
-    db::set_preference(&engine.db, "groups", &serialized)
         .await
         .map_err(|e| e.to_string())
 }

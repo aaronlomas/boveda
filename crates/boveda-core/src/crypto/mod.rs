@@ -1,8 +1,8 @@
 pub mod secret;
 
-use aes_gcm::{
+use chacha20poly1305::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
-    Aes256Gcm, Key, Nonce,
+    ChaCha20Poly1305, Key, Nonce,
 };
 use argon2::{Algorithm, Argon2, Params, Version};
 use base64::{engine::general_purpose::STANDARD as B64, Engine};
@@ -34,16 +34,16 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretBytes> {
     Ok(key)
 }
 
-/// Encrypt `plaintext` with AES-256-GCM using `key`.
+/// Encrypt `plaintext` with ChaCha20-Poly1305 using `key`.
 /// Returns Base64(nonce || ciphertext_with_tag).
 pub fn encrypt(plaintext: &SecretString, key: &[u8; 32]) -> Result<String> {
-    let aes_key = Key::<Aes256Gcm>::from_slice(key);
-    let cipher = Aes256Gcm::new(aes_key);
-    let nonce = Aes256Gcm::generate_nonce(&mut OsRng); // 96-bit random nonce
+    let chacha_key = Key::from_slice(key);
+    let cipher = ChaCha20Poly1305::new(chacha_key);
+    let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng); // 96-bit random nonce
 
     let ciphertext = cipher
         .encrypt(&nonce, plaintext.as_str().as_bytes())
-        .map_err(|e| anyhow!("AES-GCM encrypt error: {e}"))?;
+        .map_err(|e| anyhow!("ChaCha20Poly1305 encrypt error: {e}"))?;
 
     // Concat nonce (12 bytes) + ciphertext+tag
     let mut payload = nonce.to_vec();
@@ -52,7 +52,7 @@ pub fn encrypt(plaintext: &SecretString, key: &[u8; 32]) -> Result<String> {
     Ok(B64.encode(payload))
 }
 
-/// Decrypt a Base64-encoded AES-256-GCM blob produced by `encrypt`.
+/// Decrypt a Base64-encoded ChaCha20-Poly1305 blob produced by `encrypt`.
 /// Returns a `SecretString` to ensure the plaintext is zeroized on drop.
 pub fn decrypt(encoded: &str, key: &[u8; 32]) -> Result<SecretString> {
     let payload = B64.decode(encoded)?;
@@ -63,12 +63,12 @@ pub fn decrypt(encoded: &str, key: &[u8; 32]) -> Result<SecretString> {
     let (nonce_bytes, ciphertext) = payload.split_at(12);
     let nonce = Nonce::from_slice(nonce_bytes);
 
-    let aes_key = Key::<Aes256Gcm>::from_slice(key);
-    let cipher = Aes256Gcm::new(aes_key);
+    let chacha_key = Key::from_slice(key);
+    let cipher = ChaCha20Poly1305::new(chacha_key);
 
     let plaintext = cipher
         .decrypt(nonce, ciphertext)
-        .map_err(|e| anyhow!("AES-GCM decrypt error: {e}"))?;
+        .map_err(|e| anyhow!("ChaCha20Poly1305 decrypt error: {e}"))?;
 
     let result = String::from_utf8(plaintext).map_err(|e| {
         let mut err_bytes = e.into_bytes();

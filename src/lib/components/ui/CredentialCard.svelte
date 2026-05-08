@@ -201,7 +201,7 @@
         class="block font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis"
         >{account.site}</span
       >
-      <span class="text-text-muted text-xs">@{account.username}</span>
+      <span class="text-text-muted text-xs">{account.group_name || $_("groups.none")}</span>
     </div>
 
     <!-- Actions row -->
@@ -260,28 +260,9 @@
         {/if}
       </div>
 
-      <!-- Delete button (kept for quick access) -->
-      <button
-        class="text-danger rounded-md transition-colors cursor-pointer p-1 hover:bg-danger/10"
-        onclick={() => ondelete(account.id)}
-        data-tooltip={$_("dashboard.delete_tooltip")}
-        aria-label={$_("dashboard.delete_tooltip")}
-      >
-        <IconTrash size={16} />
-      </button>
     </div>
   </div>
 
-  <!-- Group chip (shown when assigned) -->
-  {#if account.group_name}
-    <div class="flex items-center -mt-1">
-      <span
-        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-accent/10 text-accent border border-accent/20 tracking-wide uppercase"
-      >
-        {account.group_name}
-      </span>
-    </div>
-  {/if}
 
   <!-- Password Field -->
   <div class="flex flex-col gap-1.5 mt-1">

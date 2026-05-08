@@ -20,7 +20,30 @@
     "tabs": {
       "theme": "Tema",
       "language": "Idioma",
+      "security": "Seguridad",
       "performance": "Rendimiento"
+    },
+    "security": {
+      "title": "Seguridad Avanzada",
+      "desc": "Añade capas adicionales de protección a tu bóveda.",
+      "totp_label": "Autenticación de Dos Factores (2FA)",
+      "totp_enabled": "Activo",
+      "totp_disabled": "Desactivado",
+      "totp_enable_btn": "Activar 2FA",
+      "totp_disable_btn": "Desactivar 2FA",
+      "totp_disable_confirm": "¿Estás seguro de que deseas desactivar el 2FA? La semilla actual se destruirá permanentemente.",
+      "totp_warning": "El 2FA mediante apps como Microsoft Authenticator puede sincronizar tu semilla en servidores externos (nube de Microsoft). Esto es una decisión personal tuya. Bóveda solo almacena la semilla de forma local y cifrada. Eres el único responsable de esta elección. La semilla en sí es un estándar abierto (RFC 6238) y nunca abandona tu dispositivo. Solo la app que elijas puede introducir dependencias de nube.",
+      "totp_scan_desc": "Escanea este código QR con tu aplicación de autenticación preferida.",
+      "totp_verify_label": "Introduce el código de verificación:",
+      "totp_verify_btn": "Verificar y Activar",
+      "totp_error_invalid": "El código es incorrecto. Inténtalo de nuevo.",
+      "totp_success_title": "¡2FA Activado!",
+      "totp_success_desc": "A partir de ahora, Bóveda te pedirá un código de seguridad cada vez que desbloquees tu baúl.",
+      "totp_done_btn": "Entendido",
+      "totp_unlock_desc": "Introduce el código de 6 dígitos de tu aplicación de autenticación.",
+      "totp_back_to_password": "Volver a contraseña",
+      "pro_tip_title": "Blindaje Profesional",
+      "pro_tip_desc": "Al activar el 2FA, proteges tu bóveda incluso si tu contraseña maestra es comprometida. Asegúrate de tener acceso a tu dispositivo móvil o guarda tus códigos de recuperación (si la app los provee)."
     },
     "theme": {
       "accent_description": "El color de acento personaliza botones, iconos activos y elementos destacados. Bóveda generará automáticamente tonos claros y efectos de brillo basados en tu elección.",

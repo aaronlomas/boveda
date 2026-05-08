@@ -27,6 +27,11 @@ region = "3"
 libc = "0.2"
 thiserror = "2.0.18"
 
+# 2FA / TOTP
+totp-rs = { version = "5", features = ["qr"] }
+qrcode = "0.14"
+image = "0.25"
+
 [target.'cfg(windows)'.dependencies.windows-sys]
 version = "0.52"
 features = ["Win32_System_Memory", "Win32_Foundation"]

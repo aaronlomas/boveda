@@ -71,6 +71,12 @@ pub fn run() {
             commands::settings::get_data_dir,
             commands::settings::export_db,
             commands::settings::import_db,
+            // ── Security ──────────────────────────────────────────────────
+            commands::security::totp_is_enabled,
+            commands::security::totp_setup,
+            commands::security::totp_verify_setup,
+            commands::security::totp_check,
+            commands::security::totp_disable,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

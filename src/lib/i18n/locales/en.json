@@ -20,7 +20,30 @@
     "tabs": {
       "theme": "Theme",
       "language": "Language",
+      "security": "Security",
       "performance": "Performance"
+    },
+    "security": {
+      "title": "Advanced Security",
+      "desc": "Add extra layers of protection to your vault.",
+      "totp_label": "Two-Factor Authentication (2FA)",
+      "totp_enabled": "Active",
+      "totp_disabled": "Disabled",
+      "totp_enable_btn": "Enable 2FA",
+      "totp_disable_btn": "Disable 2FA",
+      "totp_disable_confirm": "Are you sure you want to disable 2FA? The current seed will be permanently destroyed.",
+      "totp_warning": "Enabling 2FA through apps like Microsoft Authenticator can sync your seed to external servers (Microsoft cloud). This is your personal decision. Bóveda only stores the seed locally and encrypted. You are solely responsible for this choice. The seed itself is an open standard (RFC 6238) and never leaves your device. Only the app you choose can introduce cloud dependencies.",
+      "totp_scan_desc": "Scan this QR code with your preferred authentication app.",
+      "totp_verify_label": "Enter verification code:",
+      "totp_verify_btn": "Verify and Enable",
+      "totp_error_invalid": "The code is incorrect. Please try again.",
+      "totp_success_title": "2FA Enabled!",
+      "totp_success_desc": "From now on, Bóveda will ask for a security code every time you unlock your vault.",
+      "totp_done_btn": "Got it",
+      "totp_unlock_desc": "Enter the 6-digit code from your authentication app.",
+      "totp_back_to_password": "Back to password",
+      "pro_tip_title": "Professional Hardening",
+      "pro_tip_desc": "By enabling 2FA, you protect your vault even if your master password is compromised. Make sure you have access to your mobile device or save your recovery codes (if the app provides them)."
     },
     "theme": {
       "accent_description": "The accent color customizes buttons, active icons, and highlighted elements. Bóveda will automatically generate light tones and glow effects based on your choice.",

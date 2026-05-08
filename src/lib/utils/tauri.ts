@@ -5,8 +5,8 @@ export async function isVaultInitialized(): Promise<boolean> {
   return invoke<boolean>("is_vault_initialized");
 }
 
-export async function unlockVault(password: string): Promise<boolean> {
-  return invoke<boolean>("unlock_vault", { password });
+export async function unlockVault(password: string): Promise<string> {
+  return invoke<string>("unlock_vault", { password });
 }
 
 export async function lockVault(): Promise<void> {

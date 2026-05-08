@@ -6,16 +6,18 @@
     IconPalette,
     IconLanguage,
     IconRocket,
+    IconShieldCheck,
   } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
   import { changeLanguage } from "$lib/i18n";
   import ThemePanel from "./settings/ThemePanel.svelte";
   import LanguagePanel from "./settings/LanguagePanel.svelte";
   import PerformancePanel from "./settings/PerformancePanel.svelte";
+  import SecurityPanel from "./settings/SecurityPanel.svelte";
 
-  let { onclose }: { onclose?: () => void } = $props();
+  let { onclose, vaultUnlocked = false }: { onclose?: () => void, vaultUnlocked?: boolean } = $props();
 
-  let activeSection: "theme" | "language" | "performance" = $state("theme");
+  let activeSection: "theme" | "language" | "performance" | "security" = $state("theme");
 
   function close(e: MouseEvent) {
     if (e.target === e.currentTarget) onclose?.();
@@ -61,9 +63,9 @@
     </div>
 
     <!-- Tabs -->
-    <div class="flex border-b border-surface/8">
+    <div class="flex border-b border-surface/8 overflow-x-auto custom-scrollbar">
       <button
-        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 {activeSection ===
+        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 shrink-0 {activeSection ===
         'theme'
           ? 'border-accent text-accent-light'
           : 'border-transparent text-text-muted hover:text-text-secondary'}"
@@ -73,7 +75,7 @@
         {$_("settings.tabs.theme")}
       </button>
       <button
-        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 {activeSection ===
+        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 shrink-0 {activeSection ===
         'language'
           ? 'border-accent text-accent-light'
           : 'border-transparent text-text-muted hover:text-text-secondary'}"
@@ -82,8 +84,20 @@
         <IconLanguage size={15} />
         {$_("settings.tabs.language")}
       </button>
+      {#if vaultUnlocked}
+        <button
+          class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 shrink-0 {activeSection ===
+          'security'
+            ? 'border-accent text-accent-light'
+            : 'border-transparent text-text-muted hover:text-text-secondary'}"
+          onclick={() => (activeSection = "security")}
+        >
+          <IconShieldCheck size={15} />
+          {$_("settings.tabs.security")}
+        </button>
+      {/if}
       <button
-        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 {activeSection ===
+        class="flex items-center gap-2 px-6 py-3 text-xs font-medium transition-all border-b-2 shrink-0 {activeSection ===
         'performance'
           ? 'border-accent text-accent-light'
           : 'border-transparent text-text-muted hover:text-text-secondary'}"
@@ -102,6 +116,8 @@
         <ThemePanel />
       {:else if activeSection === "language"}
         <LanguagePanel />
+      {:else if activeSection === "security"}
+        <SecurityPanel />
       {:else if activeSection === "performance"}
         <PerformancePanel />
       {/if}

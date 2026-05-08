@@ -11,15 +11,21 @@ pub async fn is_vault_initialized(state: State<'_, AppState>) -> Result<bool, St
 }
 
 #[tauri::command]
-pub async fn unlock_vault(password: SecretString, state: State<'_, AppState>) -> Result<bool, String> {
+pub async fn unlock_vault(password: SecretString, state: State<'_, AppState>) -> Result<String, String> {
     let engine = BovedaEngine::unlock(&state.db_path, &password)
         .await
         .map_err(|e| e.to_string())?;
 
+    let is_totp = engine.is_totp_enabled().await.unwrap_or(false);
+
     let mut engine_lock = state.engine.lock().unwrap();
     *engine_lock = Some(engine);
     
-    Ok(true)
+    if is_totp {
+        Ok("totp_required".to_string())
+    } else {
+        Ok("unlocked".to_string())
+    }
 }
 
 #[tauri::command]

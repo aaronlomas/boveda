@@ -8,6 +8,9 @@ pub enum BovedaError {
     #[error("Contraseña incorrecta o archivo dañado")]
     InvalidPassword,
 
+    #[error("Código TOTP inválido o expirado")]
+    InvalidTotpCode,
+
     #[error("Error de base de datos: {0}")]
     DatabaseError(String),
 

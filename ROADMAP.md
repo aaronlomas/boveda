@@ -25,6 +25,9 @@ Este documento detalla la visión estratégica y los objetivos técnicos para el
 ## 🛡️ Fase 3: Hardening Avanzado y Funciones Pro (Q2 2027+)
 *Enfoque: Integración con hardware y funciones de nivel empresarial.*
 
+- [ ] **Doble Factor de Autenticación (2FA) Opcional:**
+    - Implementar soporte para TOTP (Google/Microsoft Authenticator) como paso adicional de desbloqueo.
+    - Interfaz de configuración con generación de QR y advertencia sobre la dependencia de ecosistemas externos.
 - [ ] **Integración de Hardware Security (HSM/U2F):** Soporte nativo para llaves físicas (YubiKey) y Secure Enclave / TPM para el desbloqueo del baúl.
 - [ ] **Biometría Nativa:** Desbloqueo mediante Windows Hello, TouchID y FaceID integrado directamente en la lógica del motor.
 - [ ] **Sincronización E2EE Opcional:** Protocolo de sincronización entre dispositivos con cifrado de extremo a extremo, donde el servidor nunca tiene acceso a los datos.

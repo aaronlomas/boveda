@@ -38,7 +38,7 @@
     }}
   />
 {:else if modal.current?.kind === 'preferences'}
-  <PreferencesModal onclose={() => modal.close()} />
+  <PreferencesModal onclose={() => modal.close()} vaultUnlocked={true} />
 {:else if modal.current?.kind === 'assign-group'}
   <AssignGroupModal
     accountId={modal.current.payload.accountId}

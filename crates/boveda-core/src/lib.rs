@@ -2,6 +2,7 @@ pub mod crypto;
 pub mod storage;
 pub mod vault;
 pub mod error;
+pub mod auth;
 
 #[cfg(test)]
 mod tests;

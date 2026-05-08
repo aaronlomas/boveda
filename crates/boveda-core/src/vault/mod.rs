@@ -3,6 +3,7 @@ pub mod validation;
 use std::sync::{Arc, Mutex};
 
 use sqlx::{sqlite::{SqliteConnectOptions, SqlitePoolOptions}, SqlitePool};
+use base64::Engine;
 use std::str::FromStr;
 use std::path::PathBuf;
 use crate::crypto::secret::{SecretKey, SecretString};
@@ -400,6 +401,86 @@ impl BovedaEngine {
         validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
         validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN)?;
         storage::set_preference(&self.db, key, value).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
+    }
+
+    // ─── TOTP (2FA) Management ─────────────────────────────────────────────────
+
+    /// Initializes 2FA for the vault.
+    /// Generates a new seed, encrypts it with the master key, and saves it.
+    pub async fn setup_totp(&self) -> BovedaResult<crate::auth::TotpSetupPayload> {
+        self.check_unlocked()?;
+
+        // 1. Generate a new seed (20 bytes random)
+        let seed = crate::auth::TotpManager::generate_secret();
+
+        // 2. Encrypt the seed using the master key
+        // We encode the seed bytes as base64 string first to use the existing encrypt helper
+        let seed_b64 = base64::engine::general_purpose::STANDARD.encode(seed.as_bytes());
+        let encrypted_seed = self.with_key(|key| {
+            crate::crypto::encrypt(&crate::crypto::secret::SecretString::from(seed_b64), key)
+                .map_err(|e| BovedaError::CryptoError(e.to_string()))
+        })??;
+
+        // 3. Persist the encrypted seed (but don't enable yet)
+        self.set_preference("totp_secret_cipher", &encrypted_seed).await?;
+
+        // 4. Return the QR and URL for the frontend
+        Ok(crate::auth::TotpSetupPayload {
+            otpauth_url: crate::auth::TotpManager::get_otpauth_url(&seed),
+            qr_png_b64: crate::auth::TotpManager::generate_qr_png_b64(&seed),
+        })
+    }
+
+    /// Verifies a TOTP code against the persisted encrypted secret.
+    pub async fn verify_totp(&self, code: &str) -> BovedaResult<bool> {
+        self.check_unlocked()?;
+
+        let cipher = self.get_preference("totp_secret_cipher").await?
+            .ok_or_else(|| BovedaError::Other("TOTP no está configurado".to_string()))?;
+
+        // Decrypt the seed (Base64 string)
+        let seed_b64 = self.with_key(|key| {
+            crate::crypto::decrypt(&cipher, key)
+                .map_err(|e| BovedaError::CryptoError(e.to_string()))
+        })??;
+
+        // Decode base64 to raw bytes
+        let seed_bytes = base64::engine::general_purpose::STANDARD.decode(seed_b64.as_str())
+            .map_err(|e: base64::DecodeError| BovedaError::CryptoError(e.to_string()))?;
+        
+        let seed = crate::crypto::secret::SecretBytes::new(seed_bytes);
+        let valid = crate::auth::TotpManager::verify(&seed, code);
+        
+        if valid {
+            // Enable TOTP now that we know the user has verified it
+            self.set_preference("totp_enabled", "true").await?;
+        }
+
+        Ok(valid)
+    }
+
+    /// Disables 2FA by removing the encrypted seed from storage.
+    pub async fn disable_totp(&self) -> BovedaResult<()> {
+        self.check_unlocked()?;
+
+        let mut tx = self.db.begin().await?;
+        
+        // Remove both keys to ensure permanent destruction
+        sqlx::query("DELETE FROM preferences WHERE key = 'totp_secret_cipher'")
+            .execute(&mut *tx)
+            .await?;
+        sqlx::query("DELETE FROM preferences WHERE key = 'totp_enabled'")
+            .execute(&mut *tx)
+            .await?;
+
+        tx.commit().await?;
+        Ok(())
+    }
+
+    /// Returns true if TOTP 2FA is currently enabled.
+    pub async fn is_totp_enabled(&self) -> BovedaResult<bool> {
+        let enabled = self.get_preference("totp_enabled").await?;
+        Ok(enabled.as_deref() == Some("true"))
     }
 
     // ─── Connection Management ─────────────────────────────────────────────────

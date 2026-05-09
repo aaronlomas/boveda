@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use sqlx::{sqlite::{SqliteConnectOptions, SqlitePoolOptions}, SqlitePool};
 use std::str::FromStr;
-use std::path::PathBuf;
+use std::path::Path;
 use crate::crypto::secret::{SecretKey, SecretString};
 use crate::crypto;
 use crate::storage;
@@ -67,7 +67,7 @@ pub struct BovedaEngine {
 
 impl BovedaEngine {
     /// Returns true if the vault database or its salt file exists.
-    pub fn is_initialized(db_path: &PathBuf) -> bool {
+    pub fn is_initialized(db_path: &Path) -> bool {
         let salt_path = db_path.with_file_name("vault.salt");
         salt_path.exists() || db_path.exists()
     }
@@ -78,7 +78,7 @@ impl BovedaEngine {
 
     /// High-level method to unlock the vault.
     /// Handles salt detection, migration, key derivation, and database opening.
-    pub async fn unlock(db_path: &PathBuf, password: &SecretString) -> BovedaResult<Self> {
+    pub async fn unlock(db_path: &Path, password: &SecretString) -> BovedaResult<Self> {
         let salt_path = db_path.with_file_name("vault.salt");
         let mut is_legacy_migration = false;
 
@@ -125,7 +125,7 @@ impl BovedaEngine {
     }
 
     /// Internal helper to handle legacy migration flow.
-    async fn unlock_legacy_migration(db_path: &PathBuf, password: &SecretString) -> BovedaResult<Self> {
+    async fn unlock_legacy_migration(db_path: &Path, password: &SecretString) -> BovedaResult<Self> {
         let unencrypted_engine = Self::open_unencrypted(db_path).await?;
         let meta = storage::get_vault_meta(&unencrypted_engine.db).await?
             .ok_or_else(|| BovedaError::MigrationError("Legacy vault has no metadata".to_string()))?;
@@ -171,7 +171,7 @@ impl BovedaEngine {
     }
 
     /// Opens the database without a key (useful for initial migration check).
-    pub async fn open_unencrypted(db_path: &PathBuf) -> BovedaResult<Self> {
+    pub async fn open_unencrypted(db_path: &Path) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
@@ -199,7 +199,7 @@ impl BovedaEngine {
     }
 
     /// Opens the database utilizing SQLCipher with the derived key.
-    pub async fn open_encrypted(db_path: &PathBuf, key: &SecretKey) -> BovedaResult<Self> {
+    pub async fn open_encrypted(db_path: &Path, key: &SecretKey) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let mut options = SqliteConnectOptions::from_str(&url)?;
         
@@ -272,7 +272,7 @@ impl BovedaEngine {
         }
         
         // Sort by site
-        accounts.sort_by(|a, b| a.site.as_str().to_lowercase().cmp(&b.site.as_str().to_lowercase()));
+        accounts.sort_by_key(|a| a.site.as_str().to_lowercase());
         Ok(accounts)
     }
 
@@ -340,10 +340,10 @@ impl BovedaEngine {
         // Use a transaction for atomic update
         let mut tx = self.db.begin().await?;
 
-        storage::rename_group_tx(&mut *tx, old_name, new_name).await?;
+        storage::rename_group_tx(&mut tx, old_name, new_name).await?;
 
         // Update the groups list in preferences
-        let raw = storage::get_preference_tx(&mut *tx, "groups").await?;
+        let raw = storage::get_preference_tx(&mut tx, "groups").await?;
         let mut groups: Vec<String> = raw
             .as_deref()
             .and_then(|s| serde_json::from_str(s).ok())
@@ -355,7 +355,7 @@ impl BovedaEngine {
         
         let serialized = serde_json::to_string(&groups)
             .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-        storage::set_preference_tx(&mut *tx, "groups", &serialized).await?;
+        storage::set_preference_tx(&mut tx, "groups", &serialized).await?;
         
         tx.commit().await?;
         Ok(())
@@ -372,10 +372,10 @@ impl BovedaEngine {
         }
 
         let mut tx = self.db.begin().await?;
-        storage::delete_group_tx(&mut *tx, name).await?;
+        storage::delete_group_tx(&mut tx, name).await?;
 
         // Update the groups list in preferences
-        let raw = storage::get_preference_tx(&mut *tx, "groups").await?;
+        let raw = storage::get_preference_tx(&mut tx, "groups").await?;
         let mut groups: Vec<String> = raw
             .as_deref()
             .and_then(|s| serde_json::from_str(s).ok())
@@ -384,7 +384,7 @@ impl BovedaEngine {
         groups.retain(|g| g != name);
         let serialized = serde_json::to_string(&groups)
             .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-        storage::set_preference_tx(&mut *tx, "groups", &serialized).await?;
+        storage::set_preference_tx(&mut tx, "groups", &serialized).await?;
         
         tx.commit().await?;
         Ok(())

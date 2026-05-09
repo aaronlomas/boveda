@@ -5,7 +5,6 @@
   import {
     IconEye,
     IconEyeOff,
-    IconSettings,
     IconLock,
     IconShieldHalfFilled,
     IconDatabaseImport,
@@ -16,10 +15,8 @@
   import { invoke } from "@tauri-apps/api/core";
   import { open } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
-  import PreferencesModal from "../modals/PreferencesModal.svelte";
   import { focus } from "$lib/utils/actions";
 
-  let showPreferences = $state(false);
 
   const version = import.meta.env.APP_VERSION;
 
@@ -143,14 +140,6 @@
       >
         <IconDatabaseImport size={16} />
         <span class="font-semibold">{$_("unlock_screen.header_import")}</span>
-      </button>
-      <button
-        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-xs cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl font-semibold"
-        type="button"
-        onclick={() => (showPreferences = true)}
-      >
-        <IconSettings size={16} />
-        <span>{$_("unlock_screen.header_settings")}</span>
       </button>
     </div>
   </header>
@@ -327,6 +316,3 @@
   </footer>
 </div>
 
-{#if showPreferences}
-  <PreferencesModal onclose={() => (showPreferences = false)} />
-{/if}

@@ -15,6 +15,7 @@
   },
   "settings": {
     "title": "Configuración",
+    "subtitle": "Personaliza tu experiencia en Bóveda",
     "close": "Cerrar",
     "restore": "Restaurar",
     "tabs": {
@@ -24,8 +25,8 @@
       "performance": "Rendimiento"
     },
     "security": {
-      "title": "Seguridad Avanzada",
-      "desc": "Añade capas adicionales de protección a tu bóveda.",
+      "title": "Extender Desbloqueo de Bóveda",
+      "desc": "Añade capas adicionales de desbloqueo a tu bóveda.",
       "totp_label": "Autenticación de Dos Factores (2FA)",
       "totp_enabled": "Activo",
       "totp_disabled": "Desactivado",

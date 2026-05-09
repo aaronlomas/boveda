@@ -15,6 +15,7 @@
   },
   "settings": {
     "title": "Settings",
+    "subtitle": "Customize your Bóveda experience",
     "close": "Close",
     "restore": "Restore",
     "tabs": {
@@ -24,8 +25,8 @@
       "performance": "Performance"
     },
     "security": {
-      "title": "Advanced Security",
-      "desc": "Add extra layers of protection to your vault.",
+      "title": "Extend Vault Unlock",
+      "desc": "Add additional layers of unlocking to your vault.",
       "totp_label": "Two-Factor Authentication (2FA)",
       "totp_enabled": "Active",
       "totp_disabled": "Disabled",

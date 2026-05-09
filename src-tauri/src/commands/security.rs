@@ -57,6 +57,24 @@ pub async fn totp_check(code: String, state: State<'_, AppState>) -> Result<bool
 }
 
 #[tauri::command]
+pub async fn totp_recovery_check(code: String, state: State<'_, AppState>) -> Result<bool, String> {
+    let engine = {
+        let engine_lock = state.engine.lock().unwrap();
+        engine_lock.as_ref().cloned().ok_or("Vault is locked")?
+    };
+    
+    let valid = engine.verify_totp_recovery(&code)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if !valid {
+        return Err("Código de recuperación inválido o ya utilizado".to_string());
+    }
+
+    Ok(true)
+}
+
+#[tauri::command]
 pub async fn totp_disable(state: State<'_, AppState>) -> Result<(), String> {
     let engine = {
         let engine_lock = state.engine.lock().unwrap();

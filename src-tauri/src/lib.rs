@@ -76,6 +76,7 @@ pub fn run() {
             commands::security::totp_setup,
             commands::security::totp_verify_setup,
             commands::security::totp_check,
+            commands::security::totp_recovery_check,
             commands::security::totp_disable,
         ])
         .run(tauri::generate_context!())

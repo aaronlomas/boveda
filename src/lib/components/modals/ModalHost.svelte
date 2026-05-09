@@ -1,9 +1,8 @@
 <script lang="ts">
   import { modal } from '$lib/stores/modal.svelte';
-  import AddCredentialModal from './AddCredentialModal.svelte';
-  import ConfirmModal from './ConfirmModal.svelte';
-  import PreferencesModal from './PreferencesModal.svelte';
-  import AssignGroupModal from './AssignGroupModal.svelte';
+  import AddCredentialModal from './forms/AddCredentialModal.svelte';
+  import ConfirmModal from './confirmation/ConfirmModal.svelte';
+  import AssignGroupModal from './forms/AssignGroupModal.svelte';
 </script>
 
 <!--
@@ -37,8 +36,6 @@
       payload?.oncancel?.();
     }}
   />
-{:else if modal.current?.kind === 'preferences'}
-  <PreferencesModal onclose={() => modal.close()} vaultUnlocked={true} />
 {:else if modal.current?.kind === 'assign-group'}
   <AssignGroupModal
     accountId={modal.current.payload.accountId}

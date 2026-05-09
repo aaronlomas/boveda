@@ -8,6 +8,7 @@ use rand::RngCore;
 pub struct TotpSetupPayload {
     pub otpauth_url: String,
     pub qr_png_b64: String,
+    pub recovery_codes: Vec<String>,
 }
 
 pub struct TotpManager;
@@ -58,5 +59,23 @@ impl TotpManager {
     pub fn verify(secret: &SecretBytes, code: &str) -> bool {
         let totp = Self::create_totp(secret);
         totp.check_current(code).unwrap_or(false)
+    }
+
+    /// Generates 10 random recovery codes (12 chars each).
+    pub fn generate_recovery_codes() -> Vec<String> {
+        let mut rng = rand::thread_rng();
+        let charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed ambiguous chars (O, 0, I, 1)
+        
+        (0..10).map(|_| {
+            let mut code = String::with_capacity(14);
+            for i in 0..12 {
+                if i > 0 && i % 4 == 0 {
+                    code.push('-');
+                }
+                let idx = (rng.next_u32() as usize) % charset.len();
+                code.push(charset.chars().nth(idx).unwrap());
+            }
+            code
+        }).collect()
     }
 }

@@ -19,7 +19,8 @@ export type ViewId =
   | "documents"
   | "about"
   | "pin"
-  | "tokens";
+  | "tokens"
+  | "settings";
 
 // ─── Global State (Svelte 5 Runes) ────────────────────────────────────────────
 

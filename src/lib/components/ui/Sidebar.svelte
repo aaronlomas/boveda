@@ -61,7 +61,7 @@
       icon: IconSettings,
       label: $_("sidebar.settings"),
       id: "settings",
-      action: () => modal.openPreferences(),
+      action: () => (globalState.activeView = "settings"),
     },
   ]);
 

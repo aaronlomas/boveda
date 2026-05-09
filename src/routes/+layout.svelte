@@ -6,7 +6,7 @@
   import { initI18n } from "$lib/i18n";
   import { isLoading, waitLocale } from "svelte-i18n";
   import TitleBar from "$lib/components/ui/TitleBar.svelte";
-  import Toast from "$lib/components/ui/Toast.svelte";
+  import Toast from "$lib/components/modals/notifications/Toast.svelte";
   import ModalHost from "$lib/components/modals/ModalHost.svelte";
   import { getCurrentWindow } from "@tauri-apps/api/window";
 

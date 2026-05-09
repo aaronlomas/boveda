@@ -7,6 +7,7 @@
   import AboutView from "./AboutView.svelte";
   import PinView from "./PinView.svelte";
   import TokensView from "./TokensView.svelte";
+  import SettingsView from "./SettingsView.svelte";
 </script>
 
 <div class="h-full w-full">
@@ -22,5 +23,7 @@
     <PinView />
   {:else if globalState.activeView === "tokens"}
     <TokensView />
+  {:else if globalState.activeView === "settings"}
+    <SettingsView />
   {/if}
 </div>

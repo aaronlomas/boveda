@@ -8,7 +8,6 @@
 //   import { modal } from '$lib/stores/modal.svelte';
 //   modal.openAddCredential({ onadded: () => refresh() });
 //   modal.openConfirm({ title, message, onconfirm: () => doSomething() });
-//   modal.openPreferences();
 //   modal.openAssignGroup({ accountId: '...', onassigned: () => refresh() });
 //   modal.close();
 
@@ -37,7 +36,6 @@ export interface AssignGroupPayload {
 type ModalDescriptor =
   | { kind: 'add-credential'; payload: AddCredentialPayload }
   | { kind: 'confirm'; payload: ConfirmPayload }
-  | { kind: 'preferences' }
   | { kind: 'assign-group'; payload: AssignGroupPayload };
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -53,9 +51,6 @@ class ModalManager {
     this.current = { kind: 'confirm', payload };
   }
 
-  openPreferences(): void {
-    this.current = { kind: 'preferences' };
-  }
 
   openAssignGroup(payload: AssignGroupPayload): void {
     this.current = { kind: 'assign-group', payload };

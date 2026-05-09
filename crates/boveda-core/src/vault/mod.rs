@@ -1,9 +1,9 @@
 pub mod validation;
+pub mod totp;
 
 use std::sync::{Arc, Mutex};
 
 use sqlx::{sqlite::{SqliteConnectOptions, SqlitePoolOptions}, SqlitePool};
-use base64::Engine;
 use std::str::FromStr;
 use std::path::PathBuf;
 use crate::crypto::secret::{SecretKey, SecretString};
@@ -401,146 +401,6 @@ impl BovedaEngine {
         validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
         validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN)?;
         storage::set_preference(&self.db, key, value).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
-    }
-
-    // ─── TOTP (2FA) Management ─────────────────────────────────────────────────
-
-    /// Initializes 2FA for the vault.
-    /// Generates a new seed, encrypts it with the master key, and saves it.
-    pub async fn setup_totp(&self) -> BovedaResult<crate::auth::TotpSetupPayload> {
-        self.check_unlocked()?;
-
-        // 1. Generate a new seed (20 bytes random)
-        let seed = crate::auth::TotpManager::generate_secret();
-
-        // 2. Encrypt the seed using the master key
-        // We encode the seed bytes as base64 string first to use the existing encrypt helper
-        let seed_b64 = base64::engine::general_purpose::STANDARD.encode(seed.as_bytes());
-        let encrypted_seed = self.with_key(|key| {
-            crate::crypto::encrypt(&crate::crypto::secret::SecretString::from(seed_b64), key)
-                .map_err(|e| BovedaError::CryptoError(e.to_string()))
-        })??;
-
-        // 4. Generate recovery codes
-        let recovery_codes = crate::auth::TotpManager::generate_recovery_codes();
-        
-        // 5. Encrypt recovery codes
-        // We'll store them as a JSON string encrypted with the master key
-        let recovery_json = serde_json::to_string(&recovery_codes)
-            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            
-        let encrypted_recovery = self.with_key(|key| {
-            crate::crypto::encrypt(&crate::crypto::secret::SecretString::from(recovery_json), key)
-                .map_err(|e| BovedaError::CryptoError(e.to_string()))
-        })??;
-        
-        // 6. Persist encrypted data
-        self.set_preference("totp_secret_cipher", &encrypted_seed).await?;
-        self.set_preference("totp_recovery_cipher", &encrypted_recovery).await?;
-
-        // 7. Return the QR, URL and codes for the frontend
-        Ok(crate::auth::TotpSetupPayload {
-            otpauth_url: crate::auth::TotpManager::get_otpauth_url(&seed),
-            qr_png_b64: crate::auth::TotpManager::generate_qr_png_b64(&seed),
-            recovery_codes,
-        })
-    }
-
-    /// Verifies a TOTP code against the persisted encrypted secret.
-    pub async fn verify_totp(&self, code: &str) -> BovedaResult<bool> {
-        self.check_unlocked()?;
-
-        let cipher = self.get_preference("totp_secret_cipher").await?
-            .ok_or_else(|| BovedaError::Other("TOTP no está configurado".to_string()))?;
-
-        // Decrypt the seed (Base64 string)
-        let seed_b64 = self.with_key(|key| {
-            crate::crypto::decrypt(&cipher, key)
-                .map_err(|e| BovedaError::CryptoError(e.to_string()))
-        })??;
-
-        // Decode base64 to raw bytes
-        let seed_bytes = base64::engine::general_purpose::STANDARD.decode(seed_b64.as_str())
-            .map_err(|e: base64::DecodeError| BovedaError::CryptoError(e.to_string()))?;
-        
-        let seed = crate::crypto::secret::SecretBytes::new(seed_bytes);
-        let valid = crate::auth::TotpManager::verify(&seed, code);
-        
-        if valid {
-            // Enable TOTP now that we know the user has verified it
-            self.set_preference("totp_enabled", "true").await?;
-        }
-
-        Ok(valid)
-    }
-
-    /// Disables 2FA by removing the encrypted seed and recovery codes from storage.
-    pub async fn disable_totp(&self) -> BovedaResult<()> {
-        self.check_unlocked()?;
-
-        let mut tx = self.db.begin().await?;
-        
-        // Remove all keys to ensure permanent destruction
-        sqlx::query("DELETE FROM preferences WHERE key = 'totp_secret_cipher'")
-            .execute(&mut *tx)
-            .await?;
-        sqlx::query("DELETE FROM preferences WHERE key = 'totp_enabled'")
-            .execute(&mut *tx)
-            .await?;
-        sqlx::query("DELETE FROM preferences WHERE key = 'totp_recovery_cipher'")
-            .execute(&mut *tx)
-            .await?;
-
-        tx.commit().await?;
-        Ok(())
-    }
-
-    /// Verifies a recovery code and burns it if valid.
-    pub async fn verify_totp_recovery(&self, input_code: &str) -> BovedaResult<bool> {
-        self.check_unlocked()?;
-        
-        let cipher = self.get_preference("totp_recovery_cipher").await?
-            .ok_or_else(|| BovedaError::Other("Códigos de recuperación no configurados".to_string()))?;
-            
-        // Decrypt the recovery list
-        let recovery_json = self.with_key(|key| {
-            crate::crypto::decrypt(&cipher, key)
-                .map_err(|e| BovedaError::CryptoError(e.to_string()))
-        })??;
-        
-        let mut codes: Vec<String> = serde_json::from_str(recovery_json.as_str())
-            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            
-        // Check if code exists (case-insensitive for better UX)
-        let normalized_input = input_code.trim().to_uppercase();
-        if let Some(pos) = codes.iter().position(|c| c.to_uppercase() == normalized_input) {
-            // Valid code! Burn it.
-            codes.remove(pos);
-            
-            // Re-encrypt and save the remaining codes
-            let new_json = serde_json::to_string(&codes)
-                .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            let new_cipher = self.with_key(|key| {
-                crate::crypto::encrypt(&crate::crypto::secret::SecretString::from(new_json), key)
-                    .map_err(|e| BovedaError::CryptoError(e.to_string()))
-            })??;
-            
-            self.set_preference("totp_recovery_cipher", &new_cipher).await?;
-            
-            // Note: We don't automatically disable TOTP here. 
-            // The user just unlocked the vault once. 
-            // They should go to settings and disable/reset 2FA if they lost the device.
-            
-            Ok(true)
-        } else {
-            Ok(false)
-        }
-    }
-
-    /// Returns true if TOTP 2FA is currently enabled.
-    pub async fn is_totp_enabled(&self) -> BovedaResult<bool> {
-        let enabled = self.get_preference("totp_enabled").await?;
-        Ok(enabled.as_deref() == Some("true"))
     }
 
     // ─── Connection Management ─────────────────────────────────────────────────

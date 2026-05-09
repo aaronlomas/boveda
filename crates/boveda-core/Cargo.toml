@@ -16,6 +16,7 @@ chacha20poly1305 = "0.10"
 argon2 = "0.5"
 rand = "0.8"
 base64 = "0.21"
+subtle = "2.5"
 
 # Utilities
 uuid = { version = "1", features = ["v4"] }

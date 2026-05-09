@@ -3,6 +3,8 @@ use totp_rs::{Algorithm, TOTP};
 use serde::{Serialize, Deserialize};
 use base64::Engine;
 use rand::RngCore;
+use rand::rngs::OsRng;
+use zeroize::Zeroizing;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TotpSetupPayload {
@@ -17,20 +19,21 @@ impl TotpManager {
     /// Generates a new 20-byte random secret for TOTP.
     pub fn generate_secret() -> SecretBytes {
         let mut bytes = vec![0u8; 20];
-        rand::thread_rng().fill_bytes(&mut bytes);
+        OsRng.fill_bytes(&mut bytes);
         SecretBytes::new(bytes)
     }
 
     /// Creates a TOTP instance from the given secret bytes.
     fn create_totp(secret: &SecretBytes) -> TOTP {
         let secret_bytes = secret.as_bytes();
+        let seed = Zeroizing::new(secret_bytes.to_vec());
         
         TOTP::new(
             Algorithm::SHA1,
             6,
             1,
             30,
-            secret_bytes.to_vec(),
+            seed.to_vec(),
             Some("Bóveda".to_string()),
             "vault".to_string(),
         ).unwrap()
@@ -63,7 +66,7 @@ impl TotpManager {
 
     /// Generates 10 random recovery codes (12 chars each).
     pub fn generate_recovery_codes() -> Vec<String> {
-        let mut rng = rand::thread_rng();
+        let mut rng = OsRng;
         let charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed ambiguous chars (O, 0, I, 1)
         
         (0..10).map(|_| {

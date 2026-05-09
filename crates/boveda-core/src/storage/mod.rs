@@ -266,11 +266,12 @@ pub async fn migrate_to_sqlcipher(
         attach_query.push(HEX_CHARS[(byte & 0x0f) as usize]);
     }
     attach_query.extend_from_slice(b"'\"");
-    let attach_query_str = crate::crypto::secret::SecretString::new(String::from_utf8(attach_query).expect("Valid string"));
+    let attach_query_str = String::from_utf8(attach_query).expect("Valid string");
+    let attach_query_zero = zeroize::Zeroizing::new(attach_query_str);
     
     let mut conn = unencrypted_pool.acquire().await?;
     
-    conn.execute(attach_query_str.as_str()).await?;
+    conn.execute(attach_query_zero.as_str()).await?;
     conn.execute("SELECT sqlcipher_export('encrypted')").await?;
     conn.execute("DETACH DATABASE encrypted").await?;
     

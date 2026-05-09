@@ -4,6 +4,7 @@ use crate::crypto;
 use crate::crypto::secret::SecretString;
 use crate::auth::{TotpManager, TotpSetupPayload};
 use base64::Engine;
+use subtle::ConstantTimeEq;
 
 impl BovedaEngine {
     // ─── TOTP (2FA) Management ─────────────────────────────────────────────────
@@ -112,9 +113,16 @@ impl BovedaEngine {
         let codes: Vec<String> = serde_json::from_str(recovery_json.as_str())
             .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
             
-        // Check if code exists (case-insensitive for better UX)
+        // Check if code exists (constant-time check for each code)
         let normalized_input = input_code.trim().to_uppercase();
-        if codes.iter().any(|c| c.to_uppercase() == normalized_input) {
+        let mut found = false;
+        for c in codes {
+            if c.to_uppercase().as_bytes().ct_eq(normalized_input.as_bytes()).into() {
+                found = true;
+            }
+        }
+
+        if found {
             // Valid recovery code! Reset 2FA entirely.
             let mut tx = self.db.begin().await?;
             

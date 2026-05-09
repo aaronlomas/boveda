@@ -183,8 +183,8 @@ impl BovedaEngine {
         })
     }
 
-    /// Safe helper to format the master key into a hex string for SQLCipher PRAGMA
-    fn generate_pragma_key(key: &SecretKey) -> SecretString {
+    /// Safe helper to format the master key into a hex string for SQLCipher PRAGMA.
+    fn generate_pragma_key(key: &SecretKey) -> String {
         const HEX_CHARS: &[u8] = b"0123456789abcdef";
         let mut pragma = Vec::with_capacity(64 + 4);
         pragma.extend_from_slice(b"\"x'");
@@ -194,7 +194,8 @@ impl BovedaEngine {
         }
         pragma.push(b'\'');
         pragma.push(b'"');
-        SecretString::new(String::from_utf8(pragma).expect("Valid ASCII"))
+        
+        String::from_utf8(pragma).expect("Valid ASCII")
     }
 
     /// Opens the database utilizing SQLCipher with the derived key.
@@ -203,9 +204,9 @@ impl BovedaEngine {
         let mut options = SqliteConnectOptions::from_str(&url)?;
         
         // Send the PRAGMA key right upon connecting
-        let pragma_key_secret = Self::generate_pragma_key(key);
+        let pragma_key = Self::generate_pragma_key(key);
         
-        options = options.pragma("key", pragma_key_secret.as_str().to_string());
+        options = options.pragma("key", pragma_key);
 
         let pool = SqlitePoolOptions::new()
             .max_connections(5)

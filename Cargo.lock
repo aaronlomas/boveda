@@ -528,6 +528,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
+ "subtle",
  "thiserror 2.0.18",
  "tokio",
  "totp-rs",

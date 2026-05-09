@@ -1,6 +1,7 @@
 use std::fmt;
 use serde::{Deserialize, Serialize};
 use zeroize::Zeroize;
+use subtle::{Choice, ConstantTimeEq};
 
 /// A wrapper for sensitive byte arrays that zeroizes its contents upon drop.
 #[derive(Clone, PartialEq)]
@@ -17,6 +18,12 @@ impl SecretBytes {
 
     pub fn as_mut_bytes(&mut self) -> &mut [u8] {
         &mut self.0
+    }
+}
+
+impl ConstantTimeEq for SecretBytes {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.0.as_slice().ct_eq(other.0.as_slice())
     }
 }
 
@@ -50,6 +57,12 @@ impl SecretKey {
     }
 }
 
+impl ConstantTimeEq for SecretKey {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.0.ct_eq(&other.0)
+    }
+}
+
 impl Drop for SecretKey {
     fn drop(&mut self) {
         self.0.zeroize();
@@ -79,9 +92,18 @@ impl SecretString {
     pub fn into_bytes(self) -> SecretBytes {
         let mut s = self;
         let bytes = std::mem::take(&mut s.0).into_bytes();
-        // The original string is now empty, so drop will zeroize empty string.
-        // We wrap the bytes in SecretBytes.
         SecretBytes::new(bytes)
+    }
+
+    /// Constant-time comparison against another string.
+    pub fn ct_eq_str(&self, other: &str) -> bool {
+        self.0.as_bytes().ct_eq(other.as_bytes()).into()
+    }
+}
+
+impl ConstantTimeEq for SecretString {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.0.as_bytes().ct_eq(other.0.as_bytes())
     }
 }
 

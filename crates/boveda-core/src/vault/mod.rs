@@ -62,7 +62,7 @@ pub struct BovedaEngine {
     /// SQLite connection pool.
     pub(crate) db: SqlitePool,
     /// The derived master key, present only when the vault is unlocked.
-    master_key: Arc<Mutex<Option<MasterKey>>>,
+    pub(crate) master_key: Arc<Mutex<Option<MasterKey>>>,
 }
 
 impl BovedaEngine {

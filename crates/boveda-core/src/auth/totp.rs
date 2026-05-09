@@ -82,3 +82,51 @@ impl TotpManager {
         }).collect()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_secret() {
+        let s1 = TotpManager::generate_secret();
+        let s2 = TotpManager::generate_secret();
+        assert_eq!(s1.as_bytes().len(), 20);
+        assert_ne!(s1.as_bytes(), s2.as_bytes());
+    }
+
+    #[test]
+    fn test_generate_recovery_codes() {
+        let codes = TotpManager::generate_recovery_codes();
+        assert_eq!(codes.len(), 10);
+        for code in codes {
+            assert_eq!(code.len(), 14); // 12 chars + 2 dashes
+            assert!(code.contains('-'));
+        }
+    }
+
+    #[test]
+    fn test_get_otpauth_url() {
+        let secret = TotpManager::generate_secret();
+        let url = TotpManager::get_otpauth_url(&secret);
+        assert!(url.contains("otpauth://totp/"));
+        assert!(url.contains("secret="));
+    }
+
+    #[test]
+    fn test_generate_qr_png_b64() {
+        let secret = TotpManager::generate_secret();
+        let b64 = TotpManager::generate_qr_png_b64(&secret);
+        assert!(!b64.is_empty());
+        // Verify it's valid base64
+        base64::engine::general_purpose::STANDARD.decode(b64).unwrap();
+    }
+
+    #[test]
+    fn test_totp_verify_sanity() {
+        let secret = TotpManager::generate_secret();
+        // Since we can't easily predict the current code without a time library,
+        // we just check that a random code fails.
+        assert!(!TotpManager::verify(&secret, "000000"));
+    }
+}

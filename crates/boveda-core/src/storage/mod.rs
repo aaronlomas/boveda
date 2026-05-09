@@ -293,3 +293,89 @@ pub async fn migrate_to_sqlcipher(
     
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sqlx::sqlite::SqlitePoolOptions;
+
+    async fn setup_db() -> SqlitePool {
+        let pool = SqlitePoolOptions::new()
+            .connect("sqlite::memory:")
+            .await
+            .unwrap();
+        init_db(&pool).await.unwrap();
+        pool
+    }
+
+    #[tokio::test]
+    async fn test_db_init() {
+        let pool = setup_db().await;
+        // Check if tables exist
+        let tables: Vec<(String,)> = sqlx::query_as("SELECT name FROM sqlite_master WHERE type='table'")
+            .fetch_all(&pool)
+            .await
+            .unwrap();
+        let table_names: Vec<String> = tables.into_iter().map(|(n,)| n).collect();
+        assert!(table_names.contains(&"vault_meta".to_string()));
+        assert!(table_names.contains(&"accounts".to_string()));
+        assert!(table_names.contains(&"preferences".to_string()));
+    }
+
+    #[tokio::test]
+    async fn test_crud_accounts() {
+        let pool = setup_db().await;
+        
+        let id = add_account(&pool, "site.com", "user", "pass", Some("notes"), Some("favicon")).await.unwrap();
+        let accounts = get_accounts(&pool).await.unwrap();
+        assert_eq!(accounts.len(), 1);
+        assert_eq!(accounts[0].id, id);
+        assert_eq!(accounts[0].site, "site.com");
+
+        update_account_group(&pool, &id, Some("Work")).await.unwrap();
+        let accounts = get_accounts(&pool).await.unwrap();
+        assert_eq!(accounts[0].group_name, Some("Work".to_string()));
+
+        delete_account(&pool, &id).await.unwrap();
+        let accounts = get_accounts(&pool).await.unwrap();
+        assert_eq!(accounts.len(), 0);
+    }
+
+    #[tokio::test]
+    async fn test_preferences() {
+        let pool = setup_db().await;
+        
+        set_preference(&pool, "theme", "dark").await.unwrap();
+        let val = get_preference(&pool, "theme").await.unwrap();
+        assert_eq!(val, Some("dark".to_string()));
+
+        set_preference(&pool, "theme", "light").await.unwrap();
+        let val = get_preference(&pool, "theme").await.unwrap();
+        assert_eq!(val, Some("light".to_string()));
+
+        let non_existent = get_preference(&pool, "non_existent").await.unwrap();
+        assert_eq!(non_existent, None);
+    }
+
+    #[tokio::test]
+    async fn test_group_operations_tx() {
+        let pool = setup_db().await;
+        add_account(&pool, "s1", "u", "p", None, None).await.unwrap();
+        let id2 = add_account(&pool, "s2", "u", "p", None, None).await.unwrap();
+        update_account_group(&pool, &id2, Some("G1")).await.unwrap();
+
+        let mut tx = pool.begin().await.unwrap();
+        rename_group_tx(&mut tx, "G1", "G2").await.unwrap();
+        tx.commit().await.unwrap();
+
+        let count = count_accounts_in_group(&pool, "G2").await.unwrap();
+        assert_eq!(count, 1);
+
+        let mut tx = pool.begin().await.unwrap();
+        delete_group_tx(&mut tx, "G2").await.unwrap();
+        tx.commit().await.unwrap();
+
+        let count = count_accounts_in_group(&pool, "G2").await.unwrap();
+        assert_eq!(count, 0);
+    }
+}

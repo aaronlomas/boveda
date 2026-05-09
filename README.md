@@ -45,6 +45,21 @@ npm run tauri dev
 
 # 3. Compilar para producción (Instaladores nativos)
 npm run tauri build
+
+## 🛡️ Auditoría de Seguridad
+
+Para garantizar que las dependencias no tengan vulnerabilidades conocidas, puedes ejecutar:
+
+```bash
+# Auditoría de dependencias de Rust y JavaScript
+npm run security
+```
+
+O individualmente:
+```bash
+cargo audit  # Para el motor de Rust
+npm audit    # Para el frontend
+```
 ```
 
 ## 🤝 Contribuciones

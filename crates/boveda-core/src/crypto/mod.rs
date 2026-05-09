@@ -185,11 +185,64 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_password() {
-        let pw1 = generate_password(16, true);
-        assert_eq!(pw1.as_str().len(), 16);
-        let pw2 = generate_password(32, false);
-        assert_eq!(pw2.as_str().len(), 32);
-        assert_ne!(pw1.as_str(), pw2.as_str());
+    fn test_encrypt_decrypt_empty() {
+        let key = SecretKey::new([0u8; 32]);
+        let plaintext = SecretString::new("".to_string());
+        let ciphertext = encrypt(&plaintext, &key).unwrap();
+        let decrypted = decrypt(&ciphertext, &key).unwrap();
+        assert_eq!(decrypted.as_str(), "");
+    }
+
+    #[test]
+    fn test_encrypt_decrypt_utf8() {
+        let key = SecretKey::new([1u8; 32]);
+        let plaintext = SecretString::new("🦀 Rust Criptografía 🔐".to_string());
+        let ciphertext = encrypt(&plaintext, &key).unwrap();
+        let decrypted = decrypt(&ciphertext, &key).unwrap();
+        assert_eq!(decrypted.as_str(), "🦀 Rust Criptografía 🔐");
+    }
+
+    #[test]
+    fn test_decrypt_invalid_base64() {
+        let key = SecretKey::new([0u8; 32]);
+        let result = decrypt("not-a-base64-string!", &key);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_decrypt_too_short() {
+        let key = SecretKey::new([0u8; 32]);
+        // Base64 for 11 bytes (too short for 12-byte nonce)
+        let too_short = B64.encode(vec![0u8; 11]);
+        let result = decrypt(&too_short, &key);
+        assert!(result.is_err());
+        if let Err(BovedaError::CryptoError(msg)) = result {
+            assert!(msg.contains("too short"));
+        }
+    }
+
+    #[test]
+    fn test_generate_password_complexity() {
+        // Test that it contains at least one of each required category
+        for _ in 0..100 {
+            let pw = generate_password(16, true);
+            let s = pw.as_str();
+            assert!(s.chars().any(|c| c.is_ascii_lowercase()));
+            assert!(s.chars().any(|c| c.is_ascii_uppercase()));
+            assert!(s.chars().any(|c| c.is_ascii_digit()));
+            assert!(s.chars().any(|c| "!@#$%^&*()-_=+[]{}|;:,.<>?".contains(c)));
+        }
+    }
+
+    #[test]
+    fn test_generate_password_no_symbols() {
+        for _ in 0..100 {
+            let pw = generate_password(16, false);
+            let s = pw.as_str();
+            assert!(s.chars().any(|c| c.is_ascii_lowercase()));
+            assert!(s.chars().any(|c| c.is_ascii_uppercase()));
+            assert!(s.chars().any(|c| c.is_ascii_digit()));
+            assert!(!s.chars().any(|c| "!@#$%^&*()-_=+[]{}|;:,.<>?".contains(c)));
+        }
     }
 }

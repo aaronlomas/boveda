@@ -73,3 +73,23 @@ impl From<anyhow::Error> for BovedaError {
         Self::Other(e.to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_conversions() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "test");
+        let bev_err: BovedaError = io_err.into();
+        assert!(format!("{}", bev_err).contains("Error de E/S: test"));
+
+        let b64_err = base64::DecodeError::InvalidByte(0, 0);
+        let bev_err: BovedaError = b64_err.into();
+        assert!(format!("{}", bev_err).contains("Error de decodificación"));
+
+        let json_err = serde_json::from_str::<serde_json::Value>("{").unwrap_err();
+        let bev_err: BovedaError = json_err.into();
+        assert!(format!("{}", bev_err).contains("Error de serialización"));
+    }
+}

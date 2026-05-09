@@ -148,3 +148,51 @@ impl fmt::Debug for SecretString {
         write!(f, "SecretString([REDACTED])")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_secret_string_redacted() {
+        let s = SecretString::new("secret".to_string());
+        assert_eq!(format!("{:?}", s), "SecretString([REDACTED])");
+    }
+
+    #[test]
+    fn test_secret_key_redacted() {
+        let k = SecretKey::new([0u8; 32]);
+        assert_eq!(format!("{:?}", k), "SecretKey([REDACTED])");
+    }
+
+    #[test]
+    fn test_secret_bytes_redacted() {
+        let b = SecretBytes::new(vec![0u8; 10]);
+        assert_eq!(format!("{:?}", b), "SecretBytes([REDACTED])");
+    }
+
+    #[test]
+    fn test_constant_time_eq() {
+        let s1 = SecretString::new("aaa".to_string());
+        let s2 = SecretString::new("aaa".to_string());
+        let s3 = SecretString::new("bbb".to_string());
+        
+        assert!(bool::from(s1.ct_eq(&s2)));
+        assert!(!bool::from(s1.ct_eq(&s3)));
+    }
+
+    #[test]
+    fn test_secret_string_to_bytes() {
+        let s = SecretString::new("hello".to_string());
+        let b = s.into_bytes();
+        assert_eq!(b.as_bytes(), b"hello");
+    }
+
+    #[test]
+    fn test_partial_eq_implementations() {
+        let s = SecretString::new("test".to_string());
+        assert_eq!(s, "test");
+        assert_eq!(s, "test".to_string());
+        assert_eq!(s, SecretString::new("test".to_string()));
+    }
+}

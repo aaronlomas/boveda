@@ -107,7 +107,7 @@ impl BovedaEngine {
         }
 
         // Normal path: Derive key from salt and password
-        let key = crypto::derive_key(password, &salt).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
+        let key = crypto::derive_key(password, &salt)?;
 
         let engine = Self::open_encrypted(db_path, &key).await
             .map_err(|_| BovedaError::InvalidPassword)?;
@@ -128,10 +128,10 @@ impl BovedaEngine {
     async fn unlock_legacy_migration(db_path: &PathBuf, password: &SecretString) -> BovedaResult<Self> {
         let unencrypted_engine = Self::open_unencrypted(db_path).await?;
         let meta = storage::get_vault_meta(&unencrypted_engine.db).await?
-            .ok_or_else(|| BovedaError::Other("Legacy vault has no metadata".to_string()))?;
+            .ok_or_else(|| BovedaError::MigrationError("Legacy vault has no metadata".to_string()))?;
         
         let (legacy_salt, challenge_opt) = meta;
-        let key = crypto::derive_key(password, &legacy_salt).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
+        let key = crypto::derive_key(password, &legacy_salt)?;
         
         // Verification logic
         let mut verified = false;
@@ -295,10 +295,10 @@ impl BovedaEngine {
         }
 
         let (enc_site, enc_username, enc_password, enc_notes) = self.with_key(|key| {
-            let s = crypto::encrypt(&site, key).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
-            let u = crypto::encrypt(&username, key).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
-            let p = crypto::encrypt(&password, key).map_err(|e| BovedaError::CryptoError(e.to_string()))?;
-            let n = notes.as_ref().map(|n| crypto::encrypt(n, key).map_err(|e| BovedaError::CryptoError(e.to_string()))).transpose()?;
+            let s = crypto::encrypt(&site, key)?;
+            let u = crypto::encrypt(&username, key)?;
+            let p = crypto::encrypt(&password, key)?;
+            let n = notes.as_ref().map(|n| crypto::encrypt(n, key)).transpose()?;
             Ok::<_, BovedaError>((s, u, p, n))
         })??;
 
@@ -309,18 +309,18 @@ impl BovedaEngine {
             &enc_password,
             enc_notes.as_deref(),
             None,
-        ).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
+        ).await
     }
 
     /// Decrypts a single ciphertext on-demand.
     pub fn decrypt_secret(&self, ciphertext: &str) -> BovedaResult<SecretString> {
-        self.with_key(|key| crypto::decrypt(ciphertext, key).map_err(|e| BovedaError::CryptoError(e.to_string())))?
+        self.with_key(|key| crypto::decrypt(ciphertext, key))?
     }
 
     /// Deletes an account by ID.
     pub async fn delete_account(&self, id: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
-        storage::delete_account(&self.db, id).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
+        storage::delete_account(&self.db, id).await
     }
 
     // ─── Group Management ─────────────────────────────────────────────────────
@@ -330,7 +330,7 @@ impl BovedaEngine {
         if let Some(name) = group_name {
             validation::validate_string(name, "Grupo", validation::MAX_GROUP_NAME_LEN)?;
         }
-        storage::update_account_group(&self.db, id, group_name).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
+        storage::update_account_group(&self.db, id, group_name).await
     }
 
     pub async fn rename_group(&self, old_name: &str, new_name: &str) -> BovedaResult<()> {
@@ -394,14 +394,14 @@ impl BovedaEngine {
 
     pub async fn get_preference(&self, key: &str) -> BovedaResult<Option<String>> {
         self.check_unlocked()?;
-        storage::get_preference(&self.db, key).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
+        storage::get_preference(&self.db, key).await
     }
 
     pub async fn set_preference(&self, key: &str, value: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
         validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
         validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN)?;
-        storage::set_preference(&self.db, key, value).await.map_err(|e| BovedaError::DatabaseError(e.to_string()))
+        storage::set_preference(&self.db, key, value).await
     }
 
     // ─── Connection Management ─────────────────────────────────────────────────

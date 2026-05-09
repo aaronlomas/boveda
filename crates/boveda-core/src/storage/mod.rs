@@ -78,8 +78,7 @@ pub async fn get_vault_meta(pool: &SqlitePool) -> BovedaResult<Option<(Vec<u8>, 
 
     if let Some((encoded, challenge)) = row {
         let bytes = base64::engine::general_purpose::STANDARD
-            .decode(&encoded)
-            .map_err(|e| crate::error::BovedaError::Other(format!("Base64 decode error: {}", e)))?;
+            .decode(&encoded)?;
         Ok(Some((bytes, challenge)))
     } else {
         Ok(None)
@@ -244,10 +243,9 @@ pub async fn migrate_to_sqlcipher(
         .await?;
         
     let salt_bytes = if let Some((encoded,)) = salt_row {
-        base64::engine::general_purpose::STANDARD.decode(&encoded)
-            .map_err(|e| crate::error::BovedaError::Other(format!("Base64 decode error: {}", e)))?
+        base64::engine::general_purpose::STANDARD.decode(&encoded)?
     } else {
-        return Err(crate::error::BovedaError::Other("No salt found in vault_meta".to_string()));
+        return Err(crate::error::BovedaError::NotFound("No salt found in vault_meta".to_string()));
     };
 
     let encrypted_path = db_path.with_file_name("vault_encrypted.bvda");
@@ -266,7 +264,7 @@ pub async fn migrate_to_sqlcipher(
         attach_query.push(HEX_CHARS[(byte & 0x0f) as usize]);
     }
     attach_query.extend_from_slice(b"'\"");
-    let attach_query_str = String::from_utf8(attach_query).expect("Valid string");
+    let attach_query_str = String::from_utf8(attach_query).map_err(|e| crate::error::BovedaError::DecodeError(e.to_string()))?;
     let attach_query_zero = zeroize::Zeroizing::new(attach_query_str);
     
     let mut conn = unencrypted_pool.acquire().await?;

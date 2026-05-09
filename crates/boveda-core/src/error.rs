@@ -17,6 +17,9 @@ pub enum BovedaError {
     #[error("Error criptográfico: {0}")]
     CryptoError(String),
 
+    #[error("Error de decodificación: {0}")]
+    DecodeError(String),
+
     #[error("Dato demasiado largo: {field} (máx {max} caracteres)")]
     InputTooLong { field: String, max: usize },
 
@@ -28,6 +31,12 @@ pub enum BovedaError {
 
     #[error("Error de serialización: {0}")]
     SerializationError(String),
+
+    #[error("Error de migración: {0}")]
+    MigrationError(String),
+
+    #[error("No se encontró el recurso: {0}")]
+    NotFound(String),
 
     #[error("{0}")]
     Other(String),
@@ -50,6 +59,12 @@ impl From<std::io::Error> for BovedaError {
 impl From<serde_json::Error> for BovedaError {
     fn from(e: serde_json::Error) -> Self {
         Self::SerializationError(e.to_string())
+    }
+}
+
+impl From<base64::DecodeError> for BovedaError {
+    fn from(e: base64::DecodeError) -> Self {
+        Self::DecodeError(e.to_string())
     }
 }
 

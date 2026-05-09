@@ -6,7 +6,7 @@ use chacha20poly1305::{
 };
 use argon2::{Algorithm, Argon2, Params, Version};
 use base64::{engine::general_purpose::STANDARD as B64, Engine};
-use anyhow::{anyhow, Result};
+use crate::error::{BovedaError, BovedaResult};
 use rand::Rng;
 use zeroize::Zeroize;
 use self::secret::{SecretKey, SecretString};
@@ -14,14 +14,14 @@ use self::secret::{SecretKey, SecretString};
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
-pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretKey> {
+pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKey> {
     let params = Params::new(
         65536, // memory (KiB)
         3,     // iterations
         4,     // parallelism
         Some(32),
     )
-    .map_err(|e| anyhow!("Argon2 params error: {e}"))?;
+    .map_err(|e| BovedaError::CryptoError(format!("Argon2 params error: {e}")))?;
 
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
     let mut key = SecretKey::new([0u8; 32]);
@@ -29,21 +29,21 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> Result<SecretKey> {
         .hash_password_into(password.as_str().as_bytes(), salt, key.as_mut_bytes())
         .map_err(|e| {
             // key will be automatically zeroized upon drop if error occurs
-            anyhow!("Argon2 KDF error: {e}")
+            BovedaError::CryptoError(format!("Argon2 KDF error: {e}"))
         })?;
     Ok(key)
 }
 
 /// Encrypt `plaintext` with ChaCha20-Poly1305 using `key`.
 /// Returns Base64(nonce || ciphertext_with_tag).
-pub fn encrypt(plaintext: &SecretString, key: &SecretKey) -> Result<String> {
+pub fn encrypt(plaintext: &SecretString, key: &SecretKey) -> BovedaResult<String> {
     let chacha_key = Key::from_slice(key.as_bytes());
     let cipher = ChaCha20Poly1305::new(chacha_key);
     let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng); // 96-bit random nonce
 
     let ciphertext = cipher
         .encrypt(&nonce, plaintext.as_str().as_bytes())
-        .map_err(|e| anyhow!("ChaCha20Poly1305 encrypt error: {e}"))?;
+        .map_err(|e| BovedaError::CryptoError(format!("ChaCha20Poly1305 encrypt error: {e}")))?;
 
     // Concat nonce (12 bytes) + ciphertext+tag
     let mut payload = nonce.to_vec();
@@ -54,10 +54,10 @@ pub fn encrypt(plaintext: &SecretString, key: &SecretKey) -> Result<String> {
 
 /// Decrypt a Base64-encoded ChaCha20-Poly1305 blob produced by `encrypt`.
 /// Returns a `SecretString` to ensure the plaintext is zeroized on drop.
-pub fn decrypt(encoded: &str, key: &SecretKey) -> Result<SecretString> {
+pub fn decrypt(encoded: &str, key: &SecretKey) -> BovedaResult<SecretString> {
     let payload = B64.decode(encoded)?;
     if payload.len() < 12 {
-        return Err(anyhow!("Ciphertext too short"));
+        return Err(BovedaError::CryptoError("Ciphertext too short".to_string()));
     }
 
     let (nonce_bytes, ciphertext) = payload.split_at(12);
@@ -68,12 +68,12 @@ pub fn decrypt(encoded: &str, key: &SecretKey) -> Result<SecretString> {
 
     let plaintext = cipher
         .decrypt(nonce, ciphertext)
-        .map_err(|e| anyhow!("ChaCha20Poly1305 decrypt error: {e}"))?;
+        .map_err(|e| BovedaError::CryptoError(format!("ChaCha20Poly1305 decrypt error: {e}")))?;
 
     let result = String::from_utf8(plaintext).map_err(|e| {
         let mut err_bytes = e.into_bytes();
         err_bytes.zeroize();
-        anyhow!("UTF-8 error")
+        BovedaError::DecodeError("UTF-8 error".to_string())
     })?;
     
     Ok(SecretString::new(result))

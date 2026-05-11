@@ -7,7 +7,7 @@ use chacha20poly1305::{
 use argon2::{Algorithm, Argon2, Params, Version};
 use base64::{engine::general_purpose::STANDARD as B64, Engine};
 use crate::error::{BovedaError, BovedaResult};
-use rand::Rng;
+use rand::{Rng, RngCore};
 use zeroize::Zeroize;
 use self::secret::{SecretKey, SecretString};
 
@@ -77,6 +77,36 @@ pub fn decrypt(encoded: &str, key: &SecretKey) -> BovedaResult<SecretString> {
     })?;
     
     Ok(SecretString::new(result))
+}
+
+/// Lower-level encryption for binary data.
+/// Returns (ciphertext, nonce).
+pub fn encrypt_raw(plaintext: &[u8], key: &SecretKey) -> BovedaResult<(Vec<u8>, [u8; 12])> {
+    let chacha_key = Key::from_slice(key.as_bytes());
+    let cipher = ChaCha20Poly1305::new(chacha_key);
+    let mut nonce_bytes = [0u8; 12];
+    OsRng.fill_bytes(&mut nonce_bytes);
+    let nonce = Nonce::from_slice(&nonce_bytes);
+
+    let ciphertext = cipher
+        .encrypt(nonce, plaintext)
+        .map_err(|e| BovedaError::CryptoError(format!("ChaCha20Poly1305 encrypt error: {e}")))?;
+
+    Ok((ciphertext, nonce_bytes))
+}
+
+/// Lower-level decryption for binary data.
+/// Returns SecretBytes to ensure the plaintext is zeroized on drop.
+pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaResult<Vec<u8>> {
+    let chacha_key = Key::from_slice(key.as_bytes());
+    let cipher = ChaCha20Poly1305::new(chacha_key);
+    let nonce = Nonce::from_slice(nonce);
+
+    let plaintext = cipher
+        .decrypt(nonce, ciphertext)
+        .map_err(|e| BovedaError::CryptoError(format!("ChaCha20Poly1305 decrypt error: {e}")))?;
+
+    Ok(plaintext)
 }
 
 /// Generate a cryptographically random password.

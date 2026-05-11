@@ -116,7 +116,7 @@ pub async fn export_db(dest_path: String) -> Result<(), String> {
     let dest_salt = dest_db.with_extension(format!("{}.salt", dest_db.extension().and_then(|e| e.to_str()).unwrap_or("bvda")));
 
     // Copy DB
-    std::fs::copy(&db_path, &dest_db).map_err(|e| e.to_string())?;
+    std::fs::copy(&db_path, dest_db).map_err(|e| e.to_string())?;
     // Copy Salt
     if salt_path.exists() {
         std::fs::copy(&salt_path, &dest_salt).map_err(|e| e.to_string())?;
@@ -125,7 +125,7 @@ pub async fn export_db(dest_path: String) -> Result<(), String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let _ = std::fs::set_permissions(&dest_db, std::fs::Permissions::from_mode(0o600));
+        let _ = std::fs::set_permissions(dest_db, std::fs::Permissions::from_mode(0o600));
         if dest_salt.exists() {
             let _ = std::fs::set_permissions(&dest_salt, std::fs::Permissions::from_mode(0o600));
         }

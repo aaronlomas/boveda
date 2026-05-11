@@ -196,6 +196,13 @@ pub async fn get_preference(pool: &SqlitePool, key: &str) -> BovedaResult<Option
     Ok(row.map(|(v,)| v))
 }
 
+pub async fn get_all_preferences(pool: &SqlitePool) -> BovedaResult<Vec<(String, String)>> {
+    let rows: Vec<(String, String)> = sqlx::query_as("SELECT key, value FROM preferences")
+        .fetch_all(pool)
+        .await?;
+    Ok(rows)
+}
+
 pub async fn get_preference_tx(conn: &mut SqliteConnection, key: &str) -> BovedaResult<Option<String>> {
     let row: Option<(String,)> = sqlx::query_as("SELECT value FROM preferences WHERE key = ?")
         .bind(key)

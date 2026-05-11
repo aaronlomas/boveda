@@ -1,5 +1,6 @@
 pub mod validation;
 pub mod totp;
+pub mod export;
 
 use std::sync::{Arc, Mutex};
 
@@ -402,6 +403,30 @@ impl BovedaEngine {
         validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
         validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN)?;
         storage::set_preference(&self.db, key, value).await
+    }
+
+    /// Exports the entire vault into a secure, encrypted package.
+    pub async fn export_vault(&self, export_password: &SecretString) -> BovedaResult<String> {
+        self.check_unlocked()?;
+        
+        // 1. Get all accounts (as raw rows for export)
+        let accounts = storage::get_accounts(&self.db).await?;
+        
+        // 2. Get all preferences
+        let preferences = storage::get_all_preferences(&self.db).await?;
+        
+        let payload = export::ExportPayload {
+            accounts,
+            preferences,
+            timestamp: chrono::Utc::now().to_rfc3339(),
+        };
+
+        // 3. Encrypt into package
+        let package = export::ExportPackage::encrypt(&payload, export_password)?;
+        
+        // 4. Serialize package to JSON
+        serde_json::to_string(&package)
+            .map_err(|e| BovedaError::SerializationError(e.to_string()))
     }
 
     // ─── Connection Management ─────────────────────────────────────────────────

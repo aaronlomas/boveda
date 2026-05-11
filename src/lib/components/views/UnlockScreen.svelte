@@ -36,6 +36,15 @@
   let recoveryCode = $state("");
   let isRecovery = $state(false);
   let recoverySuccess = $state(false);
+  let isShaking = $state(false);
+
+  // Auto-submit TOTP when 6 digits are reached
+  $effect(() => {
+    const clean = totpCode.replace(/\s/g, "");
+    if (clean.length === 6 && !loading && !error) {
+      submit();
+    }
+  });
 
   onMount(async () => {
     try {
@@ -62,7 +71,10 @@
         const status = await unlockVault(password);
         if (status === "totp_required") {
           pendingTotp = true;
+          // We don't clear password yet because we might need it for re-auth if TOTP fails? 
+          // Actually, once status is totp_required, the vault is partially unlocked in the backend.
         } else {
+          password = ""; // Security: Clear password from memory
           globalState.isUnlocked = true;
         }
       } catch (e: any) {
@@ -80,6 +92,8 @@
       try {
         const valid = await invoke<boolean>("totp_check", { code: cleanTotp });
         if (valid) {
+          password = ""; // Security: Clear secrets
+          totpCode = "";
           globalState.isUnlocked = true;
         } else {
           error = $_("settings.security.totp_error_invalid");
@@ -125,6 +139,9 @@
 
   function handleError(e: any) {
     error = $_("unlock_screen.error_incorrect");
+    isShaking = true;
+    setTimeout(() => isShaking = false, 500);
+
     // Add cooldown (1-3 seconds) to prevent rapid brute force
     cooldown = Math.floor(Math.random() * 3) + 1;
     const timer = setInterval(() => {
@@ -185,7 +202,7 @@
   </header>
 
   <div
-    class="max-w-90 m-auto p-8 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8"
+    class="max-w-90 m-auto p-8 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 {isShaking ? 'animate-shake' : ''}"
   >
     <div class="flex mb-4">
       {#if recoverySuccess}
@@ -332,7 +349,9 @@
               use:focus
               class="w-full border-0 text-text-primary text-center text-lg font-mono tracking-[0.5em] focus:outline-none focus:bg-transparent"
               type="text"
-              maxlength="16"
+              maxlength="6"
+              inputmode="numeric"
+              autocomplete="one-time-code"
               bind:value={totpCode}
               placeholder="000000"
             />

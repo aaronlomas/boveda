@@ -10,6 +10,11 @@ env:
   # Evita que SQLX intente conectarse a una DB real durante el compilado si usas macros
   SQLX_OFFLINE: true 
 
+
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   # 1. Auditoría de seguridad (rápida, no requiere dependencias de sistema pesadas)
   audit:
@@ -37,7 +42,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy, llvm-tools-preview
+          components: clippy
 
       # MAGIA: Esto ahorra un 70% del tiempo de compilación
       - name: Rust Cache
@@ -46,16 +51,7 @@ jobs:
       - name: Run Clippy (Lints)
         run: cargo clippy -- -D warnings
 
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Run Tests
+        run: cargo test --all-features --workspace
 
-      - name: Generate coverage report (Runs all tests)
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: lcov.info
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
 

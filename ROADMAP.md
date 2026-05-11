@@ -20,14 +20,13 @@ Este documento detalla la visión estratégica y los objetivos técnicos para el
 - [ ] **Soporte WebAssembly (WASM):** Adaptar el núcleo para ser compilado a WASM, permitiendo su uso en extensiones de navegador y aplicaciones web seguras.
 - [ ] **CLI de Bóveda:** Lanzar una interfaz de línea de comandos oficial para gestión de baúles en servidores y entornos headless.
 - [ ] **SDK para Móviles:** Crear bindings oficiales para Android (Kotlin/JNI) e iOS (Swift/UniFFI) utilizando el mismo motor de Rust.
-- [ ] **Exportación Segura:** Implementar formatos de exportación estandarizados y cifrados (compatible con otros gestores de contraseñas de código abierto).
+- [ ] **Contenedor de Exportación Blindado:** Implementar un formato de exportación (.bvda.pack) estrictamente cifrado con pipeline de memoria zeroized, rechazando formatos en texto plano (CSV/JSON) para garantizar la integridad forense.
 
 ## 🛡️ Fase 3: Hardening Avanzado y Funciones Pro (Q2 2027+)
 *Enfoque: Integración con hardware y funciones de nivel empresarial.*
 
-- [ ] **Integración de Hardware y software Security (HSM/U2F):** Soporte nativo para llaves físicas (YubiKey) y Secure Enclave / TPM para el desbloqueo del baúl.
-- Implementar soporte para TOTP (Google/Microsoft Authenticator) como paso adicional de desbloqueo.
-- Interfaz de configuración con generación de QR y advertencia sobre la dependencia de ecosistemas externos.
+- [ ] **Integración de Hardware Security (HSM):** Soporte nativo para llaves físicas (YubiKey) y Secure Enclave / TPM para el desbloqueo del baúl.
+- [x] **software Security (U2F):** Implementar soporte para TOTP (Google/Microsoft Authenticator) como paso adicional de desbloqueo, interfaz de configuración con generación de QR y advertencia sobre la dependencia de ecosistemas externos.
 - [ ] **Biometría Nativa:** Desbloqueo mediante Windows Hello, TouchID y FaceID integrado 
 directamente en la lógica del motor.
 - [ ] **Sincronización E2EE Opcional:** Protocolo de sincronización entre dispositivos con cifrado de extremo a extremo, donde el servidor nunca tiene acceso a los datos.

@@ -8,7 +8,7 @@
   import { performanceStore } from "$lib/stores/performance.svelte";
   import CredentialCard from "../ui/CredentialCard.svelte";
   import VirtualList from "svelte-virtual-list";
-  import { IconPlus, IconSearch, IconRocket, IconPencil, IconTrash, IconCheck, IconX } from "@tabler/icons-svelte";
+  import { IconPlus, IconSearch, IconRocket, IconPencil, IconTrash, IconCheck, IconX, IconShieldLock } from "@tabler/icons-svelte";
   import { focus, selectOnFocus } from "$lib/utils/actions";
 
   // ── State ───────────────────────────────────────────────────────────────────
@@ -308,7 +308,9 @@
     <div
       class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary"
     >
-      <div class="text-5xl mb-2">🔒</div>
+      <div class="text-accent/20 mb-2">
+        <IconShieldLock size={80} stroke={1.5} />
+      </div>
       <h3 class="text-lg text-text-primary font-semibold">
         {globalState.activeGroup
           ? $_("groups.no_accounts_in_group", { values: { group: globalState.activeGroup } })

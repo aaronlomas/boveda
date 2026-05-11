@@ -71,6 +71,8 @@ pub fn run() {
             commands::settings::get_data_dir,
             commands::settings::export_db,
             commands::settings::import_db,
+            commands::settings::export_secure_package,
+            commands::settings::import_secure_package,
             // ── Security ──────────────────────────────────────────────────
             commands::security::totp_is_enabled,
             commands::security::totp_setup,

@@ -10,8 +10,8 @@
     IconShieldHalfFilled,
     IconLayoutGrid,
     IconFiles,
-    IconDatabaseExport,
     IconDatabaseImport,
+    IconArchive,
     IconInfoCircle,
     IconSettings,
     IconLogout,
@@ -32,24 +32,16 @@
       action: () => (globalState.activeView = "documents"),
     },
     {
-      icon: IconDatabaseExport,
+      icon: IconArchive,
       label: $_("dashboard.export_db"),
       id: "export",
-      action: () => exportDb(),
+      action: () => handleExportSecure(),
     },
     {
       icon: IconDatabaseImport,
       label: $_("sidebar.import_db"),
       id: "import",
-      action: () => {
-        modal.openConfirm({
-          title: $_("sidebar.import_confirm_title"),
-          message: $_("sidebar.import_confirm_message"),
-          confirmText: $_("sidebar.import_confirm_button"),
-          type: "danger",
-          onconfirm: handleImport,
-        });
-      },
+      action: () => handleImport(),
     },
     {
       icon: IconInfoCircle,
@@ -69,36 +61,82 @@
     try {
       const filePath = await open({
         title: $_("global.select_db_title"),
-        filters: [{ name: $_("global.db_filter_name"), extensions: ["bvda", "db"] }],
+        filters: [
+          { name: "Bóveda Vaults", extensions: ["bvda", "db", "pack", "bvda.pack"] },
+        ],
       });
-      if (filePath) {
-        await invoke("import_db", { srcPath: filePath });
-        toast.success($_("sidebar.import_confirm_button"));
+      
+      if (!filePath) return;
+
+      if (filePath.endsWith(".pack") || filePath.endsWith(".bvda.pack")) {
+        // Secure Package Import
+        modal.openExportPackage({
+          title: "Importar Paquete Blindado",
+          desc: "Introduce la contraseña que usaste para cifrar este paquete.",
+          buttonText: "Descifrar e Importar",
+          onconfirm: async (password) => {
+            try {
+              await invoke("import_secure_package", { srcPath: filePath, password });
+              toast.success("Baúl importado y fusionado con éxito.");
+            } catch (e: any) {
+              console.error("Secure import failed:", e);
+              toast.error("Error al descifrar el paquete: " + e.toString());
+            }
+          }
+        });
+      } else {
+        // Legacy DB Import (SQLite file replacement)
+        modal.openConfirm({
+          title: $_("sidebar.import_confirm_title"),
+          message: $_("sidebar.import_confirm_message"),
+          confirmText: $_("sidebar.import_confirm_button"),
+          type: "danger",
+          onconfirm: async () => {
+            try {
+              await invoke("import_db", { srcPath: filePath });
+              toast.success($_("sidebar.import_confirm_button"));
+            } catch (e) {
+              console.error("Import failed:", e);
+              toast.error($_("global.error_import"));
+            }
+          },
+        });
       }
     } catch (e) {
-      console.error("Import failed:", e);
-      toast.error($_("global.error_import"));
+      console.error("Import selection failed:", e);
     }
   }
 
-  async function exportDb() {
-    try {
-      const filePath = await save({
-        title: $_("dashboard.export_db_title"),
-        defaultPath: "Boveda_Backup.bvda",
-        filters: [{ name: $_("global.db_filter_name"), extensions: ["bvda", "db"] }],
-      });
+  async function handleExportSecure() {
+    modal.openExportPackage({
+      title: $_("dashboard.export_db_title"),
+      desc: "Crea un paquete blindado (.bvda.pack)",
+      buttonText: "Generar Paquete",
+      onconfirm: async (password) => {
+        try {
+          const filePath = await save({
+            title: $_("dashboard.export_db_title"),
+            defaultPath: "Boveda_Export.bvda.pack",
+            filters: [
+              { name: "Bóveda Secure Package", extensions: ["pack", "bvda.pack"] },
+            ],
+          });
 
-      if (filePath) {
-        await invoke("export_db", { destPath: filePath });
-        toast.success(
-          $_("dashboard.export_success", { values: { path: filePath } }),
-        );
-      }
-    } catch (e) {
-      console.error("Export failed:", e);
-      toast.error($_("dashboard.export_error"));
-    }
+          if (filePath) {
+            await invoke("export_secure_package", {
+              destPath: filePath,
+              password: password,
+            });
+            toast.success(
+              $_("dashboard.export_success", { values: { path: filePath } }),
+            );
+          }
+        } catch (e) {
+          console.error("Export failed:", e);
+          toast.error($_("dashboard.export_error"));
+        }
+      },
+    });
   }
 
   function toggle() {

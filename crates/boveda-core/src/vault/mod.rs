@@ -409,14 +409,31 @@ impl BovedaEngine {
     pub async fn export_vault(&self, export_password: &SecretString) -> BovedaResult<String> {
         self.check_unlocked()?;
         
-        // 1. Get all accounts (as raw rows for export)
-        let accounts = storage::get_accounts(&self.db).await?;
+        // 1. Get all accounts (DECRYPTED)
+        let accounts = self.get_accounts().await?;
+        let mut export_accounts = Vec::with_capacity(accounts.len());
+        
+        for acc in accounts {
+            // Decrypt password and notes
+            let password = self.decrypt_secret(&acc.password_cipher)?;
+            let notes = acc.notes_cipher.as_ref()
+                .map(|c| self.decrypt_secret(c))
+                .transpose()?;
+                
+            export_accounts.push(export::ExportAccount {
+                site: acc.site,
+                username: acc.username,
+                password,
+                notes,
+                group_name: acc.group_name,
+            });
+        }
         
         // 2. Get all preferences
         let preferences = storage::get_all_preferences(&self.db).await?;
         
         let payload = export::ExportPayload {
-            accounts,
+            accounts: export_accounts,
             preferences,
             timestamp: chrono::Utc::now().to_rfc3339(),
         };
@@ -427,6 +444,33 @@ impl BovedaEngine {
         // 4. Serialize package to JSON
         serde_json::to_string(&package)
             .map_err(|e| BovedaError::SerializationError(e.to_string()))
+    }
+
+    /// Imports a secure package into the current vault.
+    pub async fn import_vault(&self, package_json: &str, export_password: &SecretString) -> BovedaResult<()> {
+        self.check_unlocked()?;
+
+        // 1. Parse and decrypt package
+        let package: export::ExportPackage = serde_json::from_str(package_json)
+            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
+        
+        let payload = package.decrypt(export_password)?;
+
+        // 2. Insert accounts
+        // We use add_account which handles encryption with the CURRENT master key.
+        for acc in payload.accounts {
+            let id = self.add_account(acc.site, acc.username, acc.password, acc.notes).await?;
+            if let Some(group) = acc.group_name {
+                let _ = self.update_account_group(&id, Some(&group)).await;
+            }
+        }
+
+        // 3. Apply preferences (Optional merge)
+        for (key, value) in payload.preferences {
+            let _ = self.set_preference(&key, &value).await;
+        }
+
+        Ok(())
     }
 
     // ─── Connection Management ─────────────────────────────────────────────────

@@ -11,9 +11,18 @@ pub struct ExportPackage {
     pub payload: String, // encrypted JSON ciphertext (base64)
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ExportAccount {
+    pub site: SecretString,
+    pub username: SecretString,
+    pub password: SecretString,
+    pub notes: Option<SecretString>,
+    pub group_name: Option<String>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct ExportPayload {
-    pub accounts: Vec<crate::storage::AccountRow>,
+    pub accounts: Vec<ExportAccount>,
     pub preferences: Vec<(String, String)>,
     pub timestamp: String,
 }
@@ -67,5 +76,63 @@ impl ExportPackage {
             .map_err(|e| crate::error::BovedaError::SerializationError(e.to_string()))?;
 
         Ok(payload)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::storage::AccountRow;
+
+    #[test]
+    fn test_export_package_roundtrip() {
+        let password = SecretString::new("export_pass".to_string());
+        
+        let payload = ExportPayload {
+            accounts: vec![
+                ExportAccount {
+                    site: SecretString::from("site.com"),
+                    username: SecretString::from("user"),
+                    password: SecretString::from("pass"),
+                    notes: None,
+                    group_name: Some("Work".to_string()),
+                }
+            ],
+            preferences: vec![("theme".to_string(), "dark".to_string())],
+            timestamp: "2024-01-01T00:00:00Z".to_string(),
+        };
+
+        // 1. Encrypt
+        let package = ExportPackage::encrypt(&payload, &password).expect("Encryption failed");
+        
+        // Ensure some properties of the package
+        assert_eq!(package.version, 1);
+        assert!(!package.payload.is_empty());
+        assert!(!package.salt.is_empty());
+
+        // 2. Decrypt
+        let decrypted = package.decrypt(&password).expect("Decryption failed");
+        
+        // 3. Verify
+        assert_eq!(decrypted.accounts.len(), 1);
+        assert_eq!(decrypted.accounts[0].site.as_str(), "site.com");
+        assert_eq!(decrypted.preferences[0].1, "dark");
+    }
+
+    #[test]
+    fn test_export_package_wrong_password() {
+        let password = SecretString::new("pass1".to_string());
+        let wrong_password = SecretString::new("pass2".to_string());
+        
+        let payload = ExportPayload {
+            accounts: vec![],
+            preferences: vec![],
+            timestamp: "2024".to_string(),
+        };
+
+        let package = ExportPackage::encrypt(&payload, &password).unwrap();
+        let result = package.decrypt(&wrong_password);
+        
+        assert!(result.is_err(), "Decryption should fail with wrong password");
     }
 }

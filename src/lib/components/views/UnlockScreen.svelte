@@ -7,7 +7,6 @@
     IconEyeOff,
     IconLock,
     IconShieldHalfFilled,
-    IconDatabaseImport,
     IconSignRight,
     IconArrowLeft,
     IconShieldCheck,
@@ -159,22 +158,6 @@
     invoke("lock_vault");
   }
 
-  async function handleImport() {
-    try {
-      const filePath = await open({
-        title: $_("global.select_db_title"),
-        filters: [
-          { name: $_("global.db_filter_name"), extensions: ["bvda", "db"] },
-        ],
-      });
-      if (filePath) {
-        await invoke("import_db", { srcPath: filePath });
-      }
-    } catch (e) {
-      console.error("Import failed:", e);
-      alert($_("global.error_import"));
-    }
-  }
 </script>
 
 <div class="h-full grid grid-rows-[auto_1fr_auto] dark">
@@ -190,14 +173,6 @@
     </a>
 
     <div class="flex items-center gap-3">
-      <button
-        class="flex items-center gap-2 bg-surface/5 border border-surface/5 text-text-primary text-xs cursor-pointer py-2 px-4 rounded-lg transition-all hover:bg-surface/10 backdrop-blur-2xl"
-        type="button"
-        onclick={handleImport}
-      >
-        <IconDatabaseImport size={16} />
-        <span class="font-semibold">{$_("unlock_screen.header_import")}</span>
-      </button>
     </div>
   </header>
 

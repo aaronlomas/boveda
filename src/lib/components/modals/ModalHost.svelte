@@ -3,6 +3,7 @@
   import AddCredentialModal from './forms/AddCredentialModal.svelte';
   import ConfirmModal from './confirmation/ConfirmModal.svelte';
   import AssignGroupModal from './forms/AssignGroupModal.svelte';
+  import ExportPasswordModal from './forms/ExportPasswordModal.svelte';
 </script>
 
 <!--
@@ -44,5 +45,21 @@
       modal.current?.kind === 'assign-group' && modal.current.payload.onassigned?.();
     }}
     onclose={() => modal.close()}
+  />
+{:else if modal.current?.kind === 'export-package'}
+  <ExportPasswordModal
+    title={modal.current.payload.title}
+    desc={modal.current.payload.desc}
+    buttonText={modal.current.payload.buttonText}
+    onconfirm={(password) => {
+      const payload = modal.current?.kind === 'export-package' ? modal.current.payload : null;
+      modal.close();
+      payload?.onconfirm(password);
+    }}
+    oncancel={() => {
+      const payload = modal.current?.kind === 'export-package' ? modal.current.payload : null;
+      modal.close();
+      payload?.oncancel?.();
+    }}
   />
 {/if}

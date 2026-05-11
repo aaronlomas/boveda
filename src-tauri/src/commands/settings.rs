@@ -1,5 +1,6 @@
 use tauri::State;
 use crate::state::AppState;
+use boveda_core::crypto::secret::SecretString;
 
 // ─── User Preferences ─────────────────────────────────────────────────────────
 
@@ -130,6 +131,58 @@ pub async fn export_db(dest_path: String) -> Result<(), String> {
             let _ = std::fs::set_permissions(&dest_salt, std::fs::Permissions::from_mode(0o600));
         }
     }
+
+    Ok(())
+}
+
+/// Exports the vault into a secure, encrypted JSON package (.bvda.pack).
+#[tauri::command]
+pub async fn export_secure_package(
+    dest_path: String,
+    password: String,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
+    let engine = {
+        let engine_lock = state.engine.lock().unwrap();
+        engine_lock.as_ref().cloned().ok_or("Vault is locked")?
+    };
+
+    let secret_pass = SecretString::new(password);
+    let package_json = engine.export_vault(&secret_pass)
+        .await
+        .map_err(|e| format!("Export failed: {}", e))?;
+
+    std::fs::write(&dest_path, package_json)
+        .map_err(|e| format!("Failed to write export file: {}", e))?;
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let _ = std::fs::set_permissions(&dest_path, std::fs::Permissions::from_mode(0o600));
+    }
+
+    Ok(())
+}
+
+/// Imports a secure package (.bvda.pack) into the current vault.
+#[tauri::command]
+pub async fn import_secure_package(
+    src_path: String,
+    password: String,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
+    let engine = {
+        let engine_lock = state.engine.lock().unwrap();
+        engine_lock.as_ref().cloned().ok_or("Vault is locked")?
+    };
+
+    let package_json = std::fs::read_to_string(&src_path)
+        .map_err(|e| format!("Failed to read import file: {}", e))?;
+
+    let secret_pass = SecretString::new(password);
+    engine.import_vault(&package_json, &secret_pass)
+        .await
+        .map_err(|e| format!("Import failed: {}", e))?;
 
     Ok(())
 }

@@ -33,10 +33,19 @@ export interface AssignGroupPayload {
   onassigned?: () => void;
 }
 
+export interface ExportPackagePayload {
+  title: string;
+  desc: string;
+  buttonText: string;
+  onconfirm: (password: string) => void;
+  oncancel?: () => void;
+}
+
 type ModalDescriptor =
   | { kind: 'add-credential'; payload: AddCredentialPayload }
   | { kind: 'confirm'; payload: ConfirmPayload }
-  | { kind: 'assign-group'; payload: AssignGroupPayload };
+  | { kind: 'assign-group'; payload: AssignGroupPayload }
+  | { kind: 'export-package'; payload: ExportPackagePayload };
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -54,6 +63,10 @@ class ModalManager {
 
   openAssignGroup(payload: AssignGroupPayload): void {
     this.current = { kind: 'assign-group', payload };
+  }
+
+  openExportPackage(payload: ExportPackagePayload): void {
+    this.current = { kind: 'export-package', payload };
   }
 
   close(): void {

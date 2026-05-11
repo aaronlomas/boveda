@@ -70,17 +70,17 @@
 
       if (filePath.endsWith(".pack") || filePath.endsWith(".bvda.pack")) {
         // Secure Package Import
-        modal.openExportPackage({
-          title: "Importar Paquete Blindado",
-          desc: "Introduce la contraseña que usaste para cifrar este paquete.",
-          buttonText: "Descifrar e Importar",
-          onconfirm: async (password) => {
+        modal.openImportPackage({
+          title: "import_pack.title",
+          desc: "import_pack.desc",
+          buttonText: "import_pack.button",
+          onconfirm: async (password, strategy) => {
             try {
-              await invoke("import_secure_package", { srcPath: filePath, password });
-              toast.success("Baúl importado y fusionado con éxito.");
+              await invoke("import_secure_package", { srcPath: filePath, password, strategy });
+              toast.success(strategy === 'replace' ? $_("import_pack.success_replace") : $_("import_pack.success_merge"));
             } catch (e: any) {
               console.error("Secure import failed:", e);
-              toast.error("Error al descifrar el paquete: " + e.toString());
+              toast.error($_("global.error_import") + ": " + e.toString());
             }
           }
         });

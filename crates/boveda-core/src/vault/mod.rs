@@ -12,6 +12,13 @@ use crate::crypto;
 use crate::storage;
 use crate::error::{BovedaError, BovedaResult};
 
+#[derive(Debug, serde::Deserialize, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+pub enum ImportStrategy {
+    Merge,
+    Replace,
+}
+
 /// Wrapper around the 256-bit AES-GCM master key.
 /// Allocates key on the heap, and uses mlock/VirtualLock to prevent swapping to disk.
 pub struct MasterKey(SecretKey);
@@ -185,7 +192,7 @@ impl BovedaEngine {
     }
 
     /// Safe helper to format the master key into a hex string for SQLCipher PRAGMA.
-    fn generate_pragma_key(key: &SecretKey) -> String {
+    fn generate_pragma_key(key: &SecretKey) -> SecretString {
         const HEX_CHARS: &[u8] = b"0123456789abcdef";
         let mut pragma = Vec::with_capacity(64 + 4);
         pragma.extend_from_slice(b"\"x'");
@@ -196,7 +203,8 @@ impl BovedaEngine {
         pragma.push(b'\'');
         pragma.push(b'"');
         
-        String::from_utf8(pragma).expect("Valid ASCII")
+        let s = String::from_utf8(pragma).expect("Valid ASCII");
+        SecretString::new(s)
     }
 
     /// Opens the database utilizing SQLCipher with the derived key.
@@ -207,7 +215,7 @@ impl BovedaEngine {
         // Send the PRAGMA key right upon connecting
         let pragma_key = Self::generate_pragma_key(key);
         
-        options = options.pragma("key", pragma_key);
+        options = options.pragma("key", pragma_key.as_str().to_string());
 
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
@@ -446,8 +454,8 @@ impl BovedaEngine {
             .map_err(|e| BovedaError::SerializationError(e.to_string()))
     }
 
-    /// Imports a secure package into the current vault.
-    pub async fn import_vault(&self, package_json: &str, export_password: &SecretString) -> BovedaResult<()> {
+    /// Imports a secure package into the current vault using the specified strategy.
+    pub async fn import_vault(&self, package_json: &str, export_password: &SecretString, strategy: ImportStrategy) -> BovedaResult<()> {
         self.check_unlocked()?;
 
         // 1. Parse and decrypt package
@@ -456,7 +464,16 @@ impl BovedaEngine {
         
         let payload = package.decrypt(export_password)?;
 
-        // 2. Insert accounts
+        // 2. Apply strategy
+        if matches!(strategy, ImportStrategy::Replace) {
+            // Clear current accounts
+            sqlx::query("DELETE FROM accounts").execute(&self.db).await?;
+            // Note: Preferences are overwritten anyway by set_preference later, 
+            // but we might want to clear them too if we want a full replacement.
+            // For now, let's just clear accounts as that's what "duplicates" refers to.
+        }
+
+        // 3. Insert accounts
         // We use add_account which handles encryption with the CURRENT master key.
         for acc in payload.accounts {
             let id = self.add_account(acc.site, acc.username, acc.password, acc.notes).await?;

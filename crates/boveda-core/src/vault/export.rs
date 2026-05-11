@@ -33,10 +33,10 @@ impl ExportPackage {
         use rand::RngCore;
         use base64::Engine;
 
-        // 1. Serialize payload to JSON string (Intermediate)
-        let json_data = serde_json::to_string(payload)
+        // 1. Serialize payload to binary (Zeroize-ready)
+        let json_data = serde_json::to_vec(payload)
             .map_err(|e| crate::error::BovedaError::SerializationError(e.to_string()))?;
-        let secret_json = SecretString::new(json_data);
+        let secret_json = SecretBytes::new(json_data);
 
         // 2. Generate new salt for export (independent from master vault)
         let mut salt = [0u8; 32];
@@ -46,7 +46,7 @@ impl ExportPackage {
         let key = crypto::derive_key(password, &salt)?;
 
         // 4. Encrypt
-        let (ciphertext, nonce) = crypto::encrypt_raw(secret_json.as_str().as_bytes(), &key)?;
+        let (ciphertext, nonce) = crypto::encrypt_raw(secret_json.as_bytes(), &key)?;
 
         Ok(Self {
             version: 1,
@@ -68,8 +68,7 @@ impl ExportPackage {
         let key = crypto::derive_key(password, &salt)?;
 
         // 2. Decrypt
-        let plaintext_bytes = crypto::decrypt_raw(&ciphertext, &nonce, &key)?;
-        let secret_plaintext = SecretBytes::new(plaintext_bytes);
+        let secret_plaintext = crypto::decrypt_raw(&ciphertext, &nonce, &key)?;
 
         // 3. Deserialize
         let payload: ExportPayload = serde_json::from_slice(secret_plaintext.as_bytes())
@@ -82,8 +81,6 @@ impl ExportPackage {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::storage::AccountRow;
-
     #[test]
     fn test_export_package_roundtrip() {
         let password = SecretString::new("export_pass".to_string());

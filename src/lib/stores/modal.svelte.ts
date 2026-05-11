@@ -41,11 +41,20 @@ export interface ExportPackagePayload {
   oncancel?: () => void;
 }
 
+export interface ImportPackagePayload {
+  title: string;
+  desc: string;
+  buttonText: string;
+  onconfirm: (password: string, strategy: 'merge' | 'replace') => void;
+  oncancel?: () => void;
+}
+
 type ModalDescriptor =
   | { kind: 'add-credential'; payload: AddCredentialPayload }
   | { kind: 'confirm'; payload: ConfirmPayload }
   | { kind: 'assign-group'; payload: AssignGroupPayload }
-  | { kind: 'export-package'; payload: ExportPackagePayload };
+  | { kind: 'export-package'; payload: ExportPackagePayload }
+  | { kind: 'import-package'; payload: ImportPackagePayload };
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -67,6 +76,10 @@ class ModalManager {
 
   openExportPackage(payload: ExportPackagePayload): void {
     this.current = { kind: 'export-package', payload };
+  }
+
+  openImportPackage(payload: ImportPackagePayload): void {
+    this.current = { kind: 'import-package', payload };
   }
 
   close(): void {

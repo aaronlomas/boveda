@@ -10,6 +10,7 @@
     "import_confirm_title": "Import Database",
     "import_confirm_message": "This will overwrite your current database with the selected one. This action CANNOT be undone and the application will restart. Are you sure you want to continue?",
     "import_confirm_button": "Yes, Import",
+    "import_pack": "Import Package",
     "documents": "Documents",
     "about": "About Bóveda"
   },
@@ -254,5 +255,19 @@
     "deleted_success": "Group deleted.",
     "deleted_error": "Error deleting the group.",
     "no_accounts_in_group": "No accounts in \"{group}\""
+  },
+  "import_pack": {
+    "title": "Import Secure Package",
+    "desc": "Enter the password and choose how you want to integrate the data.",
+    "button": "Decrypt and Import",
+    "strategy_label": "Import Strategy",
+    "keep_both": "Keep Both",
+    "keep_both_desc": "Merge data",
+    "replace": "Replace",
+    "replace_desc": "Clear and overwrite",
+    "password_label": "Package Password",
+    "password_error": "The password must be at least 8 characters long.",
+    "success_replace": "Vault replaced successfully.",
+    "success_merge": "Vault imported and merged successfully."
   }
 }

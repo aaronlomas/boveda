@@ -4,6 +4,7 @@
   import ConfirmModal from './confirmation/ConfirmModal.svelte';
   import AssignGroupModal from './forms/AssignGroupModal.svelte';
   import ExportPasswordModal from './forms/ExportPasswordModal.svelte';
+  import ImportPackageModal from './forms/ImportPackageModal.svelte';
 </script>
 
 <!--
@@ -58,6 +59,22 @@
     }}
     oncancel={() => {
       const payload = modal.current?.kind === 'export-package' ? modal.current.payload : null;
+      modal.close();
+      payload?.oncancel?.();
+    }}
+  />
+{:else if modal.current?.kind === 'import-package'}
+  <ImportPackageModal
+    title={modal.current.payload.title}
+    desc={modal.current.payload.desc}
+    buttonText={modal.current.payload.buttonText}
+    onconfirm={(password, strategy) => {
+      const payload = modal.current?.kind === 'import-package' ? modal.current.payload : null;
+      modal.close();
+      payload?.onconfirm(password, strategy);
+    }}
+    oncancel={() => {
+      const payload = modal.current?.kind === 'import-package' ? modal.current.payload : null;
       modal.close();
       payload?.oncancel?.();
     }}

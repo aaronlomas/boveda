@@ -10,6 +10,7 @@
     "import_confirm_title": "Importar Base de Datos",
     "import_confirm_message": "Esto sobrescribirá tu base de datos actual con la seleccionada. Esta acción NO se puede deshacer y la aplicación se reiniciará. ¿Estás seguro de que deseas continuar?",
     "import_confirm_button": "Sí, Importar",
+    "import_pack": "Importar Paquete",
     "documents": "Documentos",
     "about": "Sobre Bóveda"
   },
@@ -254,5 +255,19 @@
     "deleted_success": "Grupo eliminado.",
     "deleted_error": "Error al eliminar el grupo.",
     "no_accounts_in_group": "No hay cuentas en \"{group}\""
+  },
+  "import_pack": {
+    "title": "Importar Paquete Blindado",
+    "desc": "Introduce la contraseña y elige cómo quieres integrar los datos.",
+    "button": "Descifrar e Importar",
+    "strategy_label": "Estrategia de Importación",
+    "keep_both": "Conservar ambos",
+    "keep_both_desc": "Fusionar datos",
+    "replace": "Reemplazar",
+    "replace_desc": "Limpiar y sobreescribir",
+    "password_label": "Contraseña del Paquete",
+    "password_error": "La contraseña debe tener al menos 8 caracteres.",
+    "success_replace": "Baúl reemplazado con éxito.",
+    "success_merge": "Baúl importado y fusionado con éxito."
   }
 }

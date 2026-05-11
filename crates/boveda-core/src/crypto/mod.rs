@@ -9,7 +9,7 @@ use base64::{engine::general_purpose::STANDARD as B64, Engine};
 use crate::error::{BovedaError, BovedaResult};
 use rand::{Rng, RngCore};
 use zeroize::Zeroize;
-use self::secret::{SecretKey, SecretString};
+use self::secret::{SecretKey, SecretString, SecretBytes};
 
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
@@ -97,7 +97,7 @@ pub fn encrypt_raw(plaintext: &[u8], key: &SecretKey) -> BovedaResult<(Vec<u8>, 
 
 /// Lower-level decryption for binary data.
 /// Returns SecretBytes to ensure the plaintext is zeroized on drop.
-pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaResult<Vec<u8>> {
+pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaResult<SecretBytes> {
     let chacha_key = Key::from_slice(key.as_bytes());
     let cipher = ChaCha20Poly1305::new(chacha_key);
     let nonce = Nonce::from_slice(nonce);
@@ -106,7 +106,7 @@ pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaRe
         .decrypt(nonce, ciphertext)
         .map_err(|e| BovedaError::CryptoError(format!("ChaCha20Poly1305 decrypt error: {e}")))?;
 
-    Ok(plaintext)
+    Ok(SecretBytes::new(plaintext))
 }
 
 /// Generate a cryptographically random password.

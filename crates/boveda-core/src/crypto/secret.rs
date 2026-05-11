@@ -4,7 +4,7 @@ use zeroize::Zeroize;
 use subtle::{Choice, ConstantTimeEq};
 
 /// A wrapper for sensitive byte arrays that zeroizes its contents upon drop.
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct SecretBytes(Vec<u8>);
 
 impl SecretBytes {
@@ -40,7 +40,7 @@ impl fmt::Debug for SecretBytes {
 }
 
 /// A wrapper for fixed-size 32-byte cryptographic keys to prevent heap reallocations.
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct SecretKey([u8; 32]);
 
 impl SecretKey {
@@ -72,6 +72,12 @@ impl Drop for SecretKey {
 impl fmt::Debug for SecretKey {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "SecretKey([REDACTED])")
+    }
+}
+
+impl PartialEq for SecretKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.ct_eq(other).into()
     }
 }
 
@@ -121,19 +127,25 @@ impl From<String> for SecretString {
 
 impl PartialEq<&str> for SecretString {
     fn eq(&self, other: &&str) -> bool {
-        self.0 == *other
+        self.ct_eq_str(*other)
     }
 }
 
 impl PartialEq<String> for SecretString {
     fn eq(&self, other: &String) -> bool {
-        &self.0 == other
+        self.ct_eq_str(other)
     }
 }
 
 impl PartialEq for SecretString {
     fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
+        self.ct_eq(other).into()
+    }
+}
+
+impl PartialEq for SecretBytes {
+    fn eq(&self, other: &Self) -> bool {
+        self.ct_eq(other).into()
     }
 }
 

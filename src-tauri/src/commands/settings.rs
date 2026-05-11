@@ -1,6 +1,7 @@
 use tauri::State;
 use crate::state::AppState;
 use boveda_core::crypto::secret::SecretString;
+use boveda_core::vault::ImportStrategy;
 
 // ─── User Preferences ─────────────────────────────────────────────────────────
 
@@ -169,6 +170,7 @@ pub async fn export_secure_package(
 pub async fn import_secure_package(
     src_path: String,
     password: String,
+    strategy: ImportStrategy,
     state: State<'_, AppState>,
 ) -> Result<(), String> {
     let engine = {
@@ -180,7 +182,7 @@ pub async fn import_secure_package(
         .map_err(|e| format!("Failed to read import file: {}", e))?;
 
     let secret_pass = SecretString::new(password);
-    engine.import_vault(&package_json, &secret_pass)
+    engine.import_vault(&package_json, &secret_pass, strategy)
         .await
         .map_err(|e| format!("Import failed: {}", e))?;
 

@@ -499,7 +499,7 @@ dependencies = [
 
 [[package]]
 name = "boveda-core"
-version = "1.1.2"
+version = "1.2.2"
 dependencies = [
  "anyhow",
  "argon2",
@@ -3149,9 +3149,9 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "open"
-version = "5.3.4"
+version = "5.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f3bab717c29a857abf75fcef718d441ec7cb2725f937343c734740a985d37fd"
+checksum = "2fbaa89d2ddc8473c78a3adf69eea8cffa28c483b8e02a971ef31527cd0fc92c"
 dependencies = [
  "dunce",
  "is-wsl",
@@ -4594,8 +4594,6 @@ dependencies = [
  "serde_json",
  "sha2",
  "sqlx-core",
- "sqlx-mysql",
- "sqlx-postgres",
  "sqlx-sqlite",
  "syn 2.0.117",
  "tokio",
@@ -4633,7 +4631,6 @@ dependencies = [
  "percent-encoding",
  "rand 0.8.6",
  "rsa",
- "serde",
  "sha1",
  "sha2",
  "smallvec",

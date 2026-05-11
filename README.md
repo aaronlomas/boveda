@@ -1,6 +1,6 @@
 # Bóveda — Password Manager 🔒
 
-Bóveda es un gestor de contraseñas de código abierto, moderno y ultra-seguro construido con **Tauri 2**, **Svelte 5** y **Rust**. Diseñado bajo el principio de "Privacidad por Diseño", asegura que tus credenciales nunca salgan de tu dispositivo y estén protegidas contra los vectores de ataque más avanzados.
+Bóveda es un gestor de contraseñas de código abierto, moderno y ultra-seguro construido con **Tauri 2**, **Svelte 5** y **Rust**. Diseñado bajo el principio de "Privacidad por Aislamiento", asegura que tus credenciales nunca salgan de tu dispositivo y estén protegidas contra los vectores de ataque más avanzados.
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange)

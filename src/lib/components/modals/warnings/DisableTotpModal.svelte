@@ -54,31 +54,13 @@
     </div>
 
     <!-- Warning Subtitle -->
-    <div class="p-4 bg-danger/10 border border-danger/20 rounded-xl flex items-start gap-3 text-danger animate-in fade-in slide-in-from-top-1">
+    <div class="p-4 bg-warning/10 border border-warning/20 rounded-xl flex items-start gap-3 text-warning animate-in fade-in slide-in-from-top-1">
       <IconAlertTriangle size={18} class="shrink-0 mt-0.5" />
       <p class="text-xs font-medium leading-relaxed">
         {$_("settings.security.totp_disable_subtitle")}
       </p>
     </div>
 
-    <!-- Warning steps -->
-    <div class="bg-warning/5 border border-warning/15 rounded-xl p-4 space-y-3">
-      <p class="text-xs font-semibold text-warning uppercase tracking-wide">
-        {$_("settings.security.totp_disable_steps_title")}
-      </p>
-      <ol
-        class="space-y-2 text-xs text-text-secondary list-decimal list-inside leading-relaxed"
-      >
-        <li>{$_("settings.security.totp_disable_step1")}</li>
-        <li>{$_("settings.security.totp_disable_step2")}</li>
-      </ol>
-    </div>
-
-    <p class="text-xs text-text-muted leading-relaxed">
-      {$_("settings.security.totp_disable_seed_warning")}
-    </p>
-
-    <!-- Actions -->
     <div class="flex gap-3 pt-1">
       <button
         class="flex-1 px-4 py-2 bg-surface/5 border border-surface/10 rounded-lg text-text-secondary text-sm font-semibold hover:bg-surface/10 transition-all"

@@ -13,7 +13,7 @@ Construida bajo el paradigma de **Seguridad por Aislamiento**. Mientras que los 
 
 A diferencia de las soluciones convencionales, Bóveda se rige por tres pilares fundamentales que nos diferencian:
 
-1.  **Aislamiento de Procesos:** La interfaz de usuario (Svelte) vive en un entorno restringido. Nunca tiene acceso directo a las claves maestras o a la base de datos. Toda operación sensible ocurre en el "Core" de Rust a través de un puente IPC (Inter-Process Communication) estrictamente tipado y auditado.
+1.  **Aislamiento de Procesos:** La interfaz de usuario vive en un entorno restringido. Nunca tiene acceso directo a las claves maestras o a la base de datos. Toda operación sensible ocurre en el "Core" de Rust a través de un puente IPC (Inter-Process Communication) estrictamente tipado y auditado.
 2.  **Soberanía del Dato:** No hay "nube por defecto". Tus datos te pertenecen y residen exclusivamente en tu hardware. El aislamiento no es solo técnico, es estructural: Bóveda asume que cualquier conexión externa es un vector de ataque potencial.
 3.  **Resistencia Forense:** No basta con cifrar. Bóveda implementa medidas para que, incluso si un atacante obtiene acceso físico a la memoria RAM o a los volcados de sistema, no encuentre rastros legibles de tu información.
 

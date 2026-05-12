@@ -4,11 +4,13 @@
   import Dashboard from "$lib/components/views/Dashboard.svelte";
   import UnlockScreen from "$lib/components/views/UnlockScreen.svelte";
   import { globalState } from "$lib/stores/stores.svelte";
+  import { themeStore } from "$lib/stores/theme.svelte";
   import { startAutoLock, stopAutoLock } from "$lib/utils/autoLock";
 
   // Watch for unlock state changes to start/stop the auto-lock timer
   $effect(() => {
     if (globalState.isUnlocked) {
+      themeStore.init();
       startAutoLock({ onLock: () => (globalState.isUnlocked = false) });
     } else {
       stopAutoLock();

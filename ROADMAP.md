@@ -1,6 +1,6 @@
 # 🗺️ Bóveda Core Roadmap
 
-Este documento detalla la visión estratégica y los objetivos técnicos para el desarrollo de **Bóveda Core**. Nuestro objetivo es convertirnos en el estándar de código abierto para la gestión de secretos locales y multiplataforma.
+Este documento detalla la visión estratégica y los objetivos técnicos para el desarrollo de **Bóveda Core**. El objetivo es convertirnos en el estándar de código abierto para la gestión de secretos locales y multiplataforma.
 
 ---
 

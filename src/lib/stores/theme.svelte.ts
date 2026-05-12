@@ -306,8 +306,12 @@ class ThemeStore {
         }),
       ]);
 
+      // If no preferences are found, use defaults. 
+      // If some are found but activePresetId is null, it's a custom theme.
+      const isFirstTime = activePresetId === null && accentColor === null && bgType === null;
+
       this.setState({
-        activePresetId: activePresetId ?? defaultState.activePresetId,
+        activePresetId: isFirstTime ? defaultState.activePresetId : activePresetId,
         colorScheme: (colorScheme as ColorScheme) ?? defaultState.colorScheme,
         accentColor: accentColor ?? defaultState.accentColor,
         bgType: (bgType as BackgroundType) ?? defaultState.bgType,
@@ -377,13 +381,7 @@ class ThemeStore {
     this.setState({ accentColor: color, activePresetId: null });
     this.applyToDom();
     try {
-      await Promise.all([
-        invoke("set_preference", {
-          key: PREF_KEYS.activePresetId,
-          value: null, // Explicitly delete activePresetId when customizing
-        }),
-        invoke("set_preference", { key: PREF_KEYS.accentColor, value: color }),
-      ]);
+      await persistState(this.getState());
     } catch (e) {
       console.error("Failed to save accent preference:", e);
     }
@@ -397,20 +395,7 @@ class ThemeStore {
     });
     this.applyToDom();
     try {
-      await Promise.all([
-        invoke("set_preference", {
-          key: PREF_KEYS.activePresetId,
-          value: null, // Explicitly delete activePresetId when customizing
-        }),
-        invoke("set_preference", {
-          key: PREF_KEYS.textPrimary,
-          value: primary,
-        }),
-        invoke("set_preference", {
-          key: PREF_KEYS.textSecondary,
-          value: secondary,
-        }),
-      ]);
+      await persistState(this.getState());
     } catch (e) {
       console.error("Failed to save text color preferences:", e);
     }
@@ -420,14 +405,7 @@ class ThemeStore {
     this.setState({ bgType, bgValue, activePresetId: null });
     this.applyToDom();
     try {
-      await Promise.all([
-        invoke("set_preference", {
-          key: PREF_KEYS.activePresetId,
-          value: null, // Explicitly delete activePresetId when customizing
-        }),
-        invoke("set_preference", { key: PREF_KEYS.bgType, value: bgType }),
-        invoke("set_preference", { key: PREF_KEYS.bgValue, value: bgValue }),
-      ]);
+      await persistState(this.getState());
     } catch (e) {
       console.error("Failed to save background preference:", e);
     }

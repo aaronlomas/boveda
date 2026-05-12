@@ -210,11 +210,11 @@
   },
   "about_view": {
     "title": "¿Por qué confiar en Bóveda?",
-    "subtitle": "Transparencia, código abierto y seguridad local.",
+    "subtitle": "Transparencia, código abierto y seguridad por aislamiento.",
     "opensource_title": "Código Abierto",
     "opensource_desc": "Bóveda es un proyecto de código abierto. Esto significa que cualquier persona puede revisar el código para asegurarse de que no hay puertas traseras ni telemetría oculta.",
-    "local_title": "100% Local",
-    "local_desc": "Tus datos nunca salen de tu dispositivo. No usamos servidores en la nube, por lo que eres el único dueño absoluto de tu información.",
+    "local_title": "Aislamiento Total",
+    "local_desc": "Tus datos nunca salen de tu dispositivo y el motor de seguridad reside en un proceso independiente. Esta arquitectura de aislamiento garantiza que tus secretos estén blindados frente a ataques externos y vulnerabilidades comunes en interfaces web.",
     "encryption_title": "Cifrado Fuerte",
     "encryption_desc": "Toda tu bóveda está protegida usando estándares de encriptación avanzados.",
     "update_info": "Para actualizar este programa, debe volver a descargar la última versión desde {link}"

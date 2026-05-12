@@ -1,71 +1,94 @@
 # Bóveda — Password Manager 🔒
 
-Bóveda es un gestor de contraseñas de código abierto, moderno y ultra-seguro construido con **Tauri 2**, **Svelte 5** y **Rust**. Diseñado bajo el principio de "Privacidad por Aislamiento", asegura que tus credenciales nunca salgan de tu dispositivo y estén protegidas contra los vectores de ataque más avanzados.
+Construida bajo el paradigma de **Seguridad por Aislamiento**. Mientras que los "gigantes" de la industria priorizan la comodidad de la nube y la recolección de metadatos, Bóveda nace de la necesidad de soberanía digital total, donde tus secretos nunca tocan el disco sin cifrar ni la red sin tu permiso explícito.
 
-![License](https://img.shields.io/badge/license-Apache--2.0-blue)
-![Tauri](https://img.shields.io/badge/Tauri-2.0-orange)
-![Svelte](https://img.shields.io/badge/Svelte-5.0-red)
-![Rust](https://img.shields.io/badge/Rust-1.77+-black)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=for-the-badge)
+![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=for-the-badge)
+![Svelte](https://img.shields.io/badge/Svelte-5.0-red?style=for-the-badge)
+![Rust](https://img.shields.io/badge/Rust-1.77+-black?style=for-the-badge)
 
-## 🛡️ Seguridad de Grado Militar (Bóveda Core)
+---
 
-El corazón de Bóveda es un motor independiente (`boveda-core`) diseñado para ofrecer resistencia forense y criptográfica máxima:
+## 🏛️ La Filosofía: Seguridad por Aislamiento
 
-### 🔐 Criptografía y Almacenamiento
-- **Cifrado Total en Reposo:** La base de datos SQLite está cifrada íntegramente mediante **SQLCipher (AES-256 bit en modo CBC)**, protegiendo no solo tus contraseñas sino también los metadatos y la estructura de la base de datos.
-- **Protocolos de Vanguardia:** Implementa **ChaCha20-Poly1305** para el cifrado autenticado de secretos individuales, garantizando integridad y confidencialidad.
-- **Derivación de Claves Hardened:** Utiliza **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos) para transformar tu contraseña maestra en una clave criptográfica, ofreciendo la mejor resistencia actual contra ataques de fuerza bruta por GPU/ASIC.
+A diferencia de las soluciones convencionales, Bóveda se rige por tres pilares fundamentales que nos diferencian:
 
-### 🧠 Protección de Memoria Activa
-- **Memory Locking:** La clave maestra se bloquea en la RAM física mediante `mlock` (Unix) o `VirtualLock` (Windows), impidiendo que el sistema operativo la escriba en el archivo de intercambio (swap) o paginación en disco.
-- **Defensa Anti-Forense:** Bóveda desactiva los volcados de memoria (`core dumps`) a nivel de proceso para evitar que la memoria sensible sea volcada al disco tras un fallo.
-- **Arquitectura Zero-Knowledge:** Los secretos se descifran solo bajo demanda y se mantienen en contenedores `Zeroize` que limpian físicamente los bytes de la memoria RAM inmediatamente después de su uso.
+1.  **Aislamiento de Procesos:** La interfaz de usuario (Svelte) vive en un entorno restringido. Nunca tiene acceso directo a las claves maestras o a la base de datos. Toda operación sensible ocurre en el "Core" de Rust a través de un puente IPC (Inter-Process Communication) estrictamente tipado y auditado.
+2.  **Soberanía del Dato:** No hay "nube por defecto". Tus datos te pertenecen y residen exclusivamente en tu hardware. El aislamiento no es solo técnico, es estructural: Bóveda asume que cualquier conexión externa es un vector de ataque potencial.
+3.  **Resistencia Forense:** No basta con cifrar. Bóveda implementa medidas para que, incluso si un atacante obtiene acceso físico a la memoria RAM o a los volcados de sistema, no encuentre rastros legibles de tu información.
 
-## 🏗️ Arquitectura del Proyecto
+---
 
-Bóveda utiliza una arquitectura desacoplada para facilitar auditorías y mantenimiento:
+## 🛡️ Ingeniería de Seguridad (Bóveda Core)
 
-- **`crates/boveda-core`**: Biblioteca pura de Rust que contiene toda la lógica de seguridad, cifrado y base de datos.
-- **`src-tauri`**: Capa de orquestación nativa que comunica el núcleo de Rust con la interfaz gráfica mediante IPC seguro.
-- **`src`**: Interfaz de usuario reactiva construida con Svelte 5, ofreciendo una experiencia fluida, rápida y estética.
+El motor `boveda-core` es una pieza independiente encargada de proteger los datos sensibles:
+
+### 🔐 Criptografía de Vanguardia
+-   **Almacenamiento Ciego:** Base de datos **SQLite + SQLCipher** con cifrado **AES-256-CBC**. Protegemos no solo las entradas, sino el esquema, los índices y los metadatos.
+-   **Secretos:** Cada entrada individual se cifra adicionalmente con **ChaCha20-Poly1305**, proporcionando Cifrado Autenticado con Datos Asociados (AEAD).
+-   **Barrera de Fuerza Bruta:** Implementamos **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos), el estándar ganador de la Password Hashing Competition, configurado para ser costoso en hardware especializado (ASIC/GPU).
+
+### 🧠 Gestión de Memoria "Inmune"
+-   **Zeroización:** Uso de `Zeroize` que sobrescriben físicamente la memoria RAM con ceros en cuanto un secreto deja de ser necesario, mitigando ataques de reutilización de memoria.
+-   **RAM Inamovible:** Implementamos `mlock` / `VirtualLock` para evitar que las claves maestras terminen en el archivo de intercambio (swap) del disco duro.
+-   **Hardening del Proceso:** Desactivamos los `core dumps` y protegemos contra la inspección de procesos mediante políticas de seguridad a nivel de sistema operativo.
+
+---
+
+## 🏗️ Arquitectura de Capas
+
+```mermaid
+graph TD
+    UI[Interfaz Svelte 5] -- IPC Seguro --> Tauri[Capa de Orquestación]
+    Tauri -- Comandos Rust --> Core[Bóveda Core - Rust]
+    Core -- Cifrado --> DB[(SQLite + SQLCipher)]
+    Core -- Memoria --> RAM[Zeroized RAM / mlock]
+```
+
+-   **`crates/boveda-core`**: El núcleo protector. Rust puro, sin dependencias de UI, enfocado 100% en seguridad.
+-   **`src-tauri`**: El guardián moderno. Gestiona los permisos y la comunicación entre la webview y el sistema.
+-   **`src`**: La cara. Una interfaz premium, rápida y minimalista que hace que la seguridad extrema se sienta natural.
+
+---
 
 ## 🛠️ Configuración de Desarrollo
 
-**Requisitos previos:**
+**Requisitos:**
 - [Node.js](https://nodejs.org/) (v20+)
 - [Rust](https://rustup.rs/) (v1.77+)
-- Herramientas de compilación de Tauri ([Guía oficial](https://tauri.app/v2/guides/getting-started/prerequisites))
+- [Tauri Prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites)
 
 ```bash
-# 1. Instalar dependencias del frontend
+# Instalar dependencias
 npm install
 
-# 2. Ejecutar en modo desarrollo (Hot Reload)
+# Ejecutar en modo desarrollo
 npm run tauri dev
 
-# 3. Compilar para producción (Instaladores nativos)
+# Compilar binario de producción
 npm run tauri build
+```
 
-## 🛡️ Auditoría de Seguridad
+## 🛡️ Auditoría y Calidad
 
-Para garantizar que las dependencias no tengan vulnerabilidades conocidas, puedes ejecutar:
+Mantenemos un estándar de "Cero Advertencias". Puedes verificar la integridad del proyecto con:
 
 ```bash
-# Auditoría de dependencias de Rust y JavaScript
+# Auditoría completa (Rust + JS)
 npm run security
 ```
 
-O individualmente:
-```bash
-cargo audit  # Para el motor de Rust
-npm audit    # Para el frontend
-```
-```
+O por separado:
+- `cargo audit`: Verifica vulnerabilidades en dependencias de Rust.
+- `cargo clippy`: Linter estricto para asegurar código idiomático y seguro.
+- `npm audit`: Verifica el ecosistema de Node.js.
+
+---
 
 ## 🤝 Contribuciones
 
-Bóveda es un proyecto comunitario. Valoramos las contribuciones que mejoren la seguridad o la experiencia de usuario. Por favor, revisa nuestras guías de estilo antes de enviar un Pull Request.
+Si compartes nuestra visión de una privacidad sin compromisos, tus PRs son bienvenidos. Consulta el [ROADMAP.md](./ROADMAP.md) para ver en qué estamos trabajando.
 
 ## 📜 Licencia
 
-Este proyecto está bajo la Licencia **Apache-2.0**. Consulta el archivo `LICENSE` para más detalles.
+Bóveda es software libre bajo la licencia **Apache-2.0**. Tu seguridad no debería ser una caja negra.

@@ -210,11 +210,11 @@
   },
   "about_view": {
     "title": "Why trust Bóveda?",
-    "subtitle": "Transparency, open source, and local security.",
+    "subtitle": "Transparency, open source, and security by isolation.",
     "opensource_title": "Open Source",
     "opensource_desc": "Bóveda is an open-source project. This means anyone can review the code to ensure there are no backdoors or hidden telemetry.",
-    "local_title": "100% Local",
-    "local_desc": "Your data never leaves your device. We do not use cloud servers, so you are the absolute owner of your information.",
+    "local_title": "Total Isolation",
+    "local_desc": "Your data never leaves your device and the security engine resides in an independent process. This isolation architecture ensures your secrets are shielded against external attacks and common web interface vulnerabilities.",
     "encryption_title": "Strong Encryption",
     "encryption_desc": "Your entire vault is protected using advanced encryption standards.",
     "update_info": "To update this program, you must download the latest version from {link}"

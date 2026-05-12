@@ -10,7 +10,6 @@
   // Watch for unlock state changes to start/stop the auto-lock timer
   $effect(() => {
     if (globalState.isUnlocked) {
-      themeStore.init();
       startAutoLock({ onLock: () => (globalState.isUnlocked = false) });
     } else {
       stopAutoLock();

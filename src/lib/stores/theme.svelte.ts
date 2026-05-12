@@ -172,43 +172,15 @@ const defaultState: ThemeState = {
   textSecondary: "#9999a3",
 };
 
-/** Keys used to persist state in SQLite */
-const PREF_KEYS = {
-  activePresetId: "theme_active_preset_id",
-  colorScheme: "theme_color_scheme",
-  accentColor: "theme_accent_color",
-  bgType: "theme_bg_type",
-  bgValue: "theme_bg_value",
-  textPrimary: "theme_text_primary",
-  textSecondary: "theme_text_secondary",
-} as const;
+const STORAGE_KEY = "boveda_theme_settings";
 
-/** Persist all mutable theme fields to SQLite */
+/** Persist all mutable theme fields to localStorage */
 async function persistState(s: ThemeState): Promise<void> {
-  await Promise.all([
-    invoke("set_preference", {
-      key: PREF_KEYS.activePresetId,
-      value: s.activePresetId, // Can be null (deletes preference)
-    }),
-    invoke("set_preference", {
-      key: PREF_KEYS.colorScheme,
-      value: s.colorScheme,
-    }),
-    invoke("set_preference", {
-      key: PREF_KEYS.accentColor,
-      value: s.accentColor,
-    }),
-    invoke("set_preference", { key: PREF_KEYS.bgType, value: s.bgType }),
-    invoke("set_preference", { key: PREF_KEYS.bgValue, value: s.bgValue }),
-    invoke("set_preference", {
-      key: PREF_KEYS.textPrimary,
-      value: s.textPrimary,
-    }),
-    invoke("set_preference", {
-      key: PREF_KEYS.textSecondary,
-      value: s.textSecondary,
-    }),
-  ]);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  } catch (e) {
+    console.error("Failed to save theme to localStorage:", e);
+  }
 }
 
 class ThemeStore {
@@ -284,41 +256,13 @@ class ThemeStore {
 
   async init(): Promise<void> {
     try {
-      const [
-        activePresetId,
-        colorScheme,
-        accentColor,
-        bgType,
-        bgValue,
-        textPrimary,
-        textSecondary,
-      ] = await Promise.all([
-        invoke<string | null>("get_preference", {
-          key: PREF_KEYS.activePresetId,
-        }),
-        invoke<string | null>("get_preference", { key: PREF_KEYS.colorScheme }),
-        invoke<string | null>("get_preference", { key: PREF_KEYS.accentColor }),
-        invoke<string | null>("get_preference", { key: PREF_KEYS.bgType }),
-        invoke<string | null>("get_preference", { key: PREF_KEYS.bgValue }),
-        invoke<string | null>("get_preference", { key: PREF_KEYS.textPrimary }),
-        invoke<string | null>("get_preference", {
-          key: PREF_KEYS.textSecondary,
-        }),
-      ]);
-
-      // If no preferences are found, use defaults. 
-      // If some are found but activePresetId is null, it's a custom theme.
-      const isFirstTime = activePresetId === null && accentColor === null && bgType === null;
-
-      this.setState({
-        activePresetId: isFirstTime ? defaultState.activePresetId : activePresetId,
-        colorScheme: (colorScheme as ColorScheme) ?? defaultState.colorScheme,
-        accentColor: accentColor ?? defaultState.accentColor,
-        bgType: (bgType as BackgroundType) ?? defaultState.bgType,
-        bgValue: bgValue ?? defaultState.bgValue,
-        textPrimary: textPrimary ?? defaultState.textPrimary,
-        textSecondary: textSecondary ?? defaultState.textSecondary,
-      });
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as ThemeState;
+        this.setState(parsed);
+      } else {
+        this.setState(defaultState);
+      }
 
       await this.applyToDom();
 
@@ -330,7 +274,7 @@ class ThemeStore {
           });
       }
     } catch (e) {
-      console.warn("Could not load theme preferences:", e);
+      console.warn("Could not load theme preferences from localStorage:", e);
       this.setState(defaultState);
       await this.applyToDom();
     }

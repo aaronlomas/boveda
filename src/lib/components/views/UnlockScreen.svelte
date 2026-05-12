@@ -160,7 +160,7 @@
 
 </script>
 
-<div class="h-full grid grid-rows-[auto_1fr_auto] dark">
+<div class="h-full grid grid-rows-[auto_1fr_auto]">
   <header
     class=" bg-panel/30 px-6 py-4 flex items-center justify-between m-2 rounded-sm"
   >

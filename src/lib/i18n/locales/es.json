@@ -269,5 +269,15 @@
     "password_error": "La contraseña debe tener al menos 8 caracteres.",
     "success_replace": "Baúl reemplazado con éxito.",
     "success_merge": "Baúl importado y fusionado con éxito."
+  },
+  "export_pack": {
+    "title": "Generar Paquete Blindado",
+    "desc": "Crea un paquete seguro (.bvda.pack) protegido con contraseña.",
+    "button": "Generar Paquete",
+    "password_label": "Contraseña del Paquete",
+    "password_error": "La contraseña debe tener al menos 8 caracteres para garantizar la seguridad del paquete.",
+    "warning": "Esta operación utiliza cifrado fuerte. Asegúrate de usar una contraseña fuerte.",
+    "success": "Paquete exportado con éxito a:\n{path}",
+    "error": "Error al generar el paquete."
   }
 }

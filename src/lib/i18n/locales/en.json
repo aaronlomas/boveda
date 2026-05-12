@@ -269,5 +269,15 @@
     "password_error": "The password must be at least 8 characters long.",
     "success_replace": "Vault replaced successfully.",
     "success_merge": "Vault imported and merged successfully."
+  },
+  "export_pack": {
+    "title": "Generate Secure Package",
+    "desc": "Create a secure package (.bvda.pack) protected with a password.",
+    "button": "Generate Package",
+    "password_label": "Package Password",
+    "password_error": "The password must be at least 8 characters long to ensure package security.",
+    "warning": "This operation uses strong encryption. Make sure you use a strong password.",
+    "success": "Package exported successfully to:\n{path}",
+    "error": "Error generating the package."
   }
 }

@@ -109,13 +109,13 @@
 
   async function handleExportSecure() {
     modal.openExportPackage({
-      title: $_("dashboard.export_db_title"),
-      desc: "Crea un paquete blindado (.bvda.pack)",
-      buttonText: "Generar Paquete",
+      title: "export_pack.title",
+      desc: "export_pack.desc",
+      buttonText: "export_pack.button",
       onconfirm: async (password) => {
         try {
           const filePath = await save({
-            title: $_("dashboard.export_db_title"),
+            title: $_("export_pack.title"),
             defaultPath: "Boveda_Export.bvda.pack",
             filters: [
               { name: "Bóveda Secure Package", extensions: ["pack", "bvda.pack"] },
@@ -128,12 +128,12 @@
               password: password,
             });
             toast.success(
-              $_("dashboard.export_success", { values: { path: filePath } }),
+              $_("export_pack.success", { values: { path: filePath } }),
             );
           }
         } catch (e) {
           console.error("Export failed:", e);
-          toast.error($_("dashboard.export_error"));
+          toast.error($_("export_pack.error"));
         }
       },
     });

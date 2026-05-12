@@ -18,7 +18,7 @@
   function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     if (password.length < 8) {
-      error = "La contraseña debe tener al menos 8 caracteres para garantizar la seguridad del paquete.";
+      error = $_("export_pack.password_error");
       return;
     }
     onconfirm(password);
@@ -37,22 +37,21 @@
           <IconShieldLock size={24} />
         </div>
         <div>
-          <h2 class="text-xl font-bold text-text-primary">{title}</h2>
-          <p class="text-sm text-text-muted">{desc}</p>
+          <h2 class="text-xl font-bold text-text-primary">{$_(title)}</h2>
+          <p class="text-sm text-text-muted">{$_(desc)}</p>
         </div>
       </div>
 
       <div class="bg-accent/5 border border-accent/10 rounded-xl p-4 mb-6">
         <p class="text-xs text-text-secondary leading-relaxed">
-          Esta operación utiliza cifrado <strong>Argon2id</strong> y <strong>ChaCha20-Poly1305</strong>. 
-          Asegúrate de que la contraseña sea la correcta para el paquete.
+          {$_("export_pack.warning")}
         </p>
       </div>
 
       <form onsubmit={handleSubmit} class="space-y-4">
         <div class="space-y-2">
           <label for="export-pw" class="text-xs font-bold text-text-muted uppercase tracking-wider">
-            Contraseña del Paquete
+            {$_("export_pack.password_label")}
           </label>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
@@ -99,7 +98,7 @@
             class="flex-2 py-3 px-6 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2"
           >
             <IconDownload size={20} />
-            {buttonText}
+            {$_(buttonText)}
           </button>
         </div>
       </form>

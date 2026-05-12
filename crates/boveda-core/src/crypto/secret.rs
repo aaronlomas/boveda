@@ -127,7 +127,7 @@ impl From<String> for SecretString {
 
 impl PartialEq<&str> for SecretString {
     fn eq(&self, other: &&str) -> bool {
-        self.ct_eq_str(*other)
+        self.ct_eq_str(other)
     }
 }
 

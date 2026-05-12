@@ -50,7 +50,6 @@
 {:else if modal.current?.kind === 'export-package'}
   <ExportPasswordModal
     title={modal.current.payload.title}
-    desc={modal.current.payload.desc}
     buttonText={modal.current.payload.buttonText}
     onconfirm={(password) => {
       const payload = modal.current?.kind === 'export-package' ? modal.current.payload : null;
@@ -66,7 +65,6 @@
 {:else if modal.current?.kind === 'import-package'}
   <ImportPackageModal
     title={modal.current.payload.title}
-    desc={modal.current.payload.desc}
     buttonText={modal.current.payload.buttonText}
     onconfirm={(password, strategy) => {
       const payload = modal.current?.kind === 'import-package' ? modal.current.payload : null;

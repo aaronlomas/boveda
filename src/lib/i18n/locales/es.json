@@ -257,10 +257,10 @@
     "no_accounts_in_group": "No hay cuentas en \"{group}\""
   },
   "import_pack": {
-    "title": "Importar Paquete Blindado",
+    "title": "Importar Paquete",
     "desc": "Introduce la contraseña y elige cómo quieres integrar los datos.",
-    "button": "Descifrar e Importar",
-    "strategy_label": "Estrategia de Importación",
+    "button": "Descifrar",
+    "strategy_label": "Tipo de Importación",
     "keep_both": "Conservar ambos",
     "keep_both_desc": "Fusionar datos",
     "replace": "Reemplazar",
@@ -271,12 +271,11 @@
     "success_merge": "Baúl importado y fusionado con éxito."
   },
   "export_pack": {
-    "title": "Generar Paquete Blindado",
-    "desc": "Crea un paquete seguro (.bvda.pack) protegido con contraseña.",
-    "button": "Generar Paquete",
+    "title": "Exportar Paquete",
+    "button": "Exportar",
     "password_label": "Contraseña del Paquete",
     "password_error": "La contraseña debe tener al menos 8 caracteres para garantizar la seguridad del paquete.",
-    "warning": "Esta operación utiliza cifrado fuerte. Asegúrate de usar una contraseña fuerte.",
+    "warning": "Los datos serán cifrados por seguridad, asegúrate de recordar la contraseña.",
     "success": "Paquete exportado con éxito a:\n{path}",
     "error": "Error al generar el paquete."
   }

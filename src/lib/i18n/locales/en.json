@@ -257,10 +257,10 @@
     "no_accounts_in_group": "No accounts in \"{group}\""
   },
   "import_pack": {
-    "title": "Import Secure Package",
+    "title": "Import Package",
     "desc": "Enter the password and choose how you want to integrate the data.",
-    "button": "Decrypt and Import",
-    "strategy_label": "Import Strategy",
+    "button": "Decrypt",
+    "strategy_label": "Import Type",
     "keep_both": "Keep Both",
     "keep_both_desc": "Merge data",
     "replace": "Replace",
@@ -271,12 +271,11 @@
     "success_merge": "Vault imported and merged successfully."
   },
   "export_pack": {
-    "title": "Generate Secure Package",
-    "desc": "Create a secure package (.bvda.pack) protected with a password.",
-    "button": "Generate Package",
+    "title": "Export Package",
+    "button": "Export",
     "password_label": "Package Password",
     "password_error": "The password must be at least 8 characters long to ensure package security.",
-    "warning": "This operation uses strong encryption. Make sure you use a strong password.",
+    "warning": "The data will be encrypted for security, make sure you remember the password.",
     "success": "Package exported successfully to:\n{path}",
     "error": "Error generating the package."
   }

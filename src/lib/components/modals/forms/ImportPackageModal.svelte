@@ -43,11 +43,10 @@
     <div class="p-6">
       <div class="flex items-center gap-3 mb-6">
         <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
-          <IconShieldLock size={24} />
+          <IconDatabaseImport size={24} />
         </div>
         <div>
           <h2 class="text-xl font-bold text-text-primary">{$_(title)}</h2>
-          <p class="text-sm text-text-muted">{$_(desc)}</p>
         </div>
       </div>
 
@@ -122,17 +121,17 @@
           {/if}
         </div>
 
-        <div class="flex gap-3 pt-2">
+        <div class="grid grid-cols-2 gap-3">
           <button
             type="button"
-            class="flex-1 py-3 px-4 bg-surface/5 hover:bg-surface/10 text-text-primary font-bold rounded-xl transition-all"
+            class="py-3 px-4 bg-surface/5 hover:bg-surface/10 text-text-primary font-bold rounded-xl transition-all"
             onclick={oncancel}
           >
             {$_("global.cancel")}
           </button>
           <button
             type="submit"
-            class="flex-2 py-3 px-6 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2"
+            class="py-3 px-6 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2"
           >
             <IconDatabaseImport size={20} />
             {$_(buttonText)}

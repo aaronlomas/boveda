@@ -35,7 +35,7 @@ export interface AssignGroupPayload {
 
 export interface ExportPackagePayload {
   title: string;
-  desc: string;
+  desc?: string;
   buttonText: string;
   onconfirm: (password: string) => void;
   oncancel?: () => void;
@@ -43,7 +43,7 @@ export interface ExportPackagePayload {
 
 export interface ImportPackagePayload {
   title: string;
-  desc: string;
+  desc?: string;
   buttonText: string;
   onconfirm: (password: string, strategy: 'merge' | 'replace') => void;
   oncancel?: () => void;

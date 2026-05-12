@@ -5,6 +5,7 @@
   import { invoke } from "@tauri-apps/api/core";
   import { open, save } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
+  import { get } from "svelte/store";
   import { toast } from "$lib/stores/toast.svelte";
   import {
     IconShieldHalfFilled,
@@ -72,15 +73,15 @@
         // Secure Package Import
         modal.openImportPackage({
           title: "import_pack.title",
-          desc: "import_pack.desc",
           buttonText: "import_pack.button",
           onconfirm: async (password, strategy) => {
+            const t = get(_);
             try {
               await invoke("import_secure_package", { srcPath: filePath, password, strategy });
-              toast.success(strategy === 'replace' ? $_("import_pack.success_replace") : $_("import_pack.success_merge"));
+              toast.success(strategy === 'replace' ? t("import_pack.success_replace") : t("import_pack.success_merge"));
             } catch (e: any) {
               console.error("Secure import failed:", e);
-              toast.error($_("global.error_import") + ": " + e.toString());
+              toast.error(t("global.error_import") + ": " + e.toString());
             }
           }
         });
@@ -108,14 +109,14 @@
   }
 
   async function handleExportSecure() {
+    const t = get(_);
     modal.openExportPackage({
       title: "export_pack.title",
-      desc: "export_pack.desc",
       buttonText: "export_pack.button",
       onconfirm: async (password) => {
         try {
           const filePath = await save({
-            title: $_("export_pack.title"),
+            title: t("export_pack.title"),
             defaultPath: "Boveda_Export.bvda.pack",
             filters: [
               { name: "Bóveda Secure Package", extensions: ["pack", "bvda.pack"] },
@@ -128,12 +129,12 @@
               password: password,
             });
             toast.success(
-              $_("export_pack.success", { values: { path: filePath } }),
+              t("export_pack.success", { values: { path: filePath } }),
             );
           }
         } catch (e) {
           console.error("Export failed:", e);
-          toast.error($_("export_pack.error"));
+          toast.error(t("export_pack.error"));
         }
       },
     });

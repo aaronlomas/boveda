@@ -17,14 +17,20 @@ pub async fn get_preference(key: String, state: State<'_, AppState>) -> Result<O
 }
 
 #[tauri::command]
-pub async fn set_preference(key: String, value: String, state: State<'_, AppState>) -> Result<(), String> {
+pub async fn set_preference(key: String, value: Option<String>, state: State<'_, AppState>) -> Result<(), String> {
     let engine = {
         let engine_lock = state.engine.lock().unwrap();
         engine_lock.as_ref().cloned().ok_or("Vault is locked")?
     };
-    engine.set_preference(&key, &value)
-        .await
-        .map_err(|e: boveda_core::BovedaError| e.to_string())
+    
+    match value {
+        Some(v) => engine.set_preference(&key, &v)
+            .await
+            .map_err(|e: boveda_core::BovedaError| e.to_string()),
+        None => engine.delete_preference(&key)
+            .await
+            .map_err(|e: boveda_core::BovedaError| e.to_string()),
+    }
 }
 
 // ─── Background Image ─────────────────────────────────────────────────────────

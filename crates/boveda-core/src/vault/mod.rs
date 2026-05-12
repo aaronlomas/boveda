@@ -413,6 +413,12 @@ impl BovedaEngine {
         storage::set_preference(&self.db, key, value).await
     }
 
+    pub async fn delete_preference(&self, key: &str) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
+        storage::delete_preference(&self.db, key).await
+    }
+
     /// Exports the entire vault into a secure, encrypted package.
     pub async fn export_vault(&self, export_password: &SecretString) -> BovedaResult<String> {
         self.check_unlocked()?;

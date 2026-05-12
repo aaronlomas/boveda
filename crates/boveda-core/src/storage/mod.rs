@@ -236,6 +236,23 @@ pub async fn set_preference_tx(conn: &mut SqliteConnection, key: &str, value: &s
     Ok(())
 }
 
+/// Delete a user preference by key.
+pub async fn delete_preference(pool: &SqlitePool, key: &str) -> BovedaResult<()> {
+    sqlx::query("DELETE FROM preferences WHERE key = ?")
+        .bind(key)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn delete_preference_tx(conn: &mut SqliteConnection, key: &str) -> BovedaResult<()> {
+    sqlx::query("DELETE FROM preferences WHERE key = ?")
+        .bind(key)
+        .execute(conn)
+        .await?;
+    Ok(())
+}
+
 // ─── TEMPORAL MIGRATION LOGIC ──────────────────────────────────────────────────
 
 pub async fn migrate_to_sqlcipher(

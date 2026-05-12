@@ -188,7 +188,7 @@ async function persistState(s: ThemeState): Promise<void> {
   await Promise.all([
     invoke("set_preference", {
       key: PREF_KEYS.activePresetId,
-      value: s.activePresetId,
+      value: s.activePresetId, // Can be null (deletes preference)
     }),
     invoke("set_preference", {
       key: PREF_KEYS.colorScheme,
@@ -380,7 +380,7 @@ class ThemeStore {
       await Promise.all([
         invoke("set_preference", {
           key: PREF_KEYS.activePresetId,
-          value: null,
+          value: null, // Explicitly delete activePresetId when customizing
         }),
         invoke("set_preference", { key: PREF_KEYS.accentColor, value: color }),
       ]);
@@ -400,7 +400,7 @@ class ThemeStore {
       await Promise.all([
         invoke("set_preference", {
           key: PREF_KEYS.activePresetId,
-          value: null,
+          value: null, // Explicitly delete activePresetId when customizing
         }),
         invoke("set_preference", {
           key: PREF_KEYS.textPrimary,
@@ -423,7 +423,7 @@ class ThemeStore {
       await Promise.all([
         invoke("set_preference", {
           key: PREF_KEYS.activePresetId,
-          value: null,
+          value: null, // Explicitly delete activePresetId when customizing
         }),
         invoke("set_preference", { key: PREF_KEYS.bgType, value: bgType }),
         invoke("set_preference", { key: PREF_KEYS.bgValue, value: bgValue }),

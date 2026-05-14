@@ -15,16 +15,16 @@
     "about": "Sobre Bóveda"
   },
   "pin_security": {
-    "title": "Seguridad PIN",
+    "title": "Guardar PIN",
     "desc": "Guarda de forma segura los PINs de tus tarjetas bancarias, accesos o aplicaciones.",
     "new_pin": "Nuevo PIN",
     "no_pins": "No hay PINs guardados",
     "no_pins_desc": "Agrega tu primer PIN para empezar.",
     "search_placeholder": "Buscar PIN...",
     "name_label": "Nombre",
-    "name_placeholder": "Mi Tarjeta Débito",
+    "name_placeholder": "Tarjeta Débito/Crédito/App/Web",
     "pin_label": "Código PIN",
-    "pin_placeholder": "••••",
+    "pin_placeholder": "••••+",
     "notes_label": "Notas (opcional)",
     "notes_placeholder": "Información adicional...",
     "save_button": "Guardar PIN",
@@ -95,7 +95,7 @@
       "presets": {
         "midnight_violet": "Violeta Medianoche",
         "ocean_light": "Océano Claro",
-        "matrix_dark": "Terminal Matrix",
+        "matrix_dark": "Matrix",
         "crimson_light": "Carmín Claro",
         "nord_frost": "Escarcha Nord"
       },
@@ -217,15 +217,6 @@
       "strong": "Fuerte",
       "very_strong": "Muy Fuerte"
     }
-  },
-  "general_view": {
-    "accounts_title": "Cuentas",
-    "accounts_desc": "Gestiona tus contraseñas y credenciales guardadas.",
-    "pin_title": "Seguridad PIN",
-    "pin_desc": "Configura y administra tus códigos PIN de forma segura.",
-    "tokens_title": "Tokens / Claves dinámicas",
-    "tokens_desc": "Genera y administra tokens de autenticación de dos factores (2FA).",
-    "coming_soon": "Próximamente"
   },
   "about_view": {
     "title": "¿Por qué confiar en Bóveda?",

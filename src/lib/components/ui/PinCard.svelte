@@ -181,7 +181,7 @@
         class="flex-1 font-mono text-lg text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-[0.2em]"
         class:text-white={revealed}
       >
-        {revealed && decryptedPin ? decryptedPin : "••••"}
+        {revealed && decryptedPin ? decryptedPin : "••••+"}
       </code>
 
       <div class="flex items-center gap-0.5">

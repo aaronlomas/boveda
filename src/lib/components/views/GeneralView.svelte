@@ -39,7 +39,7 @@
       </div>
     </button>
 
-    <!-- Card Seguridad PIN -->
+    <!-- Card Save PIN -->
     <button
       class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group cursor-pointer"
       onclick={() => (globalState.activeView = "pin")}
@@ -51,9 +51,9 @@
       </div>
       <div>
         <h3 class="text-lg font-semibold text-text-primary mb-1">
-          {$_("general_view.pin_title")}
+          {$_("pin_security.title")}
         </h3>
-        <p class="text-sm text-text-muted">{$_("general_view.pin_desc")}</p>
+        <p class="text-sm text-text-muted">{$_("pin_security.desc")}</p>
       </div>
     </button>
 

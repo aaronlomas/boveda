@@ -15,16 +15,16 @@
     "about": "About Bóveda"
   },
   "pin_security": {
-    "title": "PIN Security",
+    "title": "Save PIN",
     "desc": "Securely store the PINs for your bank cards, access codes, or applications.",
     "new_pin": "New PIN",
     "no_pins": "No PINs saved",
     "no_pins_desc": "Add your first PIN to get started.",
     "search_placeholder": "Search PIN...",
     "name_label": "Name",
-    "name_placeholder": "My Debit Card",
+    "name_placeholder": "Debit/Credit Card/App/Web",
     "pin_label": "PIN Code",
-    "pin_placeholder": "••••",
+    "pin_placeholder": "••••+",
     "notes_label": "Notes (optional)",
     "notes_placeholder": "Additional information...",
     "save_button": "Save PIN",
@@ -96,7 +96,7 @@
       "presets": {
         "midnight_violet": "Midnight Violet",
         "ocean_light": "Ocean Light",
-        "matrix_dark": "Terminal Matrix",
+        "matrix_dark": "Matrix",
         "crimson_light": "Crimson Light",
         "nord_frost": "Nord Frost"
       },
@@ -217,15 +217,6 @@
       "strong": "Strong",
       "very_strong": "Very Strong"
     }
-  },
-  "general_view": {
-    "accounts_title": "Accounts",
-    "accounts_desc": "Manage your saved passwords and credentials.",
-    "pin_title": "PIN Security",
-    "pin_desc": "Configure and manage your PIN codes securely.",
-    "tokens_title": "Tokens / Dynamic keys",
-    "tokens_desc": "Generate and manage two-factor authentication (2FA) tokens.",
-    "coming_soon": "Coming soon"
   },
   "about_view": {
     "title": "Why trust Bóveda?",

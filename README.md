@@ -1,6 +1,6 @@
 # Bóveda — Password Manager 🔒
 
-Construida bajo el paradigma de **Seguridad por Aislamiento**. Mientras que los "gigantes" de la industria priorizan la comodidad de la nube y la recolección de metadatos, Bóveda nace de la necesidad de soberanía digital total, donde tus secretos nunca tocan el disco sin cifrar ni la red sin tu permiso explícito.
+Construida bajo la filosofía de **Seguridad por Aislamiento**. Mientras que los 'gigantes' de la industria priorizan la comodidad de la nube y la recolección de metadatos, Bóveda nace como una alternativa moderna para la soberanía digital total, donde tus secretos nunca tocan el disco sin cifrar ni la red sin tu permiso explícito.
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=for-the-badge)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=for-the-badge)
@@ -26,7 +26,7 @@ El motor `boveda-core` es una pieza independiente encargada de proteger los dato
 ### 🔐 Criptografía de Vanguardia
 -   **Almacenamiento Ciego:** Base de datos **SQLite + SQLCipher** con cifrado **AES-256-CBC**. Protegemos no solo las entradas, sino el esquema, los índices y los metadatos.
 -   **Secretos:** Cada entrada individual se cifra adicionalmente con **ChaCha20-Poly1305**, proporcionando Cifrado Autenticado con Datos Asociados (AEAD).
--   **Barrera de Fuerza Bruta:** Implementamos **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos), el estándar ganador de la Password Hashing Competition, configurado para ser costoso en hardware especializado (ASIC/GPU).
+-   **Barrera de Fuerza Bruta:** Implementamos **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos), el estándar de Password Hashing Competition, configurado para ser costoso en hardware especializado (ASIC/GPU).
 
 ### 🧠 Gestión de Memoria "Inmune"
 -   **Zeroización:** Uso de `Zeroize` que sobrescriben físicamente la memoria RAM con ceros en cuanto un secreto deja de ser necesario, mitigando ataques de reutilización de memoria.
@@ -88,7 +88,7 @@ O por separado:
 
 ## 🤝 Contribuciones
 
-Si compartes nuestra visión de una privacidad sin compromisos, tus PRs son bienvenidos. Consulta el [ROADMAP.md](./ROADMAP.md) para ver en qué estamos trabajando.
+Si compartes nuestra visión de una privacidad sin compromisos, tus PRs son bienvenidos. Por favor, lee nuestra [Guía de Contribución](./CONTRIBUTING.md) y consulta el [ROADMAP.md](./crates/boveda-core/docs/ROADMAP.md) para ver en qué estamos trabajando.
 
 ## 📜 Licencia
 

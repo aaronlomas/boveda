@@ -14,6 +14,15 @@
     "documents": "Documents",
     "about": "About Bóveda"
   },
+  "pin_security": {
+    "title": "PIN Security",
+    "desc": "Securely store the PINs for your bank cards, access codes, or applications.",
+    "new_pin": "New PIN",
+    "no_pins": "No PINs saved",
+    "no_pins_desc": "Add your first PIN to get started.",
+    "search_placeholder": "Search PIN...",
+    "coming_soon_modal": "The feature to add PINs will be available soon."
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Customize your Bóveda experience",

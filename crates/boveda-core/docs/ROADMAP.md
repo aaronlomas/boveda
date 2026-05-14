@@ -1,4 +1,4 @@
-# 🗺️ Bóveda Core Roadmap
+# 🗺️ Bóveda-Core Roadmap
 
 Este documento detalla la visión estratégica y los objetivos técnicos para el desarrollo de **Bóveda Core**. El objetivo es convertirnos en el estándar de código abierto para la gestión de secretos locales y multiplataforma.
 
@@ -11,7 +11,7 @@ Este documento detalla la visión estratégica y los objetivos técnicos para el
     - [x] Integrar `cargo test`, `cargo clippy` y `cargo audit` en GitHub Actions para bloquear código no seguro.
     - Reportes de cobertura de código (Code Coverage) superiores al 90%.
 - [ ] **Fuzz Testing:** Implementar `cargo-fuzz` en el motor de descifrado y procesamiento de base de datos para detectar fallos de memoria raros.
-- [ ] **Libro Blanco de Seguridad:** Documentar exhaustivamente el diseño criptográfico, la jerarquía de claves y las medidas de endurecimiento de memoria.
+- [x] **Libro Blanco de Seguridad:** Documentar exhaustivamente el diseño criptográfico, la jerarquía de claves y las medidas de endurecimiento de memoria.
 - [x] **Refactorización de Errores:** Completar la migración a errores estructurados y localizables en todos los módulos del núcleo.
 
 ## 🚀 Fase 2: Expansión del Ecosistema (Q4 2026 - Q1 2027)

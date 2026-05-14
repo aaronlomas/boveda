@@ -115,6 +115,25 @@ export const PRESETS: ThemePreset[] = [
       textSecondary: "#9f1239",
     },
   },
+  {
+    id: "nord-frost",
+    nameKey: "settings.theme.presets.nord_frost",
+    defaultScheme: "dark",
+    dark: {
+      accentColor: "#88c0d0",
+      bgType: "solid",
+      bgValue: "#2e3440",
+      textPrimary: "#eceff4",
+      textSecondary: "#d8dee9",
+    },
+    light: {
+      accentColor: "#5e81ac",
+      bgType: "solid",
+      bgValue: "#eceff4",
+      textPrimary: "#2e3440",
+      textSecondary: "#4c566a",
+    },
+  },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

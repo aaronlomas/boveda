@@ -96,7 +96,8 @@
         "midnight_violet": "Violeta Medianoche",
         "ocean_light": "Océano Claro",
         "matrix_dark": "Terminal Matrix",
-        "crimson_light": "Carmín Claro"
+        "crimson_light": "Carmín Claro",
+        "nord_frost": "Escarcha Nord"
       },
       "bg_description": "Color de fondo",
       "bg_dark": "Oscuro Puro (Por defecto)",

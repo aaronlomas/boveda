@@ -38,11 +38,11 @@ El motor `boveda-core` es una pieza independiente encargada de proteger los dato
 ## 🏗️ Arquitectura de Capas
 
 ```mermaid
-graph TD
-    UI[Interfaz Svelte 5] -- IPC Seguro --> Tauri[Capa de Orquestación]
-    Tauri -- Comandos Rust --> Core[Bóveda Core - Rust]
-    Core -- Cifrado --> DB[(SQLite + SQLCipher)]
-    Core -- Memoria --> RAM[Zeroized RAM / mlock]
+flowchart TD
+    UI["Interfaz Svelte 5"] -- "IPC Seguro" --> Tauri["Capa de Orquestación"]
+    Tauri -- "Comandos Rust" --> Core["Bóveda-Core (Rust)"]
+    Core -- "Cifrado" --> DB[("SQLite + SQLCipher")]
+    Core -- "Memoria" --> RAM["Zeroized RAM / mlock"]
 ```
 
 -   **`crates/boveda-core`**: El núcleo protector. Rust puro, sin dependencias de UI, enfocado 100% en seguridad.

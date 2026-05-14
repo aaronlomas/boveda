@@ -1,4 +1,5 @@
 use crate::crypto::secret::SecretBytes;
+use crate::error::BovedaResult;
 use totp_rs::{Algorithm, TOTP};
 use serde::{Serialize, Deserialize};
 use base64::Engine;
@@ -24,7 +25,7 @@ impl TotpManager {
     }
 
     /// Creates a TOTP instance from the given secret bytes.
-    fn create_totp(secret: &SecretBytes) -> TOTP {
+    fn create_totp(secret: &SecretBytes) -> BovedaResult<TOTP> {
         let secret_bytes = secret.as_bytes();
         let seed = Zeroizing::new(secret_bytes.to_vec());
         
@@ -36,32 +37,35 @@ impl TotpManager {
             seed.to_vec(),
             Some("Bóveda".to_string()),
             "vault".to_string(),
-        ).unwrap()
+        ).map_err(|e| crate::error::BovedaError::CryptoError(format!("TOTP init error: {e}")))
     }
 
     /// Generates the otpauth URL for QR codes.
-    pub fn get_otpauth_url(secret: &SecretBytes) -> String {
-        let totp = Self::create_totp(secret);
-        totp.get_url()
+    pub fn get_otpauth_url(secret: &SecretBytes) -> BovedaResult<String> {
+        let totp = Self::create_totp(secret)?;
+        Ok(totp.get_url())
     }
 
     /// Generates the QR code PNG as a base64 string.
-    pub fn generate_qr_png_b64(secret: &SecretBytes) -> String {
-        let url = Self::get_otpauth_url(secret);
-        let code = qrcode::QrCode::new(url.as_bytes()).unwrap();
+    pub fn generate_qr_png_b64(secret: &SecretBytes) -> BovedaResult<String> {
+        let url = Self::get_otpauth_url(secret)?;
+        let code = qrcode::QrCode::new(url.as_bytes())
+            .map_err(|e| crate::error::BovedaError::CryptoError(format!("QR generation error: {e}")))?;
+            
         let image = code.render::<image::Luma<u8>>().build();
         
         let mut png_bytes = Vec::new();
         let encoder = image::codecs::png::PngEncoder::new(&mut png_bytes);
-        image.write_with_encoder(encoder).unwrap();
+        image.write_with_encoder(encoder)
+            .map_err(|e| crate::error::BovedaError::CryptoError(format!("PNG encoding error: {e}")))?;
         
-        base64::engine::general_purpose::STANDARD.encode(&png_bytes)
+        Ok(base64::engine::general_purpose::STANDARD.encode(&png_bytes))
     }
 
     /// Verifies the 6-digit TOTP code.
-    pub fn verify(secret: &SecretBytes, code: &str) -> bool {
-        let totp = Self::create_totp(secret);
-        totp.check_current(code).unwrap_or(false)
+    pub fn verify(secret: &SecretBytes, code: &str) -> BovedaResult<bool> {
+        let totp = Self::create_totp(secret)?;
+        Ok(totp.check_current(code).unwrap_or(false))
     }
 
     /// Generates 10 random recovery codes (12 chars each).
@@ -75,7 +79,8 @@ impl TotpManager {
                 if i > 0 && i % 4 == 0 {
                     code.push('-');
                 }
-                let idx = (rng.next_u32() as usize) % charset.len();
+                use rand::Rng;
+                let idx = rng.gen_range(0..charset.len());
                 code.push(charset.chars().nth(idx).unwrap());
             }
             code
@@ -108,7 +113,7 @@ mod tests {
     #[test]
     fn test_get_otpauth_url() {
         let secret = TotpManager::generate_secret();
-        let url = TotpManager::get_otpauth_url(&secret);
+        let url = TotpManager::get_otpauth_url(&secret).unwrap();
         assert!(url.contains("otpauth://totp/"));
         assert!(url.contains("secret="));
     }
@@ -116,7 +121,7 @@ mod tests {
     #[test]
     fn test_generate_qr_png_b64() {
         let secret = TotpManager::generate_secret();
-        let b64 = TotpManager::generate_qr_png_b64(&secret);
+        let b64 = TotpManager::generate_qr_png_b64(&secret).unwrap();
         assert!(!b64.is_empty());
         // Verify it's valid base64
         base64::engine::general_purpose::STANDARD.decode(b64).unwrap();
@@ -127,6 +132,6 @@ mod tests {
         let secret = TotpManager::generate_secret();
         // Since we can't easily predict the current code without a time library,
         // we just check that a random code fails.
-        assert!(!TotpManager::verify(&secret, "000000"));
+        assert!(!TotpManager::verify(&secret, "000000").unwrap());
     }
 }

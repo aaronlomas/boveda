@@ -1,40 +1,36 @@
 //! # Bóveda — Password Manager Backend
 //!
-//! This crate wires together the Tauri application.
-//! The actual logic lives in focused modules:
+//! Este crate conecta la aplicación Tauri. La lógica real vive en `boveda-core`:
 //!
-//! - [`crypto`]   — AES-256-GCM encryption + Argon2id key derivation
-//! - [`db`]       — SQLite schema, queries, and migrations
-//! - [`state`]    — Global `AppState` shared via Tauri's managed state
-//! - [`commands::vault`]    — Tauri commands for vault unlock/lock and accounts
-//! - [`commands::settings`] — Tauri commands for preferences, DB import/export, backgrounds
+//! - [`boveda_core::commands`] — Facade de comandos framework-agnostico
+//! - [`boveda_core::crypto`]  — Cifrado ChaCha20-Poly1305 + Argon2id
+//! - [`boveda_core::vault`]   — Motor principal del baúl
+//! - [`state`]                — Re-exporta `AppState` desde boveda-core
 
 mod commands;
-
 mod state;
 
 // ─── App Entry Point ─────────────────────────────────────────────────────────
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Resolve the database path in the OS-appropriate data directory:
-    //   Linux:   ~/.local/share/boveda/vault.db
-    //   macOS:   ~/Library/Application Support/boveda/vault.db
-    //   Windows: %APPDATA%\boveda\vault.db
+    // Resuelve la ruta de la base de datos en el directorio de datos del SO:
+    //   Linux:   ~/.local/share/boveda/vault.bvda
+    //   macOS:   ~/Library/Application Support/boveda/vault.bvda
+    //   Windows: %APPDATA%\boveda\vault.bvda
     let db_path = {
         let dir = dirs_next::data_local_dir()
             .unwrap_or_else(|| std::path::PathBuf::from("."))
             .join("boveda");
         std::fs::create_dir_all(&dir).ok();
-        
+
         let old_db = dir.join("vault.db");
         let new_db = dir.join("vault.bvda");
 
-        // Transparent migration: if the old DB exists but the new one doesn't, rename it.
+        // Migración transparente: si existe la DB antigua y no la nueva, renombrarla.
         if old_db.exists() && !new_db.exists() {
             if let Err(e) = std::fs::rename(&old_db, &new_db) {
                 eprintln!("Warning: Failed to migrate vault.db to vault.bvda: {}", e);
-                // Fallback to old_db if rename fails due to permissions, though rare.
                 old_db
             } else {
                 new_db

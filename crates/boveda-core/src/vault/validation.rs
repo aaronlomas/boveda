@@ -8,9 +8,9 @@ pub const MAX_GROUP_NAME_LEN: usize = 64;
 pub const MAX_PREF_KEY_LEN: usize = 64;
 pub const MAX_PREF_VALUE_LEN: usize = 8192;
 
-pub fn validate_string(s: &str, field: &str, max_len: usize) -> BovedaResult<()> {
+pub fn validate_string(s: &str, field: &str, max_len: usize, required: bool) -> BovedaResult<()> {
     let trimmed = s.trim();
-    if trimmed.is_empty() && (field == "Sitio" || field == "Usuario" || field == "Contraseña" || field == "Grupo") {
+    if required && trimmed.is_empty() {
         return Err(BovedaError::EmptyInput { field: field.to_string() });
     }
     if s.len() > max_len {

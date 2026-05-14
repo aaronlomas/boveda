@@ -11,6 +11,9 @@ use crate::crypto::secret::{SecretKey, SecretString};
 use crate::crypto;
 use crate::storage;
 use crate::error::{BovedaError, BovedaResult};
+// ─────────────────────────────────────────────────────────────────────────────
+// 🏗️  Core Structures
+// ─────────────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, serde::Deserialize, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
@@ -19,47 +22,52 @@ pub enum ImportStrategy {
     Replace,
 }
 
-/// Wrapper around the 256-bit AES-GCM master key.
+/// Wrapper around the 256-bit ChaCha20-Poly1305 master key.
 /// Allocates key on the heap, and uses mlock/VirtualLock to prevent swapping to disk.
-pub struct MasterKey(SecretKey);
+pub struct MasterKey(Box<[u8; 32]>);
 
 impl MasterKey {
     pub fn new(key: SecretKey) -> Self {
+        let boxed_key = Box::new(*key.as_bytes());
+        
         #[cfg(unix)]
         unsafe {
-            let ptr = key.as_bytes().as_ptr() as *const libc::c_void;
-            if libc::mlock(ptr, std::mem::size_of::<[u8; 32]>()) != 0 {
-                eprintln!("Warning: Failed to mlock master key memory");
+            let ptr = boxed_key.as_ptr() as *const libc::c_void;
+            if libc::mlock(ptr, 32) != 0 {
+                eprintln!("Warning: Failed to mlock master key memory. Ensure CAP_IPC_LOCK is set for better security.");
             }
         }
         #[cfg(windows)]
         unsafe {
             use windows_sys::Win32::System::Memory::VirtualLock;
-            let ptr = key.as_bytes().as_ptr() as *const std::ffi::c_void;
-            if VirtualLock(ptr, std::mem::size_of::<[u8; 32]>()) == 0 {
-                eprintln!("Warning: Failed to VirtualLock master key memory");
+            let ptr = boxed_key.as_ptr() as *const std::ffi::c_void;
+            if VirtualLock(ptr, 32) == 0 {
+                eprintln!("Warning: Failed to VirtualLock master key memory. Ensure sufficient process quotas.");
             }
         }
-        Self(key)
+        Self(boxed_key)
     }
 
     pub fn as_bytes(&self) -> &[u8; 32] {
-        self.0.as_bytes()
+        &self.0
     }
 }
 
 impl Drop for MasterKey {
     fn drop(&mut self) {
+        use zeroize::Zeroize;
+        self.0.zeroize();
+        
         #[cfg(unix)]
         unsafe {
-            let ptr = self.0.as_bytes().as_ptr() as *const libc::c_void;
-            libc::munlock(ptr, std::mem::size_of::<[u8; 32]>());
+            let ptr = self.0.as_ptr() as *const libc::c_void;
+            libc::munlock(ptr, 32);
         }
         #[cfg(windows)]
         unsafe {
             use windows_sys::Win32::System::Memory::VirtualUnlock;
-            let ptr = self.0.as_bytes().as_ptr() as *const std::ffi::c_void;
-            VirtualUnlock(ptr, std::mem::size_of::<[u8; 32]>());
+            let ptr = self.0.as_ptr() as *const std::ffi::c_void;
+            VirtualUnlock(ptr, 32);
         }
     }
 }
@@ -73,6 +81,10 @@ pub struct BovedaEngine {
     pub(crate) master_key: Arc<Mutex<Option<MasterKey>>>,
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔒 Lifecycle & Authentication
+// ─────────────────────────────────────────────────────────────────────────────
+
 impl BovedaEngine {
     /// Returns true if the vault database or its salt file exists.
     pub fn is_initialized(db_path: &Path) -> bool {
@@ -81,7 +93,7 @@ impl BovedaEngine {
     }
 
     pub fn is_locked(&self) -> bool {
-        self.master_key.lock().unwrap().is_none()
+        self.master_key.lock().map(|l| l.is_none()).unwrap_or(true)
     }
 
     /// High-level method to unlock the vault.
@@ -125,9 +137,13 @@ impl BovedaEngine {
 
         // Store the master key in the engine
         {
-            let mut key_lock = engine.master_key.lock().unwrap();
+            let mut key_lock = engine.master_key.lock()
+                .map_err(|_| BovedaError::Other("Vault lock poisoned".to_string()))?;
             *key_lock = Some(MasterKey::new(key));
         }
+
+        // SOC2: Log successful unlock
+        let _ = engine.log_audit("vault_unlock", Some("Success")).await;
 
         Ok(engine)
     }
@@ -171,14 +187,16 @@ impl BovedaEngine {
         // Open newly encrypted database
         let engine = Self::open_encrypted(db_path, &key).await?;
         {
-            let mut key_lock = engine.master_key.lock().unwrap();
+            let mut key_lock = engine.master_key.lock()
+                .map_err(|_| BovedaError::Other("Vault lock poisoned".to_string()))?;
             *key_lock = Some(MasterKey::new(key));
         }
 
         Ok(engine)
     }
 
-    /// Opens the database without a key (useful for initial migration check).
+    /// Locks the engine and connects to the specified database.
+    /// If the database doesn't exist, it will be created on the first write.
     pub async fn open_unencrypted(db_path: &Path) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let pool = SqlitePoolOptions::new()
@@ -215,7 +233,12 @@ impl BovedaEngine {
         // Send the PRAGMA key right upon connecting
         let pragma_key = Self::generate_pragma_key(key);
         
-        options = options.pragma("key", pragma_key.as_str().to_string());
+        options = options
+            .pragma("key", pragma_key.as_str().to_string())
+            .pragma("cipher_use_hmac", "ON")
+            .pragma("cipher_plaintext_header_size", "0")
+            .pragma("secure_delete", "ON")
+            .pragma("journal_mode", "WAL");
 
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
@@ -230,8 +253,21 @@ impl BovedaEngine {
 
     /// Locks the vault by clearing the master key from memory.
     pub fn lock(&self) {
-        let mut lock = self.master_key.lock().unwrap();
-        *lock = None;
+        if let Ok(mut lock) = self.master_key.lock() {
+            *lock = None;
+        }
+    }
+
+    /// Logs an action to the persistent audit log.
+    pub async fn log_audit(&self, action: &str, metadata: Option<&str>) -> BovedaResult<()> {
+        let now = chrono::Utc::now().to_rfc3339();
+        sqlx::query("INSERT INTO audit_log (action, metadata, created_at) VALUES (?, ?, ?)")
+            .bind(action)
+            .bind(metadata)
+            .bind(now)
+            .execute(&self.db)
+            .await?;
+        Ok(())
     }
 
     /// Internal helper to check if unlocked and return error if not.
@@ -248,17 +284,40 @@ impl BovedaEngine {
     where
         F: FnOnce(&SecretKey) -> R,
     {
-        let lock = self.master_key.lock().unwrap();
+        let lock = self.master_key.lock()
+            .map_err(|_| BovedaError::Other("Vault lock poisoned".to_string()))?;
+            
         lock.as_ref()
-            .map(|mk| f(&mk.0))
+            .map(|mk| {
+                // Temporary reconstruct SecretKey from the safe boxed memory
+                let sk = SecretKey::new(*mk.as_bytes());
+                f(&sk)
+            })
             .ok_or(BovedaError::VaultLocked)
     }
+}
 
-    /// Retrieves and decrypts all accounts.
+// ─────────────────────────────────────────────────────────────────────────────
+// 📁 Account Management
+// ─────────────────────────────────────────────────────────────────────────────
+
+impl BovedaEngine {
+    /// Retrieves and decrypts all accounts in the vault.
     pub async fn get_accounts(&self) -> BovedaResult<Vec<crate::storage::models::Account>> {
         self.check_unlocked()?;
         let rows = storage::get_accounts(&self.db).await?;
-        
+        self.decrypt_rows(rows)
+    }
+
+    /// Retrieves and decrypts a page of accounts.
+    pub async fn get_accounts_paged(&self, limit: i64, offset: i64) -> BovedaResult<Vec<crate::storage::models::Account>> {
+        self.check_unlocked()?;
+        let rows = storage::get_accounts_paged(&self.db, limit, offset).await?;
+        self.decrypt_rows(rows)
+    }
+
+    /// Helper to decrypt a batch of account rows.
+    fn decrypt_rows(&self, rows: Vec<crate::storage::AccountRow>) -> BovedaResult<Vec<crate::storage::models::Account>> {
         let mut accounts = Vec::with_capacity(rows.len());
         for row in rows {
             let (dec_site, dec_username) = self.with_key(|key| {
@@ -280,7 +339,7 @@ impl BovedaEngine {
             });
         }
         
-        // Sort by site
+        // Sort by site (Note: Storage already sorts by encrypted site, but decrypted sort is better)
         accounts.sort_by_key(|a| a.site.as_str().to_lowercase());
         Ok(accounts)
     }
@@ -296,11 +355,11 @@ impl BovedaEngine {
         self.check_unlocked()?;
         
         // Validation
-        validation::validate_string(site.as_str(), "Sitio", validation::MAX_SITE_LEN)?;
-        validation::validate_string(username.as_str(), "Usuario", validation::MAX_USERNAME_LEN)?;
-        validation::validate_string(password.as_str(), "Contraseña", validation::MAX_PASSWORD_LEN)?;
+        validation::validate_string(site.as_str(), "Sitio", validation::MAX_SITE_LEN, true)?;
+        validation::validate_string(username.as_str(), "Usuario", validation::MAX_USERNAME_LEN, true)?;
+        validation::validate_string(password.as_str(), "Contraseña", validation::MAX_PASSWORD_LEN, true)?;
         if let Some(n) = &notes {
-            validation::validate_string(n.as_str(), "Notas", validation::MAX_NOTES_LEN)?;
+            validation::validate_string(n.as_str(), "Notas", validation::MAX_NOTES_LEN, false)?;
         }
 
         let (enc_site, enc_username, enc_password, enc_notes) = self.with_key(|key| {
@@ -311,40 +370,48 @@ impl BovedaEngine {
             Ok::<_, BovedaError>((s, u, p, n))
         })??;
 
-        storage::add_account(
+        let id = storage::add_account(
             &self.db,
             &enc_site,
             &enc_username,
             &enc_password,
             enc_notes.as_deref(),
             None,
-        ).await
+        ).await?;
+
+        self.log_audit("account_create", Some(&id)).await?;
+        Ok(id)
     }
 
     /// Decrypts a single ciphertext on-demand.
     pub fn decrypt_secret(&self, ciphertext: &str) -> BovedaResult<SecretString> {
+        // SOC2: El acceso se loguea en la capa de Comandos (Facade) mediante cmd_reveal_password
         self.with_key(|key| crypto::decrypt(ciphertext, key))?
     }
 
     /// Deletes an account by ID.
     pub async fn delete_account(&self, id: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
+        self.log_audit("account_delete", Some(id)).await?;
         storage::delete_account(&self.db, id).await
     }
 
-    // ─── Group Management ─────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 👥 Group Management
+// ─────────────────────────────────────────────────────────────────────────────
 
     pub async fn update_account_group(&self, id: &str, group_name: Option<&str>) -> BovedaResult<()> {
         self.check_unlocked()?;
+        self.log_audit("account_group_update", Some(id)).await?;
         if let Some(name) = group_name {
-            validation::validate_string(name, "Grupo", validation::MAX_GROUP_NAME_LEN)?;
+            validation::validate_string(name, "Grupo", validation::MAX_GROUP_NAME_LEN, true)?;
         }
         storage::update_account_group(&self.db, id, group_name).await
     }
 
     pub async fn rename_group(&self, old_name: &str, new_name: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
-        validation::validate_string(new_name, "Grupo", validation::MAX_GROUP_NAME_LEN)?;
+        validation::validate_string(new_name, "Grupo", validation::MAX_GROUP_NAME_LEN, true)?;
 
         // Use a transaction for atomic update
         let mut tx = self.db.begin().await?;
@@ -399,7 +466,9 @@ impl BovedaEngine {
         Ok(())
     }
 
-    // ─── Preferences ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚙️  Preferences & Settings
+// ─────────────────────────────────────────────────────────────────────────────
 
     pub async fn get_preference(&self, key: &str) -> BovedaResult<Option<String>> {
         self.check_unlocked()?;
@@ -408,20 +477,25 @@ impl BovedaEngine {
 
     pub async fn set_preference(&self, key: &str, value: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
-        validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
-        validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN)?;
+        validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN, true)?;
+        validation::validate_string(value, "Valor de preferencia", validation::MAX_PREF_VALUE_LEN, false)?;
         storage::set_preference(&self.db, key, value).await
     }
 
     pub async fn delete_preference(&self, key: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
-        validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN)?;
+        validation::validate_string(key, "Preferencia", validation::MAX_PREF_KEY_LEN, true)?;
         storage::delete_preference(&self.db, key).await
     }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 📦 Export & Import
+// ─────────────────────────────────────────────────────────────────────────────
 
     /// Exports the entire vault into a secure, encrypted package.
     pub async fn export_vault(&self, export_password: &SecretString) -> BovedaResult<String> {
         self.check_unlocked()?;
+        self.log_audit("vault_export", None).await?;
         
         // 1. Get all accounts (DECRYPTED)
         let accounts = self.get_accounts().await?;
@@ -463,10 +537,19 @@ impl BovedaEngine {
     /// Imports a secure package into the current vault using the specified strategy.
     pub async fn import_vault(&self, package_json: &str, export_password: &SecretString, strategy: ImportStrategy) -> BovedaResult<()> {
         self.check_unlocked()?;
+        self.log_audit("vault_import", Some(match strategy {
+            ImportStrategy::Merge => "merge",
+            ImportStrategy::Replace => "replace",
+        })).await?;
 
         // 1. Parse and decrypt package
         let package: export::ExportPackage = serde_json::from_str(package_json)
             .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
+        
+        // SEC-6: Strictly validate version
+        if package.version != 1 {
+            return Err(BovedaError::Other(format!("Versión de paquete no soportada: {}", package.version)));
+        }
         
         let payload = package.decrypt(export_password)?;
 
@@ -481,7 +564,23 @@ impl BovedaEngine {
 
         // 3. Insert accounts
         // We use add_account which handles encryption with the CURRENT master key.
+        let existing_accounts = if matches!(strategy, ImportStrategy::Merge) {
+            self.get_accounts().await?
+        } else {
+            vec![]
+        };
+
         for acc in payload.accounts {
+            // E-5: Deduplication check in Merge mode
+            if matches!(strategy, ImportStrategy::Merge) {
+                let duplicate = existing_accounts.iter().any(|existing| {
+                    existing.site.as_str() == acc.site.as_str() && existing.username.as_str() == acc.username.as_str()
+                });
+                if duplicate {
+                    continue; // Skip existing entry
+                }
+            }
+
             let id = self.add_account(acc.site, acc.username, acc.password, acc.notes).await?;
             if let Some(group) = acc.group_name {
                 let _ = self.update_account_group(&id, Some(&group)).await;

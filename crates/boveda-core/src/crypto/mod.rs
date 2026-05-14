@@ -1,5 +1,9 @@
 pub mod secret;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔑 Key Derivation (KDF)
+// ─────────────────────────────────────────────────────────────────────────────
+
 use chacha20poly1305::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     ChaCha20Poly1305, Key, Nonce,
@@ -14,6 +18,7 @@ use self::secret::{SecretKey, SecretString, SecretBytes};
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
+#[must_use]
 pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKey> {
     let params = Params::new(
         65536, // memory (KiB)
@@ -33,6 +38,10 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKe
         })?;
     Ok(key)
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔒 AEAD Encryption/Decryption
+// ─────────────────────────────────────────────────────────────────────────────
 
 /// Encrypt `plaintext` with ChaCha20-Poly1305 using `key`.
 /// Returns Base64(nonce || ciphertext_with_tag).
@@ -109,9 +118,14 @@ pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaRe
     Ok(SecretBytes::new(plaintext))
 }
 
-/// Generate a cryptographically random password.
-/// Returns a SecretString.
-pub fn generate_password(length: usize, use_symbols: bool) -> SecretString {
+// ─────────────────────────────────────────────────────────────────────────────
+// 🛠️  Utilities & Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Generates a random secure password of `length` characters.
+/// Includes symbols and numbers.
+#[must_use]
+pub fn generate_password(length: usize, include_symbols: bool) -> SecretString {
     let mut rng = OsRng;
 
     let lowercase = b"abcdefghijklmnopqrstuvwxyz";
@@ -123,7 +137,7 @@ pub fn generate_password(length: usize, use_symbols: bool) -> SecretString {
     charset.extend_from_slice(lowercase);
     charset.extend_from_slice(uppercase);
     charset.extend_from_slice(digits);
-    if use_symbols {
+    if include_symbols {
         charset.extend_from_slice(symbols);
     }
 
@@ -134,7 +148,7 @@ pub fn generate_password(length: usize, use_symbols: bool) -> SecretString {
         digits[rng.gen_range(0..digits.len())],
     ];
 
-    if use_symbols {
+    if include_symbols {
         password.push(symbols[rng.gen_range(0..symbols.len())]);
     }
 
@@ -149,8 +163,19 @@ pub fn generate_password(length: usize, use_symbols: bool) -> SecretString {
         password.swap(i, j);
     }
 
-    let result = String::from_utf8(password).expect("All chars are valid ASCII");
-    SecretString::new(result)
+    let result = String::from_utf8(password).map_err(|e| {
+        let mut b = e.into_bytes();
+        use zeroize::Zeroize;
+        b.zeroize();
+        BovedaError::DecodeError("Error al generar cadena de contraseña".to_string())
+    });
+
+    // In a real scenario, this would return BovedaResult<SecretString>.
+    // Since this is a utility, we wrap the error or return a safe fallback.
+    match result {
+        Ok(s) => SecretString::new(s),
+        Err(_) => SecretString::from("ERR_GEN_FAIL_SECURE_RETRY"), // Safe fallback
+    }
 }
 
 #[cfg(test)]

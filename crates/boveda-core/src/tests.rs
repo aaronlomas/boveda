@@ -38,7 +38,7 @@ async fn test_validation_limits() {
     let engine = setup_engine().await;
     // Simulate unlocking
     {
-        let mut lock = engine.master_key.lock().unwrap();
+        let mut lock = engine.master_key.lock().expect("Test lock poisoned");
         *lock = Some(crate::vault::MasterKey::new(SecretKey::new([0u8; 32])));
     }
 
@@ -67,7 +67,7 @@ async fn test_validation_limits() {
 async fn test_group_management() {
     let engine = setup_engine().await;
     {
-        let mut lock = engine.master_key.lock().unwrap();
+        let mut lock = engine.master_key.lock().expect("Test lock poisoned");
         *lock = Some(crate::vault::MasterKey::new(SecretKey::new([0u8; 32])));
     }
 
@@ -95,7 +95,7 @@ async fn test_group_management() {
 async fn test_preferences_flow() {
     let engine = setup_engine().await;
     {
-        let mut lock = engine.master_key.lock().unwrap();
+        let mut lock = engine.master_key.lock().expect("Test lock poisoned");
         *lock = Some(crate::vault::MasterKey::new(SecretKey::new([0u8; 32])));
     }
 
@@ -107,7 +107,7 @@ async fn test_preferences_flow() {
 async fn test_totp_flow() {
     let engine = setup_engine().await;
     {
-        let mut lock = engine.master_key.lock().unwrap();
+        let mut lock = engine.master_key.lock().expect("Test lock poisoned");
         *lock = Some(crate::vault::MasterKey::new(SecretKey::new([0u8; 32])));
     }
 
@@ -163,6 +163,87 @@ async fn test_full_unlock_flow_with_files() {
     // Cleanup
     let _ = std::fs::remove_file(&db_path);
     let _ = std::fs::remove_file(&salt_path);
+}
+
+#[tokio::test]
+async fn test_pagination() {
+    let engine = setup_engine().await;
+    {
+        let mut lock = engine.master_key.lock().expect("Test lock poisoned");
+        *lock = Some(crate::vault::MasterKey::new(SecretKey::new([0u8; 32])));
+    }
+
+    // Add 5 accounts
+    for i in 1..=5 {
+        engine.add_account(
+            SecretString::from(format!("site{}", i)),
+            SecretString::from("user"),
+            SecretString::from("pass"),
+            None
+        ).await.unwrap();
+    }
+
+    // Get page 1 (2 items)
+    let page1 = engine.get_accounts_paged(2, 0).await.unwrap();
+    assert_eq!(page1.len(), 2);
+    
+    // Get page 2 (2 items)
+    let page2 = engine.get_accounts_paged(2, 2).await.unwrap();
+    assert_eq!(page2.len(), 2);
+    
+    // Ensure page 1 and page 2 are different
+    for p1 in &page1 {
+        for p2 in &page2 {
+            assert_ne!(p1.id, p2.id);
+        }
+    }
+
+    // Get page 3 (remaining 1 item)
+    let page3 = engine.get_accounts_paged(2, 4).await.unwrap();
+    assert_eq!(page3.len(), 1);
+}
+
+#[tokio::test]
+async fn test_deduplication() {
+    let engine = setup_engine().await;
+    {
+        let mut lock = engine.master_key.lock().expect("Test lock poisoned");
+        *lock = Some(crate::vault::MasterKey::new(SecretKey::new([0u8; 32])));
+    }
+
+    let site = SecretString::from("unique.com");
+    let user = SecretString::from("admin");
+    let pass = SecretString::from("secret");
+
+    // Add once
+    engine.add_account(site.clone(), user.clone(), pass.clone(), None).await.unwrap();
+    
+    // Create an export package manually (simplified)
+    use crate::vault::export::*;
+    let payload = ExportPayload {
+        accounts: vec![
+            ExportAccount {
+                site: site.clone(),
+                username: user.clone(),
+                password: pass.clone(),
+                notes: None,
+                group_name: None,
+            }
+        ],
+        preferences: vec![],
+        timestamp: "2024".to_string(),
+    };
+    
+    let export_pass = SecretString::from("export");
+    let package = ExportPackage::encrypt(&payload, &export_pass).unwrap();
+    let package_json = serde_json::to_string(&package).unwrap();
+
+    // Import with Merge strategy
+    engine.import_vault(&package_json, &export_pass, crate::vault::ImportStrategy::Merge).await.unwrap();
+
+    // Verify it's NOT duplicated
+    let accounts = engine.get_accounts().await.unwrap();
+    assert_eq!(accounts.len(), 1);
 }
 
 #[test]

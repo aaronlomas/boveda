@@ -21,10 +21,14 @@ pub struct AccountRow {
     pub updated_at: String,
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🏗️  Schema Management
+// ─────────────────────────────────────────────────────────────────────────────
+
 /// Initialize the SQLite database schema.
 pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     sqlx::query(
-        r#"
+        r"
         CREATE TABLE IF NOT EXISTS vault_meta (
             id          INTEGER PRIMARY KEY,
             salt        TEXT NOT NULL,
@@ -38,33 +42,46 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
             encrypted_password  TEXT NOT NULL,
             encrypted_notes     TEXT,
             favicon_url         TEXT,
+            group_name          TEXT,
             created_at          TEXT NOT NULL,
             updated_at          TEXT NOT NULL
         );
-        "#,
+
+        -- Index for fast sorting and searching by site
+        CREATE INDEX IF NOT EXISTS idx_accounts_site ON accounts(site);
+        -- Index for fast filtering by group
+        CREATE INDEX IF NOT EXISTS idx_accounts_group ON accounts(group_name);
+        ",
     )
     .execute(pool)
     .await?;
 
-    // Attempt to add challenge_text column for backward compatibility
-    let _ = sqlx::query("ALTER TABLE vault_meta ADD COLUMN challenge_text TEXT")
-        .execute(pool)
-        .await;
-
-    // Attempt to add group_name column for backward compatibility
-    let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT")
-        .execute(pool)
-        .await;
+    // Audit Log table
+    sqlx::query(
+        r"CREATE TABLE IF NOT EXISTS audit_log (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            action      TEXT NOT NULL,
+            metadata    TEXT,
+            created_at  TEXT NOT NULL
+        );",
+    )
+    .execute(pool)
+    .await?;
 
     // Preferences table
     sqlx::query(
-        r#"CREATE TABLE IF NOT EXISTS preferences (
+        r"CREATE TABLE IF NOT EXISTS preferences (
             key   TEXT PRIMARY KEY,
             value TEXT NOT NULL
-        );"#,
+        );",
     )
     .execute(pool)
     .await?;
+
+    // Handle legacy schema updates gracefully
+    let _ = sqlx::query("ALTER TABLE vault_meta ADD COLUMN challenge_text TEXT").execute(pool).await;
+    let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT").execute(pool).await;
+    // Note: If columns already exist, ALTER TABLE fails safely in this context
 
     Ok(())
 }
@@ -85,6 +102,10 @@ pub async fn get_vault_meta(pool: &SqlitePool) -> BovedaResult<Option<(Vec<u8>, 
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 📁 Account Persistence
+// ─────────────────────────────────────────────────────────────────────────────
+
 /// Insert a new account into the database.
 pub async fn add_account(
     pool: &SqlitePool,
@@ -98,9 +119,9 @@ pub async fn add_account(
     let now = Utc::now().to_rfc3339();
 
     sqlx::query(
-        r#"INSERT INTO accounts
+        r"INSERT INTO accounts
            (id, site, username, encrypted_password, encrypted_notes, favicon_url, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)"#,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(&id)
     .bind(site)
@@ -119,10 +140,24 @@ pub async fn add_account(
 /// Fetch all account rows.
 pub async fn get_accounts(pool: &SqlitePool) -> BovedaResult<Vec<AccountRow>> {
     let rows = sqlx::query_as::<_, AccountRow>(
-        r#"SELECT id, site, username, encrypted_password,
+        r"SELECT id, site, username, encrypted_password,
                   encrypted_notes, favicon_url, group_name, created_at, updated_at
-           FROM accounts ORDER BY site ASC"#,
+           FROM accounts ORDER BY site ASC",
     )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows)
+}
+
+/// Fetch a page of account rows.
+pub async fn get_accounts_paged(pool: &SqlitePool, limit: i64, offset: i64) -> BovedaResult<Vec<AccountRow>> {
+    let rows = sqlx::query_as::<_, AccountRow>(
+        r"SELECT id, site, username, encrypted_password,
+                  encrypted_notes, favicon_url, group_name, created_at, updated_at
+           FROM accounts ORDER BY site ASC LIMIT ? OFFSET ?",
+    )
+    .bind(limit)
+    .bind(offset)
     .fetch_all(pool)
     .await?;
     Ok(rows)
@@ -251,6 +286,36 @@ pub async fn delete_preference_tx(conn: &mut SqliteConnection, key: &str) -> Bov
         .execute(conn)
         .await?;
     Ok(())
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚖️ Audit Logging
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Add a new entry to the audit log.
+pub async fn add_audit_log(
+    pool: &SqlitePool,
+    action: &str,
+    metadata: Option<&str>,
+) -> BovedaResult<()> {
+    let now = Utc::now().to_rfc3339();
+    sqlx::query("INSERT INTO audit_log (action, metadata, created_at) VALUES (?, ?, ?)")
+        .bind(action)
+        .bind(metadata)
+        .bind(&now)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+/// Fetch recent audit logs.
+pub async fn get_audit_logs(pool: &SqlitePool, limit: i64) -> BovedaResult<Vec<(i64, String, Option<String>, String)>> {
+    let rows: Vec<(i64, String, Option<String>, String)> = 
+        sqlx::query_as("SELECT id, action, metadata, created_at FROM audit_log ORDER BY id DESC LIMIT ?")
+            .bind(limit)
+            .fetch_all(pool)
+            .await?;
+    Ok(rows)
 }
 
 // ─── TEMPORAL MIGRATION LOGIC ──────────────────────────────────────────────────

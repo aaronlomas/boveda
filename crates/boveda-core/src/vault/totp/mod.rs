@@ -14,6 +14,11 @@ impl BovedaEngine {
     pub async fn setup_totp(&self) -> BovedaResult<TotpSetupPayload> {
         self.check_unlocked()?;
 
+        // SEC-4: Prevent overwriting existing setup without explicit disable
+        if self.get_preference("totp_secret_cipher").await?.is_some() {
+            return Err(BovedaError::Other("TOTP ya está configurado. Desactívalo primero para re-vincular.".to_string()));
+        }
+
         // 1. Generate a new seed (20 bytes random)
         let seed = TotpManager::generate_secret();
 
@@ -42,8 +47,8 @@ impl BovedaEngine {
 
         // 7. Return the QR, URL and codes for the frontend
         Ok(TotpSetupPayload {
-            otpauth_url: TotpManager::get_otpauth_url(&seed),
-            qr_png_b64: TotpManager::generate_qr_png_b64(&seed),
+            otpauth_url: TotpManager::get_otpauth_url(&seed)?,
+            qr_png_b64: TotpManager::generate_qr_png_b64(&seed)?,
             recovery_codes,
         })
     }
@@ -66,7 +71,7 @@ impl BovedaEngine {
             .map_err(|e: base64::DecodeError| BovedaError::CryptoError(e.to_string()))?;
         
         let seed = crate::crypto::secret::SecretBytes::new(seed_bytes);
-        let valid = TotpManager::verify(&seed, code);
+        let valid = TotpManager::verify(&seed, code)?;
         
         if valid {
             // Enable TOTP now that we know the user has verified it
@@ -119,6 +124,7 @@ impl BovedaEngine {
         for c in codes {
             if c.to_uppercase().as_bytes().ct_eq(normalized_input.as_bytes()).into() {
                 found = true;
+                break; // SEC: Early exit found
             }
         }
 

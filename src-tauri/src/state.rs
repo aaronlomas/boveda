@@ -1,17 +1,3 @@
-use std::sync::Mutex;
-use std::path::PathBuf;
-pub use boveda_core::BovedaEngine;
-
-pub struct AppState {
-    pub db_path: PathBuf,
-    pub engine: Mutex<Option<BovedaEngine>>,
-}
-
-impl AppState {
-    pub fn new(db_path: PathBuf) -> Self {
-        Self {
-            db_path,
-            engine: Mutex::new(None),
-        }
-    }
-}
+// El AppState vive en boveda-core para ser framework-agnostico.
+// Aquí solo lo re-exportamos para que lib.rs y los comandos Tauri lo encuentren.
+pub use boveda_core::AppState;

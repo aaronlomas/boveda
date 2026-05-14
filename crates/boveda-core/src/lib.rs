@@ -11,7 +11,7 @@ mod tests;
 
 pub use vault::BovedaEngine;
 pub use vault::MasterKey;
-pub use storage::models::Account;
+pub use storage::models::{Account, Pin};
 pub use crypto::secret::{SecretKey, SecretString};
 pub use error::{BovedaError, BovedaResult};
 pub use commands::AppState;

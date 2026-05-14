@@ -20,6 +20,8 @@ pub enum AuditAction {
     TotpDisabled,
     MasterKeyChanged,
     FailedLoginAttempt,
+    PinCreate,
+    PinDelete,
 }
 
 impl AuditAction {
@@ -37,6 +39,8 @@ impl AuditAction {
             Self::TotpDisabled => "totp_disabled",
             Self::MasterKeyChanged => "master_key_changed",
             Self::FailedLoginAttempt => "failed_login_attempt",
+            Self::PinCreate => "pin_create",
+            Self::PinDelete => "pin_delete",
         }
     }
 }

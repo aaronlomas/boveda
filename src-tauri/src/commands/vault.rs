@@ -75,3 +75,25 @@ pub async fn rename_group(
 pub async fn delete_group(name: String, state: State<'_, AppState>) -> Result<(), String> {
     state.cmd_delete_group(&name).await
 }
+
+// ─── PIN commands ─────────────────────────────────────────────────────────────
+
+#[tauri::command]
+pub async fn add_pin(
+    name: SecretString,
+    pin: SecretString,
+    notes: SecretString,
+    state: State<'_, AppState>,
+) -> Result<String, String> {
+    state.cmd_add_pin(name, pin, notes).await
+}
+
+#[tauri::command]
+pub async fn get_pins(state: State<'_, AppState>) -> Result<Vec<boveda_core::Pin>, String> {
+    state.cmd_get_pins().await
+}
+
+#[tauri::command]
+pub async fn delete_pin(id: String, state: State<'_, AppState>) -> Result<(), String> {
+    state.cmd_delete_pin(&id).await
+}

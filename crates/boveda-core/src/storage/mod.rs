@@ -21,6 +21,16 @@ pub struct AccountRow {
     pub updated_at: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
+pub struct PinRow {
+    pub id: String,
+    pub name: String,
+    pub encrypted_pin: String,
+    pub encrypted_notes: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 🏗️  Schema Management
 // ─────────────────────────────────────────────────────────────────────────────
@@ -51,6 +61,15 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
         CREATE INDEX IF NOT EXISTS idx_accounts_site ON accounts(site);
         -- Index for fast filtering by group
         CREATE INDEX IF NOT EXISTS idx_accounts_group ON accounts(group_name);
+
+        CREATE TABLE IF NOT EXISTS pins (
+            id              TEXT PRIMARY KEY,
+            name            TEXT NOT NULL,
+            encrypted_pin   TEXT NOT NULL,
+            encrypted_notes TEXT,
+            created_at      TEXT NOT NULL,
+            updated_at      TEXT NOT NULL
+        );
         ",
     )
     .execute(pool)
@@ -166,6 +185,54 @@ pub async fn get_accounts_paged(pool: &SqlitePool, limit: i64, offset: i64) -> B
 /// Delete an account by ID.
 pub async fn delete_account(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
     sqlx::query("DELETE FROM accounts WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔒 PIN Persistence
+// ─────────────────────────────────────────────────────────────────────────────
+
+pub async fn add_pin(
+    pool: &SqlitePool,
+    name: &str,
+    encrypted_pin: &str,
+    encrypted_notes: Option<&str>,
+) -> BovedaResult<String> {
+    let id = Uuid::new_v4().to_string();
+    let now = Utc::now().to_rfc3339();
+
+    sqlx::query(
+        r"INSERT INTO pins
+           (id, name, encrypted_pin, encrypted_notes, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(&id)
+    .bind(name)
+    .bind(encrypted_pin)
+    .bind(encrypted_notes)
+    .bind(&now)
+    .bind(&now)
+    .execute(pool)
+    .await?;
+
+    Ok(id)
+}
+
+pub async fn get_pins(pool: &SqlitePool) -> BovedaResult<Vec<PinRow>> {
+    let rows = sqlx::query_as::<_, PinRow>(
+        r"SELECT id, name, encrypted_pin, encrypted_notes, created_at, updated_at
+           FROM pins ORDER BY name ASC",
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows)
+}
+
+pub async fn delete_pin(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
+    sqlx::query("DELETE FROM pins WHERE id = ?")
         .bind(id)
         .execute(pool)
         .await?;

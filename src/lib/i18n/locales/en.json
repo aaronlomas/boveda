@@ -21,7 +21,16 @@
     "no_pins": "No PINs saved",
     "no_pins_desc": "Add your first PIN to get started.",
     "search_placeholder": "Search PIN...",
-    "coming_soon_modal": "The feature to add PINs will be available soon."
+    "name_label": "Name",
+    "name_placeholder": "My Debit Card",
+    "pin_label": "PIN Code",
+    "pin_placeholder": "••••",
+    "notes_label": "Notes (optional)",
+    "notes_placeholder": "Additional information...",
+    "save_button": "Save PIN",
+    "cancel_button": "Cancel",
+    "error_name": "Name is required.",
+    "error_pin": "PIN is required."
   },
   "settings": {
     "title": "Settings",

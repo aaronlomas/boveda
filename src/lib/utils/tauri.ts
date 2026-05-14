@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { Account } from "../stores/stores.svelte";
+import type { Account, Pin } from "../stores/stores.svelte";
 
 export async function isVaultInitialized(): Promise<boolean> {
   return invoke<boolean>("is_vault_initialized");
@@ -35,6 +35,24 @@ export async function generatePassword(
   useSymbols: boolean,
 ): Promise<string> {
   return invoke<string>("generate_password", { length, useSymbols });
+}
+
+// ─── PINs ───────────────────────────────────────────────────────────────────
+
+export async function addPin(
+  name: string,
+  pin: string,
+  notes: string,
+): Promise<string> {
+  return invoke<string>("add_pin", { name, pin, notes });
+}
+
+export async function getPins(): Promise<Pin[]> {
+  return invoke<Pin[]>("get_pins");
+}
+
+export async function deletePin(id: string): Promise<void> {
+  return invoke("delete_pin", { id });
 }
 
 // ─── Groups ───────────────────────────────────────────────────────────────────

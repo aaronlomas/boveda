@@ -49,12 +49,17 @@ export interface ImportPackagePayload {
   oncancel?: () => void;
 }
 
+export interface AddPinPayload {
+  onadded?: () => void;
+}
+
 type ModalDescriptor =
   | { kind: 'add-credential'; payload: AddCredentialPayload }
   | { kind: 'confirm'; payload: ConfirmPayload }
   | { kind: 'assign-group'; payload: AssignGroupPayload }
   | { kind: 'export-package'; payload: ExportPackagePayload }
-  | { kind: 'import-package'; payload: ImportPackagePayload };
+  | { kind: 'import-package'; payload: ImportPackagePayload }
+  | { kind: 'add-pin'; payload: AddPinPayload };
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -63,6 +68,10 @@ class ModalManager {
 
   openAddCredential(payload: AddCredentialPayload = {}): void {
     this.current = { kind: 'add-credential', payload };
+  }
+
+  openAddPin(payload: AddPinPayload = {}): void {
+    this.current = { kind: 'add-pin', payload };
   }
 
   openConfirm(payload: ConfirmPayload = {}): void {

@@ -59,6 +59,10 @@ pub fn run() {
             commands::vault::update_account_group,
             commands::vault::rename_group,
             commands::vault::delete_group,
+            // ── PINs ──────────────────────────────────────────────────────
+            commands::vault::add_pin,
+            commands::vault::get_pins,
+            commands::vault::delete_pin,
             // ── Preferences & storage ─────────────────────────────────────
             commands::settings::get_preference,
             commands::settings::set_preference,

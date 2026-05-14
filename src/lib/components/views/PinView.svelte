@@ -1,25 +1,58 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
+  import { onMount } from "svelte";
+  import { _, locale } from "svelte-i18n";
   import { 
-    IconLock, 
     IconArrowLeft, 
     IconPlus,
     IconSearch,
     IconDialpad
   } from "@tabler/icons-svelte";
   import { globalState } from "$lib/stores/stores.svelte";
+  import { modal } from "$lib/stores/modal.svelte";
   import { toast } from "$lib/stores/toast.svelte";
+  import { getPins, deletePin } from "$lib/utils/tauri";
+  import PinCard from "$lib/components/ui/PinCard.svelte";
 
   let search = $state("");
-  let pins = $state<any[]>([]); // Mocked for now, will connect to backend later
+  let loadError = $state("");
 
   let filtered = $derived(
-    pins.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
+    globalState.pins.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
   );
 
-  function handleNewPin() {
-    toast.info($_("pin_security.coming_soon_modal"));
+  async function refresh() {
+    try {
+      globalState.pins = await getPins();
+    } catch (e) {
+      console.error(e);
+      loadError = "Error al cargar PINs";
+    }
   }
+
+  async function handleDelete(id: string) {
+    modal.openConfirm({
+      title: $_("dashboard.delete_confirm_title"),
+      message: $_("dashboard.delete_confirm_message"),
+      confirmText: $_("dashboard.delete_tooltip"),
+      type: "danger",
+      onconfirm: async () => {
+        try {
+          await deletePin(id);
+          await refresh();
+          toast.success($_("dashboard.deleted_success"));
+        } catch (e) {
+          console.error(e);
+          toast.error($_("dashboard.delete_error"));
+        }
+      }
+    });
+  }
+
+  function handleNewPin() {
+    modal.openAddPin({ onadded: refresh });
+  }
+
+  onMount(refresh);
 </script>
 
 <div
@@ -58,7 +91,7 @@
 
   <!-- Search -->
   <div
-    class="flex items-center mb-6 border border-surface/10 rounded-lg text-text-primary px-4 py-3"
+    class="flex items-center mb-6 border border-surface/10 rounded-lg text-text-primary px-4 py-3 focus-within:border-accent/50 transition-colors"
   >
     <div class="text-text-muted text-lg">
       <IconSearch size={18} />
@@ -70,10 +103,14 @@
     />
   </div>
 
-  <!-- Empty State -->
-  {#if filtered.length === 0}
+  {#if loadError}
+    <div class="text-center py-16">
+       <p class="text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 inline-block">{loadError}</p>
+       <button class="block mx-auto mt-4 text-accent underline cursor-pointer" onclick={refresh}>Reintentar</button>
+    </div>
+  {:else if filtered.length === 0}
     <div
-      class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary"
+      class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl"
     >
       <div class="text-accent/20 mb-2">
         <IconDialpad size={80} stroke={1.5} />
@@ -95,9 +132,14 @@
       {/if}
     </div>
   {:else}
-    <!-- Grid for future PIN cards -->
     <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
-      <!-- Mapped PIN cards will go here -->
+      {#each filtered as pinEntry (pinEntry.id)}
+        <PinCard 
+          {pinEntry} 
+          locale={$locale ?? "es"} 
+          ondelete={handleDelete} 
+        />
+      {/each}
     </div>
   {/if}
 </div>

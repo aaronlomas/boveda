@@ -5,6 +5,7 @@
   import AssignGroupModal from './forms/AssignGroupModal.svelte';
   import ExportPasswordModal from './forms/ExportPasswordModal.svelte';
   import ImportPackageModal from './forms/ImportPackageModal.svelte';
+  import AddPinModal from './forms/AddPinModal.svelte';
 </script>
 
 <!--
@@ -17,6 +18,13 @@
   <AddCredentialModal
     onadded={() => {
       modal.current?.kind === 'add-credential' && modal.current.payload.onadded?.();
+    }}
+    onclose={() => modal.close()}
+  />
+{:else if modal.current?.kind === 'add-pin'}
+  <AddPinModal
+    onadded={() => {
+      modal.current?.kind === 'add-pin' && modal.current.payload.onadded?.();
     }}
     onclose={() => modal.close()}
   />

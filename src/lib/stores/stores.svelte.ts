@@ -12,6 +12,15 @@ export interface Account {
   updated_at: string;
 }
 
+export interface Pin {
+  id: string;
+  name: string;
+  encrypted_pin: string;
+  encrypted_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /** All valid dashboard view identifiers. Adding a new view? Add it here first. */
 export type ViewId =
   | "general"
@@ -27,6 +36,7 @@ export type ViewId =
 class AppState {
   isUnlocked = $state(false);
   accounts = $state<Account[]>([]);
+  pins = $state<Pin[]>([]);
   sidebarCollapsed = $state(false);
   activeView = $state<ViewId>("general");
   /** The currently selected group filter; null means "All". */

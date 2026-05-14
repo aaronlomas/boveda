@@ -106,6 +106,34 @@ impl AppState {
         engine.delete_account(id).await.map_err(|e| e.to_string())
     }
 
+    // =========================================================================
+    // 🔒 PIN MANAGEMENT
+    // =========================================================================
+
+    pub async fn cmd_add_pin(
+        &self,
+        name: SecretString,
+        pin: SecretString,
+        notes: SecretString,
+    ) -> Result<String, String> {
+        let engine = self.get_engine()?;
+        let notes_opt = if notes.as_str().is_empty() { None } else { Some(notes) };
+        engine
+            .add_pin(name, pin, notes_opt)
+            .await
+            .map_err(|e| e.to_string())
+    }
+
+    pub async fn cmd_get_pins(&self) -> Result<Vec<crate::storage::models::Pin>, String> {
+        let engine = self.get_engine()?;
+        engine.get_pins().await.map_err(|e| e.to_string())
+    }
+
+    pub async fn cmd_delete_pin(&self, id: &str) -> Result<(), String> {
+        let engine = self.get_engine()?;
+        engine.delete_pin(id).await.map_err(|e| e.to_string())
+    }
+
     /// Genera una contraseña aleatoria (nunca se almacena).
     pub fn cmd_generate_password(length: usize, use_symbols: bool) -> String {
         let len = length.clamp(8, 128);

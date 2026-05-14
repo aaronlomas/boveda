@@ -17,3 +17,13 @@ pub struct Account {
     pub created_at: String,
     pub updated_at: String,
 }
+/// A decrypted PIN entry as returned to the frontend.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Pin {
+    pub id: String,
+    pub name: SecretString,
+    pub encrypted_pin: String,
+    pub encrypted_notes: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}

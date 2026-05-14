@@ -21,7 +21,16 @@
     "no_pins": "No hay PINs guardados",
     "no_pins_desc": "Agrega tu primer PIN para empezar.",
     "search_placeholder": "Buscar PIN...",
-    "coming_soon_modal": "La funcionalidad para agregar PINs estará disponible pronto."
+    "name_label": "Nombre",
+    "name_placeholder": "Mi Tarjeta Débito",
+    "pin_label": "Código PIN",
+    "pin_placeholder": "••••",
+    "notes_label": "Notas (opcional)",
+    "notes_placeholder": "Información adicional...",
+    "save_button": "Guardar PIN",
+    "cancel_button": "Cancelar",
+    "error_name": "El nombre es requerido.",
+    "error_pin": "El PIN es requerido."
   },
   "settings": {
     "title": "Configuración",

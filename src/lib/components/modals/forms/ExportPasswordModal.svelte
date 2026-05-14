@@ -3,11 +3,11 @@
   import { IconShieldLock, IconLock, IconEye, IconEyeOff, IconDownload, IconDatabaseExport } from "@tabler/icons-svelte";
   import { focus } from "$lib/utils/actions";
   
-  let { onconfirm, oncancel, title, desc, buttonText } = $props<{
+  let { onconfirm, oncancel, title, desc = "", buttonText } = $props<{
     onconfirm: (password: string) => void;
     oncancel: () => void;
     title: string;
-    desc: string;
+    desc?: string;
     buttonText: string;
   }>();
 
@@ -38,6 +38,9 @@
         </div>
         <div>
           <h2 class="text-xl font-bold text-text-primary">{$_(title)}</h2>
+          {#if desc}
+            <p class="text-[10px] text-text-muted">{$_(desc)}</p>
+          {/if}
         </div>
       </div>
 

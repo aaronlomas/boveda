@@ -18,7 +18,6 @@ use self::secret::{SecretKey, SecretString, SecretBytes};
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
-#[must_use]
 pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKey> {
     let params = Params::new(
         65536, // memory (KiB)

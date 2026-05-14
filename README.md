@@ -55,18 +55,19 @@ graph TD
 
 **Requisitos:**
 - [Node.js](https://nodejs.org/) (v20+)
+- [pnpm](https://pnpm.io/) (v9+)
 - [Rust](https://rustup.rs/) (v1.77+)
 - [Tauri Prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites)
 
 ```bash
 # Instalar dependencias
-npm install
+pnpm install
 
 # Ejecutar en modo desarrollo
-npm run tauri dev
+pnpm tauri dev
 
 # Compilar binario de producción
-npm run tauri build
+pnpm tauri build
 ```
 
 ## 🛡️ Auditoría y Calidad
@@ -75,13 +76,13 @@ Mantenemos un estándar de "Cero Advertencias". Puedes verificar la integridad d
 
 ```bash
 # Auditoría completa (Rust + JS)
-npm run security
+pnpm security
 ```
 
 O por separado:
 - `cargo audit`: Verifica vulnerabilidades en dependencias de Rust.
 - `cargo clippy`: Linter estricto para asegurar código idiomático y seguro.
-- `npm audit`: Verifica el ecosistema de Node.js.
+- `pnpm audit`: Verifica el ecosistema de Node.js.
 
 ---
 

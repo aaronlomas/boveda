@@ -1,6 +1,6 @@
 # Bóveda — Password Manager 🔒
 
-Construida bajo la filosofía de **Seguridad por Aislamiento**. Mientras que los 'gigantes' de la industria priorizan la comodidad de la nube y la recolección de metadatos, Bóveda nace como una alternativa moderna para la soberanía digital total, donde tus secretos nunca tocan el disco sin cifrar ni la red sin tu permiso explícito.
+Construida bajo la filosofía de **Seguridad por Aislamiento**. Mientras que otros de la industria priorizan la comodidad de la nube y la recolección de metadatos, Bóveda nace como una alternativa moderna para la soberanía digital total, donde tus secretos nunca tocan el disco sin cifrar ni la red sin tu permiso explícito.
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=for-the-badge)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=for-the-badge)

@@ -76,6 +76,7 @@ impl BovedaEngine {
         if valid {
             // Enable TOTP now that we know the user has verified it
             self.set_preference("totp_enabled", "true").await?;
+            self.log_audit(crate::audit::AuditAction::TotpEnabled, None).await?;
         }
 
         Ok(valid)
@@ -99,6 +100,7 @@ impl BovedaEngine {
             .await?;
 
         tx.commit().await?;
+        self.log_audit(crate::audit::AuditAction::TotpDisabled, None).await?;
         Ok(())
     }
 
@@ -143,6 +145,7 @@ impl BovedaEngine {
                 .await?;
 
             tx.commit().await?;
+            self.log_audit(crate::audit::AuditAction::TotpDisabled, Some("recovery_code_used")).await?;
             
             Ok(true)
         } else {

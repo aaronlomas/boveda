@@ -143,7 +143,7 @@ impl BovedaEngine {
         }
 
         // SOC2: Log successful unlock
-        let _ = engine.log_audit("vault_unlock", Some("Success")).await;
+        let _ = engine.log_audit(crate::audit::AuditAction::VaultUnlock, Some("Success")).await;
 
         Ok(engine)
     }
@@ -259,15 +259,8 @@ impl BovedaEngine {
     }
 
     /// Logs an action to the persistent audit log.
-    pub async fn log_audit(&self, action: &str, metadata: Option<&str>) -> BovedaResult<()> {
-        let now = chrono::Utc::now().to_rfc3339();
-        sqlx::query("INSERT INTO audit_log (action, metadata, created_at) VALUES (?, ?, ?)")
-            .bind(action)
-            .bind(metadata)
-            .bind(now)
-            .execute(&self.db)
-            .await?;
-        Ok(())
+    pub async fn log_audit(&self, action: crate::audit::AuditAction, metadata: Option<&str>) -> BovedaResult<()> {
+        crate::storage::add_audit_log(&self.db, action.as_str(), metadata).await
     }
 
     /// Internal helper to check if unlocked and return error if not.
@@ -379,7 +372,7 @@ impl BovedaEngine {
             None,
         ).await?;
 
-        self.log_audit("account_create", Some(&id)).await?;
+        self.log_audit(crate::audit::AuditAction::AccountCreate, Some(&id)).await?;
         Ok(id)
     }
 
@@ -392,7 +385,7 @@ impl BovedaEngine {
     /// Deletes an account by ID.
     pub async fn delete_account(&self, id: &str) -> BovedaResult<()> {
         self.check_unlocked()?;
-        self.log_audit("account_delete", Some(id)).await?;
+        self.log_audit(crate::audit::AuditAction::AccountDelete, Some(id)).await?;
         storage::delete_account(&self.db, id).await
     }
 
@@ -402,7 +395,7 @@ impl BovedaEngine {
 
     pub async fn update_account_group(&self, id: &str, group_name: Option<&str>) -> BovedaResult<()> {
         self.check_unlocked()?;
-        self.log_audit("account_group_update", Some(id)).await?;
+        self.log_audit(crate::audit::AuditAction::AccountGroupUpdate, Some(id)).await?;
         if let Some(name) = group_name {
             validation::validate_string(name, "Grupo", validation::MAX_GROUP_NAME_LEN, true)?;
         }
@@ -495,7 +488,7 @@ impl BovedaEngine {
     /// Exports the entire vault into a secure, encrypted package.
     pub async fn export_vault(&self, export_password: &SecretString) -> BovedaResult<String> {
         self.check_unlocked()?;
-        self.log_audit("vault_export", None).await?;
+        self.log_audit(crate::audit::AuditAction::VaultExport, None).await?;
         
         // 1. Get all accounts (DECRYPTED)
         let accounts = self.get_accounts().await?;
@@ -537,7 +530,7 @@ impl BovedaEngine {
     /// Imports a secure package into the current vault using the specified strategy.
     pub async fn import_vault(&self, package_json: &str, export_password: &SecretString, strategy: ImportStrategy) -> BovedaResult<()> {
         self.check_unlocked()?;
-        self.log_audit("vault_import", Some(match strategy {
+        self.log_audit(crate::audit::AuditAction::VaultImport, Some(match strategy {
             ImportStrategy::Merge => "merge",
             ImportStrategy::Replace => "replace",
         })).await?;

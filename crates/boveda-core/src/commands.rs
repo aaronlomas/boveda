@@ -113,8 +113,12 @@ impl AppState {
     }
 
     /// Descifra un campo secreto individual bajo demanda.
-    pub fn cmd_decrypt_secret(&self, ciphertext: &str) -> Result<String, String> {
+    pub async fn cmd_decrypt_secret(&self, ciphertext: &str) -> Result<String, String> {
         let engine = self.get_engine()?;
+        
+        // SOC2: Logueamos el acceso al secreto
+        let _ = engine.log_audit(crate::audit::AuditAction::SecretAccess, Some(ciphertext)).await;
+
         engine
             .decrypt_secret(ciphertext)
             .map(|s: SecretString| s.as_str().to_string())

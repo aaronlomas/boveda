@@ -47,8 +47,8 @@ pub fn generate_password(length: usize, use_symbols: bool) -> String {
 
 /// Descifra un campo secreto individual bajo demanda.
 #[tauri::command]
-pub fn decrypt_secret(ciphertext: String, state: State<'_, AppState>) -> Result<String, String> {
-    state.cmd_decrypt_secret(&ciphertext)
+pub async fn decrypt_secret(ciphertext: String, state: State<'_, AppState>) -> Result<String, String> {
+    state.cmd_decrypt_secret(&ciphertext).await
 }
 
 // ─── Group commands ───────────────────────────────────────────────────────────

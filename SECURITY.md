@@ -20,11 +20,13 @@ Para detalles técnicos sobre nuestra implementación criptográfica y medidas d
 
 **Por favor, NO abras un Issue público para reportar una vulnerabilidad.**
 
-Para reportar un fallo de seguridad, por favor sigue estos pasos:
+Para reportar un fallo de seguridad de forma privada y segura, por favor utiliza la función de **Reportes Privados de GitHub**:
 
-1. Envía un correo electrónico detallado a **[security@boveda.app]** (o el canal de contacto del mantenedor).
-2. Incluye una descripción del fallo, los pasos para reproducirlo y, si es posible, una prueba de concepto (PoC).
-3. Danos un tiempo razonable para investigar y solucionar el problema antes de hacerlo público.
+1. Ve a la pestaña de [Seguridad (Security)](https://github.com/aaronlomas/boveda/security/advisories/new) de este repositorio.
+2. Haz clic en **"Report a vulnerability"**.
+3. Incluye una descripción detallada del fallo, los pasos para reproducirlo y, si es posible, una prueba de concepto (PoC).
+
+Este método permite que el equipo de mantenimiento investigue y solucione el problema de forma privada antes de que se haga público un boletín de seguridad (Security Advisory).
 
 Prometemos:
 - Acusar recibo de tu reporte en un plazo de 48-72 horas.

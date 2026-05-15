@@ -45,10 +45,9 @@ flowchart TD
     Core -- "Memoria" --> RAM["Zeroized RAM / mlock"]
 ```
 
--   **`crates/boveda-core`**: El núcleo protector. Rust puro, sin dependencias de UI, enfocado 100% en seguridad.
--   **`src-tauri`**: El guardián moderno. Gestiona los permisos y la comunicación entre la webview y el sistema.
--   **`src`**: La cara. Una interfaz premium, rápida y minimalista que hace que la seguridad extrema se sienta natural.
-
+-   **`crates/boveda-core`**: El núcleo de Bóveda, sin dependencias de UI, enfocado 100% en seguridad.
+-   **`src-tauri`**: Gestiona los permisos y la comunicación entre la webview y el sistema.
+-   **`src`**: Nuestra interfáz de usuario, rápida y minimalista que hace que la seguridad extrema se sienta natural.
 ---
 
 ## 🛠️ Configuración de Desarrollo

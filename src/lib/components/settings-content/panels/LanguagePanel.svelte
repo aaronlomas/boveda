@@ -5,7 +5,7 @@
 </script>
 
 <!-- ─ Language Section ─ -->
-<p class="text-xs text-text-muted">
+<p class="text-xs text-text-muted mb-4">
   {$_("settings.language.description")}
 </p>
 

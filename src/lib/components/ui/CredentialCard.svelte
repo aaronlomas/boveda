@@ -335,7 +335,7 @@
         <button
           class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
                  {copyTimer !== null
-            ? 'bg-accent-dim border border-accent/30 text-accent-light'
+            ? 'text-accent-light'
             : ''}"
           onclick={copyPassword}
           aria-label={$_("accounts.copy_password_tooltip")}
@@ -343,13 +343,13 @@
             ? $_("accounts.clearing_in", { values: { seconds: copyTimer } })
             : $_("accounts.copy_password_tooltip")}
         >
-          {#if copyTimer !== null}
-            <span class="text-xs font-bold min-w-4 text-center"
-              >{copyTimer}</span
-            >
-          {:else}
-            <IconCopy size={16} />
-          {/if}
+          <div class="w-4 h-4 flex items-center justify-center">
+            {#if copyTimer !== null}
+              <span class="text-[10px] font-bold leading-none">{copyTimer}</span>
+            {:else}
+              <IconCopy size={16} />
+            {/if}
+          </div>
         </button>
       </div>
     </div>
@@ -376,7 +376,7 @@
           <button
             class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
                    {recoveryCopyTimer !== null
-              ? 'bg-accent-dim border border-accent/30 text-accent-light'
+              ? 'text-accent-light'
               : ''}"
             onclick={copyRecoveryCode}
             aria-label={$_("accounts.copy_recovery_tooltip")}
@@ -384,13 +384,13 @@
               ? $_("accounts.clearing_in", { values: { seconds: recoveryCopyTimer } })
               : $_("accounts.copy_recovery_tooltip")}
           >
-            {#if recoveryCopyTimer !== null}
-              <span class="text-xs font-bold min-w-4 text-center"
-                >{recoveryCopyTimer}</span
-              >
-            {:else}
-              <IconCopy size={16} />
-            {/if}
+            <div class="w-4 h-4 flex items-center justify-center">
+              {#if recoveryCopyTimer !== null}
+                <span class="text-[10px] font-bold leading-none">{recoveryCopyTimer}</span>
+              {:else}
+                <IconCopy size={16} />
+              {/if}
+            </div>
           </button>
         </div>
       </div>

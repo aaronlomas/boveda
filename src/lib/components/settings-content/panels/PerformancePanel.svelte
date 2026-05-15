@@ -9,7 +9,7 @@
 </script>
 
 <!-- ─ Performance Section ─ -->
-<p class="text-xs text-text-muted">
+<p class="text-xs text-text-muted mb-4">
   {$_("settings.performance.description")}
 </p>
 

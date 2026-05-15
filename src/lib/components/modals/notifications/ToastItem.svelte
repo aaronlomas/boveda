@@ -70,7 +70,7 @@
   out:fly={{ x: 20, duration: 250 }}
   onmouseenter={pauseTimer}
   onmouseleave={resumeTimer}
-  class="pointer-events-auto flex items-center gap-3 min-w-72 max-w-sm px-4 py-3
+  class="pointer-events-auto flex items-center gap-3 w-auto px-4 py-3
          rounded-xl backdrop-blur-xl
          bg-panel/80 border border-surface/15
          {STYLES[t.kind]}"

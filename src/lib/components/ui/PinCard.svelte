@@ -67,7 +67,7 @@
         ciphertext: pinEntry.encrypted_pin,
       });
       await copyToClipboard(plain);
-      toast.success($_("dashboard.copied_success"));
+      toast.success($_("add_credential.copied_button"));
     } catch (e) {
       console.error("Failed to decrypt for copy", e);
     }
@@ -161,7 +161,7 @@
               onclick={() => { menuOpen = false; ondelete(pinEntry.id); }}
             >
               <IconTrash size={15} class="shrink-0" />
-              {$_("dashboard.delete_tooltip")}
+              {$_("accounts.delete_tooltip")}
             </button>
           </div>
         {/if}
@@ -198,15 +198,17 @@
         </button>
 
         <button
-          class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer {copyTimer !== null ? 'bg-accent-dim border border-accent/30 text-accent-light' : ''}"
+          class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer {copyTimer !== null ? 'text-accent-light' : ''}"
           onclick={copyPin}
           aria-label="Copy PIN"
         >
-          {#if copyTimer !== null}
-            <span class="text-xs font-bold min-w-4 text-center">{copyTimer}</span>
-          {:else}
-            <IconCopy size={18} />
-          {/if}
+          <div class="w-[18px] h-[18px] flex items-center justify-center">
+            {#if copyTimer !== null}
+              <span class="text-[11px] font-bold leading-none">{copyTimer}</span>
+            {:else}
+              <IconCopy size={18} />
+            {/if}
+          </div>
         </button>
       </div>
     </div>

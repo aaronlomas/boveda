@@ -28,6 +28,7 @@ async fn test_locking_guards() {
         SecretString::from("site"),
         SecretString::from("user"),
         SecretString::from("pass"),
+        None,
         None
     ).await;
     assert!(matches!(res, Err(BovedaError::VaultLocked)));
@@ -48,6 +49,7 @@ async fn test_validation_limits() {
         SecretString::from(long_site),
         SecretString::from("user"),
         SecretString::from("pass"),
+        None,
         None
     ).await;
     assert!(res.is_err());
@@ -58,6 +60,7 @@ async fn test_validation_limits() {
         SecretString::from("site"),
         SecretString::from("user"),
         SecretString::from("pass"),
+        None,
         Some(SecretString::from(long_notes))
     ).await;
     assert!(res.is_err());
@@ -72,7 +75,7 @@ async fn test_group_management() {
     }
 
     let id = engine.add_account(
-        SecretString::from("s"), SecretString::from("u"), SecretString::from("p"), None
+        SecretString::from("s"), SecretString::from("u"), SecretString::from("p"), None, None
     ).await.unwrap();
 
     engine.update_account_group(&id, Some("Work")).await.unwrap();
@@ -179,6 +182,7 @@ async fn test_pagination() {
             SecretString::from(format!("site{}", i)),
             SecretString::from("user"),
             SecretString::from("pass"),
+            None,
             None
         ).await.unwrap();
     }
@@ -216,7 +220,7 @@ async fn test_deduplication() {
     let pass = SecretString::from("secret");
 
     // Add once
-    engine.add_account(site.clone(), user.clone(), pass.clone(), None).await.unwrap();
+    engine.add_account(site.clone(), user.clone(), pass.clone(), None, None).await.unwrap();
     
     // Create an export package manually (simplified)
     use crate::vault::export::*;
@@ -226,6 +230,7 @@ async fn test_deduplication() {
                 site: site.clone(),
                 username: user.clone(),
                 password: pass.clone(),
+                recovery_code: None,
                 notes: None,
                 group_name: None,
             }

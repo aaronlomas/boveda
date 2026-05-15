@@ -23,10 +23,11 @@ pub async fn add_account(
     site: SecretString,
     username: SecretString,
     password: SecretString,
+    recovery_code: SecretString,
     notes: SecretString,
     state: State<'_, AppState>,
 ) -> Result<String, String> {
-    state.cmd_add_account(site, username, password, notes).await
+    state.cmd_add_account(site, username, password, recovery_code, notes).await
 }
 
 #[tauri::command]

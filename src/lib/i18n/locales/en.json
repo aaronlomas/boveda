@@ -3,6 +3,7 @@
     "general": "General",
     "new_credential": "New Credential",
     "import_db": "Import DB",
+    "export_db": "Export DB",
     "settings": "Settings",
     "logout": "Logout",
     "collapse": "Collapse",
@@ -14,6 +15,37 @@
     "documents": "Documents",
     "about": "About Bóveda"
   },
+  "accounts_mode": {
+    "title": "Accounts",
+    "desc": "Manage your accounts with Bóveda"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "credentials_count": "Your credentials are isolated here.",
+    "search_placeholder": "Search by site or user…",
+    "no_credentials": "No credentials",
+    "no_credentials_desc": "Add a credential.",
+    "password_label": "Password",
+    "username_label": "Username",
+    "delete_tooltip": "Delete",
+    "show_tooltip": "Show",
+    "hide_tooltip": "Hide",
+    "copy_password_tooltip": "Copy password",
+    "copy_username_tooltip": "Copy username",
+    "recovery_code_label": "Recovery Code",
+    "copy_recovery_tooltip": "Copy recovery code",
+    "clearing_in": "Clearing in {seconds}s",
+    "added_at": "Added {date}",
+    "delete_confirm_title": "Delete Credential",
+    "delete_confirm_message": "Are you sure you want to delete this credential? This action cannot be undone.",
+    "delete_confirm_button": "Delete",
+    "export_success": "Database exported successfully to:\n{path}",
+    "export_error": "Error exporting database.",
+    "delete_success": "Credential deleted.",
+    "delete_error": "Error deleting credential.",
+    "load_error": "Could not load credentials."
+  },
+
   "pin_security": {
     "title": "Save PIN",
     "desc": "Securely store the PINs for your bank cards, access codes, or applications.",
@@ -31,6 +63,11 @@
     "cancel_button": "Cancel",
     "error_name": "Name is required.",
     "error_pin": "PIN is required."
+  },
+  "code_recovery": {
+    "title": "Code Recovery",
+    "desc": "Save your recovery codes.",
+    "generate_button": "Save"
   },
   "settings": {
     "title": "Settings",
@@ -160,31 +197,10 @@
     "select_bg_image_title": "Select Background Image",
     "images_filter_name": "Images"
   },
-  "dashboard": {
-    "title": "Your Vault",
-    "credentials_count": "{count} {count, plural, one {credential saved} other {credentials saved}}",
-    "export_db": "Export DB",
-    "search_placeholder": "Search by site or user…",
-    "no_credentials": "No credentials",
-    "no_credentials_desc": "Add a credential.",
-    "password_label": "Password",
-    "username_label": "Username",
-    "delete_tooltip": "Delete",
-    "show_tooltip": "Show",
-    "hide_tooltip": "Hide",
-    "copy_password_tooltip": "Copy password",
-    "copy_username_tooltip": "Copy username",
-    "clearing_in": "Clearing in {seconds}s",
-    "added_at": "Added {date}",
-    "delete_confirm_title": "Delete Credential",
-    "delete_confirm_message": "Are you sure you want to delete this credential? This action cannot be undone.",
-    "delete_confirm_button": "Delete",
-    "export_success": "Database exported successfully to:\n{path}",
-    "export_error": "Error exporting database.",
-    "delete_success": "Credential deleted.",
-    "delete_error": "Error deleting credential.",
-    "load_error": "Could not load credentials."
-  },
+
+
+
+
   "add_credential": {
     "title": "New Credential",
     "site_label": "Site / App",
@@ -193,6 +209,8 @@
     "user_placeholder": "you@email.com",
     "password_label": "Password:",
     "placeholder": "•••••••••••••••",
+    "recovery_code_label": "Recovery Code (optional)",
+    "recovery_code_placeholder": "ABCD-1234-EFGH",
     "notes_label": "Notes (optional)",
     "notes_placeholder": "Additional information…",
     "generate": "Generate",

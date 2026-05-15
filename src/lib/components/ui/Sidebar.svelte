@@ -34,7 +34,7 @@
     },
     {
       icon: IconArchive,
-      label: $_("dashboard.export_db"),
+      label: $_("sidebar.export_db"),
       id: "export",
       action: () => handleExportSecure(),
     },

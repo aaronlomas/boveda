@@ -16,6 +16,7 @@ pub struct ExportAccount {
     pub site: SecretString,
     pub username: SecretString,
     pub password: SecretString,
+    pub recovery_code: Option<SecretString>,
     pub notes: Option<SecretString>,
     pub group_name: Option<String>,
 }
@@ -91,6 +92,7 @@ mod tests {
                     site: SecretString::from("site.com"),
                     username: SecretString::from("user"),
                     password: SecretString::from("pass"),
+                    recovery_code: Some(SecretString::from("rec-123")),
                     notes: None,
                     group_name: Some("Work".to_string()),
                 }

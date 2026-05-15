@@ -324,8 +324,9 @@ impl BovedaEngine {
                 site: dec_site,
                 username: dec_username,
                 password_cipher: row.encrypted_password,
+                recovery_code_cipher: row.encrypted_recovery_code,
                 notes_cipher: row.encrypted_notes,
-                favicon_url: None,
+                favicon_url: row.favicon_url,
                 group_name: row.group_name,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
@@ -343,6 +344,7 @@ impl BovedaEngine {
         site: SecretString,
         username: SecretString,
         password: SecretString,
+        recovery_code: Option<SecretString>,
         notes: Option<SecretString>,
     ) -> BovedaResult<String> {
         self.check_unlocked()?;
@@ -351,16 +353,20 @@ impl BovedaEngine {
         validation::validate_string(site.as_str(), "Sitio", validation::MAX_SITE_LEN, true)?;
         validation::validate_string(username.as_str(), "Usuario", validation::MAX_USERNAME_LEN, true)?;
         validation::validate_string(password.as_str(), "Contraseña", validation::MAX_PASSWORD_LEN, true)?;
+        if let Some(rc) = &recovery_code {
+            validation::validate_string(rc.as_str(), "Código de recuperación", validation::MAX_PASSWORD_LEN, false)?;
+        }
         if let Some(n) = &notes {
             validation::validate_string(n.as_str(), "Notas", validation::MAX_NOTES_LEN, false)?;
         }
 
-        let (enc_site, enc_username, enc_password, enc_notes) = self.with_key(|key| {
+        let (enc_site, enc_username, enc_password, enc_recovery_code, enc_notes) = self.with_key(|key| {
             let s = crypto::encrypt(&site, key)?;
             let u = crypto::encrypt(&username, key)?;
             let p = crypto::encrypt(&password, key)?;
+            let rc = recovery_code.as_ref().map(|rc| crypto::encrypt(rc, key)).transpose()?;
             let n = notes.as_ref().map(|n| crypto::encrypt(n, key)).transpose()?;
-            Ok::<_, BovedaError>((s, u, p, n))
+            Ok::<_, BovedaError>((s, u, p, rc, n))
         })??;
 
         let id = storage::add_account(
@@ -368,6 +374,7 @@ impl BovedaEngine {
             &enc_site,
             &enc_username,
             &enc_password,
+            enc_recovery_code.as_deref(),
             enc_notes.as_deref(),
             None,
         ).await?;
@@ -559,8 +566,11 @@ impl BovedaEngine {
         let mut export_accounts = Vec::with_capacity(accounts.len());
         
         for acc in accounts {
-            // Decrypt password and notes
+            // Decrypt password, recovery code and notes
             let password = self.decrypt_secret(&acc.password_cipher)?;
+            let recovery_code = acc.recovery_code_cipher.as_ref()
+                .map(|c| self.decrypt_secret(c))
+                .transpose()?;
             let notes = acc.notes_cipher.as_ref()
                 .map(|c| self.decrypt_secret(c))
                 .transpose()?;
@@ -569,6 +579,7 @@ impl BovedaEngine {
                 site: acc.site,
                 username: acc.username,
                 password,
+                recovery_code,
                 notes,
                 group_name: acc.group_name,
             });
@@ -638,7 +649,7 @@ impl BovedaEngine {
                 }
             }
 
-            let id = self.add_account(acc.site, acc.username, acc.password, acc.notes).await?;
+            let id = self.add_account(acc.site, acc.username, acc.password, acc.recovery_code, acc.notes).await?;
             if let Some(group) = acc.group_name {
                 let _ = self.update_account_group(&id, Some(&group)).await;
             }

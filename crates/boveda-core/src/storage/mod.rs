@@ -14,6 +14,7 @@ pub struct AccountRow {
     pub site: String,
     pub username: String,
     pub encrypted_password: String,
+    pub encrypted_recovery_code: Option<String>,
     pub encrypted_notes: Option<String>,
     pub favicon_url: Option<String>,
     pub group_name: Option<String>,
@@ -50,6 +51,7 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
             site                TEXT NOT NULL,
             username            TEXT NOT NULL,
             encrypted_password  TEXT NOT NULL,
+            encrypted_recovery_code TEXT,
             encrypted_notes     TEXT,
             favicon_url         TEXT,
             group_name          TEXT,
@@ -100,6 +102,8 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     // Handle legacy schema updates gracefully
     let _ = sqlx::query("ALTER TABLE vault_meta ADD COLUMN challenge_text TEXT").execute(pool).await;
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT").execute(pool).await;
+    let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN encrypted_recovery_code TEXT").execute(pool).await;
+    let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN favicon_url TEXT").execute(pool).await;
     // Note: If columns already exist, ALTER TABLE fails safely in this context
 
     Ok(())
@@ -131,6 +135,7 @@ pub async fn add_account(
     site: &str,
     username: &str,
     encrypted_password: &str,
+    encrypted_recovery_code: Option<&str>,
     encrypted_notes: Option<&str>,
     favicon_url: Option<&str>,
 ) -> BovedaResult<String> {
@@ -139,13 +144,14 @@ pub async fn add_account(
 
     sqlx::query(
         r"INSERT INTO accounts
-           (id, site, username, encrypted_password, encrypted_notes, favicon_url, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+           (id, site, username, encrypted_password, encrypted_recovery_code, encrypted_notes, favicon_url, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(&id)
     .bind(site)
     .bind(username)
     .bind(encrypted_password)
+    .bind(encrypted_recovery_code)
     .bind(encrypted_notes)
     .bind(favicon_url)
     .bind(&now)
@@ -159,7 +165,7 @@ pub async fn add_account(
 /// Fetch all account rows.
 pub async fn get_accounts(pool: &SqlitePool) -> BovedaResult<Vec<AccountRow>> {
     let rows = sqlx::query_as::<_, AccountRow>(
-        r"SELECT id, site, username, encrypted_password,
+        r"SELECT id, site, username, encrypted_password, encrypted_recovery_code,
                   encrypted_notes, favicon_url, group_name, created_at, updated_at
            FROM accounts ORDER BY site ASC",
     )
@@ -171,7 +177,7 @@ pub async fn get_accounts(pool: &SqlitePool) -> BovedaResult<Vec<AccountRow>> {
 /// Fetch a page of account rows.
 pub async fn get_accounts_paged(pool: &SqlitePool, limit: i64, offset: i64) -> BovedaResult<Vec<AccountRow>> {
     let rows = sqlx::query_as::<_, AccountRow>(
-        r"SELECT id, site, username, encrypted_password,
+        r"SELECT id, site, username, encrypted_password, encrypted_recovery_code,
                   encrypted_notes, favicon_url, group_name, created_at, updated_at
            FROM accounts ORDER BY site ASC LIMIT ? OFFSET ?",
     )
@@ -482,7 +488,7 @@ mod tests {
     async fn test_crud_accounts() {
         let pool = setup_db().await;
         
-        let id = add_account(&pool, "site.com", "user", "pass", Some("notes"), Some("favicon")).await.unwrap();
+        let id = add_account(&pool, "site.com", "user", "pass", None, Some("notes"), Some("favicon")).await.unwrap();
         let accounts = get_accounts(&pool).await.unwrap();
         assert_eq!(accounts.len(), 1);
         assert_eq!(accounts[0].id, id);
@@ -516,8 +522,8 @@ mod tests {
     #[tokio::test]
     async fn test_group_operations_tx() {
         let pool = setup_db().await;
-        add_account(&pool, "s1", "u", "p", None, None).await.unwrap();
-        let id2 = add_account(&pool, "s2", "u", "p", None, None).await.unwrap();
+        add_account(&pool, "s1", "u", "p", None, None, None).await.unwrap();
+        let id2 = add_account(&pool, "s2", "u", "p", None, None, None).await.unwrap();
         update_account_group(&pool, &id2, Some("G1")).await.unwrap();
 
         let mut tx = pool.begin().await.unwrap();

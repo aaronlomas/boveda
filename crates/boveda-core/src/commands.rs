@@ -86,12 +86,14 @@ impl AppState {
         site: SecretString,
         username: SecretString,
         password: SecretString,
+        recovery_code: SecretString,
         notes: SecretString,
     ) -> Result<String, String> {
         let engine = self.get_engine()?;
+        let recovery_opt = if recovery_code.as_str().is_empty() { None } else { Some(recovery_code) };
         let notes_opt = if notes.as_str().is_empty() { None } else { Some(notes) };
         engine
-            .add_account(site, username, password, notes_opt)
+            .add_account(site, username, password, recovery_opt, notes_opt)
             .await
             .map_err(|e| e.to_string())
     }

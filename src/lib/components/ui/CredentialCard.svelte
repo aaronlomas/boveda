@@ -32,8 +32,10 @@
   // ── Local State ─────────────────────────────────────────────────────────────
   let revealed = $state(false);
   let decryptedPassword: string | null = $state(null);
+  let decryptedRecoveryCode: string | null = $state(null);
   let decryptedNotes: string | null = $state(null);
   let copyTimer: number | null = $state(null);
+  let recoveryCopyTimer: number | null = $state(null);
   let userCopyTimer: number | null = $state(null);
   let menuOpen = $state(false);
 
@@ -64,7 +66,7 @@
 
   async function copyToClipboard(
     text: string,
-    timerId: "pass" | "user",
+    timerId: "pass" | "user" | "recovery",
   ): Promise<void> {
     try {
       await writeText(text);
@@ -90,16 +92,34 @@
     }
   }
 
+  async function copyRecoveryCode() {
+    if (!account.recovery_code_cipher) return;
+    try {
+      const plain = await invoke<string>("decrypt_secret", {
+        ciphertext: account.recovery_code_cipher,
+      });
+      await copyToClipboard(plain, "recovery");
+    } catch (e) {
+      console.error("Failed to decrypt for copy", e);
+    }
+  }
+
   async function toggleReveal() {
     if (revealed) {
       revealed = false;
       decryptedPassword = null;
+      decryptedRecoveryCode = null;
       decryptedNotes = null;
     } else {
       try {
         decryptedPassword = await invoke<string>("decrypt_secret", {
           ciphertext: account.password_cipher,
         });
+        if (account.recovery_code_cipher) {
+          decryptedRecoveryCode = await invoke<string>("decrypt_secret", {
+            ciphertext: account.recovery_code_cipher,
+          });
+        }
         if (account.notes_cipher) {
           decryptedNotes = await invoke<string>("decrypt_secret", {
             ciphertext: account.notes_cipher,
@@ -112,7 +132,7 @@
     }
   }
 
-  function startCountdown(timerId: "pass" | "user"): void {
+  function startCountdown(timerId: "pass" | "user" | "recovery"): void {
     const SECONDS = 30;
 
     if (timerId === "pass") {
@@ -126,6 +146,19 @@
           );
         } else {
           copyTimer--;
+        }
+      }, 1000);
+    } else if (timerId === "recovery") {
+      recoveryCopyTimer = SECONDS;
+      const interval = setInterval(() => {
+        if (recoveryCopyTimer === null || recoveryCopyTimer <= 1) {
+          clearInterval(interval);
+          recoveryCopyTimer = null;
+          writeText("").catch(() =>
+            navigator.clipboard.writeText("").catch(() => {}),
+          );
+        } else {
+          recoveryCopyTimer--;
         }
       }, 1000);
     } else {
@@ -254,7 +287,7 @@
               role="menuitem"
             >
               <IconTrash size={15} class="shrink-0" />
-              {$_("dashboard.delete_tooltip")}
+              {$_("accounts.delete_tooltip")}
             </button>
           </div>
         {/if}
@@ -267,7 +300,7 @@
   <!-- Password Field -->
   <div class="flex flex-col gap-1.5 mt-1">
     <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
-      {$_("dashboard.password_label")}
+      {$_("accounts.password_label")}
     </span>
     <div
       class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
@@ -285,11 +318,11 @@
           class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
           onclick={toggleReveal}
           aria-label={revealed
-            ? $_("dashboard.hide_tooltip")
-            : $_("dashboard.show_tooltip")}
+            ? $_("accounts.hide_tooltip")
+            : $_("accounts.show_tooltip")}
           data-tooltip={revealed
-            ? $_("dashboard.hide_tooltip")
-            : $_("dashboard.show_tooltip")}
+            ? $_("accounts.hide_tooltip")
+            : $_("accounts.show_tooltip")}
         >
           {#if revealed}
             <IconEyeOff size={16} />
@@ -305,10 +338,10 @@
             ? 'bg-accent-dim border border-accent/30 text-accent-light'
             : ''}"
           onclick={copyPassword}
-          aria-label={$_("dashboard.copy_password_tooltip")}
+          aria-label={$_("accounts.copy_password_tooltip")}
           data-tooltip={copyTimer !== null
-            ? $_("dashboard.clearing_in", { values: { seconds: copyTimer } })
-            : $_("dashboard.copy_password_tooltip")}
+            ? $_("accounts.clearing_in", { values: { seconds: copyTimer } })
+            : $_("accounts.copy_password_tooltip")}
         >
           {#if copyTimer !== null}
             <span class="text-xs font-bold min-w-4 text-center"
@@ -322,10 +355,52 @@
     </div>
   </div>
 
+  <!-- Recovery Code Field (optional) -->
+  {#if account.recovery_code_cipher}
+    <div class="flex flex-col gap-1.5 mt-1">
+      <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
+        {$_("accounts.recovery_code_label")}
+      </span>
+      <div
+        class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
+      >
+        <code
+          class="flex-1 font-mono text-sm text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
+          class:text-white={revealed}
+        >
+          {revealed && decryptedRecoveryCode ? decryptedRecoveryCode : "••••••••••••"}
+        </code>
+
+        <div class="flex items-center gap-0.5">
+          <!-- Copy recovery code -->
+          <button
+            class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
+                   {recoveryCopyTimer !== null
+              ? 'bg-accent-dim border border-accent/30 text-accent-light'
+              : ''}"
+            onclick={copyRecoveryCode}
+            aria-label={$_("accounts.copy_recovery_tooltip")}
+            data-tooltip={recoveryCopyTimer !== null
+              ? $_("accounts.clearing_in", { values: { seconds: recoveryCopyTimer } })
+              : $_("accounts.copy_recovery_tooltip")}
+          >
+            {#if recoveryCopyTimer !== null}
+              <span class="text-xs font-bold min-w-4 text-center"
+                >{recoveryCopyTimer}</span
+              >
+            {:else}
+              <IconCopy size={16} />
+            {/if}
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
   <!-- Username Field -->
   <div class="flex flex-col gap-1.5">
     <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
-      {$_("dashboard.username_label")}
+      {$_("accounts.username_label")}
     </span>
     <div
       class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl py-2 px-3 transition-colors hover:bg-surface/[0.07]"
@@ -338,8 +413,8 @@
       <button
         class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
         onclick={() => copyToClipboard(account.username, "user")}
-        aria-label={$_("dashboard.copy_username_tooltip")}
-        data-tooltip={$_("dashboard.copy_username_tooltip")}
+        aria-label={$_("accounts.copy_username_tooltip")}
+        data-tooltip={$_("accounts.copy_username_tooltip")}
       >
         <IconCopy size={16} />
       </button>
@@ -363,7 +438,7 @@
 
   <!-- Date -->
   <div class="text-xs text-text-muted text-right">
-    {$_("dashboard.added_at", {
+    {$_("accounts.added_at", {
       values: { date: formatDate(account.created_at) },
     })}
   </div>

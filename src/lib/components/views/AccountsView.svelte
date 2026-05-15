@@ -55,24 +55,24 @@
       globalState.accounts = await getAccounts();
     } catch (e) {
       console.error("Failed to load accounts:", e);
-      loadError = $_("dashboard.load_error");
+      loadError = $_("accounts.load_error");
     }
   }
 
   function handleDelete(id: string): void {
     modal.openConfirm({
-      title: $_("dashboard.delete_confirm_title"),
-      message: $_("dashboard.delete_confirm_message"),
-      confirmText: $_("dashboard.delete_confirm_button"),
+      title: $_("accounts.delete_confirm_title"),
+      message: $_("accounts.delete_confirm_message"),
+      confirmText: $_("accounts.delete_confirm_button"),
       type: "danger",
       onconfirm: async () => {
         try {
           await deleteAccount(id);
           await refresh();
-          toast.success($_("dashboard.delete_success"));
+          toast.success($_("accounts.delete_success"));
         } catch (e) {
           console.error("Delete failed:", e);
-          toast.error($_("dashboard.delete_error"));
+          toast.error($_("accounts.delete_error"));
         }
       },
     });
@@ -151,10 +151,10 @@
         <h1
           class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent pointer-events-none"
         >
-          {$_("dashboard.title")}
+          {$_("accounts.title")}
         </h1>
         <p class="text-text-muted text-sm mt-0.5 pointer-events-none">
-          {$_("dashboard.credentials_count", {
+          {$_("accounts.credentials_count", {
             values: { count: globalState.accounts.length },
           })}
         </p>
@@ -180,7 +180,7 @@
     <input
       class="w-full pl-4 bg-none text-sm placeholder:text-text-muted focus:outline-none transition-all"
       bind:value={search}
-      placeholder={$_("dashboard.search_placeholder")}
+      placeholder={$_("accounts.search_placeholder")}
     />
   </div>
 
@@ -314,10 +314,10 @@
       <h3 class="text-lg text-text-primary font-semibold">
         {globalState.activeGroup
           ? $_("groups.no_accounts_in_group", { values: { group: globalState.activeGroup } })
-          : $_("dashboard.no_credentials")}
+          : $_("accounts.no_credentials")}
       </h3>
       <p class="text-text-muted">
-        {globalState.activeGroup ? "" : $_("dashboard.no_credentials_desc")}
+        {globalState.activeGroup ? "" : $_("accounts.no_credentials_desc")}
       </p>
       {#if !globalState.activeGroup}
         <button

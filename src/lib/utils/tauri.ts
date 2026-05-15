@@ -17,9 +17,10 @@ export async function addAccount(
   site: string,
   username: string,
   password: string,
+  recoveryCode: string,
   notes: string,
 ): Promise<string> {
-  return invoke<string>("add_account", { site, username, password, notes });
+  return invoke<string>("add_account", { site, username, password, recoveryCode, notes });
 }
 
 export async function getAccounts(): Promise<Account[]> {

@@ -6,7 +6,6 @@
   import DocumentsView from "./DocumentsView.svelte";
   import AboutView from "./AboutView.svelte";
   import PinView from "./PinView.svelte";
-  import TokensView from "./TokensView.svelte";
   import SettingsView from "./SettingsView.svelte";
 </script>
 
@@ -21,8 +20,6 @@
     <AboutView />
   {:else if globalState.activeView === "pin"}
     <PinView />
-  {:else if globalState.activeView === "tokens"}
-    <TokensView />
   {:else if globalState.activeView === "settings"}
     <SettingsView />
   {/if}

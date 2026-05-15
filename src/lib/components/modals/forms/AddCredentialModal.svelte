@@ -9,6 +9,7 @@
   let site = $state("");
   let username = $state("");
   let password = $state("");
+  let recoveryCode = $state("");
   let notes = $state("");
   let loading = $state(false);
   let error = $state("");
@@ -130,7 +131,7 @@
 
     loading = true;
     try {
-      await addAccount(site.trim(), username.trim(), password, notes.trim());
+      await addAccount(site.trim(), username.trim(), password, recoveryCode.trim(), notes.trim());
       onadded?.();
       onclose?.();
     } catch (e: any) {
@@ -338,6 +339,20 @@
               </div>
             </div>
           {/if}
+        </div>
+        
+        <!-- Recovery Code -->
+        <div class="flex flex-col gap-1.5">
+          <label for="add-recovery" class="text-xs font-medium text-text-secondary"
+            >{$_("add_credential.recovery_code_label")}</label
+          >
+          <input
+            id="add-recovery"
+            class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
+            bind:value={recoveryCode}
+            placeholder={$_("add_credential.recovery_code_placeholder")}
+            autocomplete="off"
+          />
         </div>
 
         <!-- Notes -->

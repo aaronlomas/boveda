@@ -3,6 +3,7 @@
     "general": "General",
     "new_credential": "Nueva Credencial",
     "import_db": "Importar DB",
+    "export_db": "Exportar DB",
     "settings": "Configuración",
     "logout": "Cerrar Sesión",
     "collapse": "Ocultar",
@@ -14,6 +15,38 @@
     "documents": "Documentos",
     "about": "Sobre Bóveda"
   },
+
+  "accounts_mode": {
+    "title": "Cuentas",
+    "desc": "Gestiona tus cuentas con Bóveda"
+  },
+  "accounts": {
+    "title": "Credenciales",
+    "credentials_count": "Tus credenciales estan aisladas aquí.",
+    "search_placeholder": "Buscar por sitio o usuario…",
+    "no_credentials": "No hay credenciales",
+    "no_credentials_desc": "Añade una credencial.",
+    "password_label": "Contraseña",
+    "username_label": "Usuario",
+    "delete_tooltip": "Eliminar",
+    "show_tooltip": "Mostrar",
+    "hide_tooltip": "Ocultar",
+    "copy_password_tooltip": "Copiar contraseña",
+    "copy_username_tooltip": "Copiar usuario",
+    "recovery_code_label": "Código de Recuperación",
+    "copy_recovery_tooltip": "Copiar código de recuperación",
+    "clearing_in": "Limpiando en {seconds}s",
+    "added_at": "Añadido {date}",
+    "delete_confirm_title": "Eliminar Credencial",
+    "delete_confirm_message": "¿Estás seguro de que deseas eliminar esta credencial? Esta acción no se puede deshacer.",
+    "delete_confirm_button": "Eliminar",
+    "export_success": "Base de datos exportada con éxito a:\n{path}",
+    "export_error": "Error al exportar la base de datos.",
+    "delete_success": "Credencial eliminada.",
+    "delete_error": "Error al eliminar la credencial.",
+    "load_error": "No se pudieron cargar las credenciales."
+  },
+
   "pin_security": {
     "title": "Guardar PIN",
     "desc": "Guarda de forma segura los PINs de tus tarjetas bancarias, accesos o aplicaciones.",
@@ -25,12 +58,19 @@
     "name_placeholder": "Tarjeta Débito/Crédito/App/Web",
     "pin_label": "Código PIN",
     "pin_placeholder": "••••+",
+    "recovery_code_label": "Código de recuperación (opcional)",
+    "recovery_code_placeholder": "ABCD-1234-EFGH",
     "notes_label": "Notas (opcional)",
     "notes_placeholder": "Información adicional...",
     "save_button": "Guardar PIN",
     "cancel_button": "Cancelar",
     "error_name": "El nombre es requerido.",
     "error_pin": "El PIN es requerido."
+  },
+  "code_recovery": {
+    "title": "Código de Recuperación",
+    "desc": "Guarda tus códigos de recuperación.",
+    "generate_button": "Guardar"
   },
   "settings": {
     "title": "Configuración",
@@ -160,31 +200,10 @@
     "select_bg_image_title": "Seleccionar Imagen de Fondo",
     "images_filter_name": "Imágenes"
   },
-  "dashboard": {
-    "title": "Tu Bóveda",
-    "credentials_count": "{count} {count, plural, one {credencial guardada} other {credenciales guardadas}}",
-    "export_db": "Exportar DB",
-    "search_placeholder": "Buscar por sitio o usuario…",
-    "no_credentials": "No hay credenciales",
-    "no_credentials_desc": "Añade una credencial.",
-    "password_label": "Contraseña",
-    "username_label": "Usuario",
-    "delete_tooltip": "Eliminar",
-    "show_tooltip": "Mostrar",
-    "hide_tooltip": "Ocultar",
-    "copy_password_tooltip": "Copiar contraseña",
-    "copy_username_tooltip": "Copiar usuario",
-    "clearing_in": "Limpiando en {seconds}s",
-    "added_at": "Añadido {date}",
-    "delete_confirm_title": "Eliminar Credencial",
-    "delete_confirm_message": "¿Estás seguro de que deseas eliminar esta credencial? Esta acción no se puede deshacer.",
-    "delete_confirm_button": "Eliminar",
-    "export_success": "Base de datos exportada con éxito a:\n{path}",
-    "export_error": "Error al exportar la base de datos.",
-    "delete_success": "Credencial eliminada.",
-    "delete_error": "Error al eliminar la credencial.",
-    "load_error": "No se pudieron cargar las credenciales."
-  },
+
+
+
+
   "add_credential": {
     "title": "Nueva Credencial",
     "site_label": "Sitio / Aplicación",
@@ -193,6 +212,8 @@
     "user_placeholder": "tu@email.com",
     "password_label": "Contraseña:",
     "placeholder": "•••••••••••••••",
+    "recovery_code_label": "Código de recuperación (opcional)",
+    "recovery_code_placeholder": "ABCD-1234-EFGH",
     "notes_label": "Notas (opcional)",
     "notes_placeholder": "Información adicional…",
     "generate": "Generar",

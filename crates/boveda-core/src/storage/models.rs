@@ -11,6 +11,7 @@ pub struct Account {
     pub site: SecretString,
     pub username: SecretString,
     pub password_cipher: String,
+    pub recovery_code_cipher: Option<String>,
     pub notes_cipher: Option<String>,
     pub favicon_url: Option<String>,
     pub group_name: Option<String>,

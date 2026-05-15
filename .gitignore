@@ -4,7 +4,9 @@ src-tauri/target/
 src-tauri/gen/schemas
 # Cargo.lock is NOT ignored for applications to ensure reproducible builds
 **/*.rs.bk
-
+# --- Auditories ---
+*_report.txt
+*_results.txt
 # --- Bóveda Specific (Security) ---
 # Never commit actual vaults or cryptographic salts
 *.bvda

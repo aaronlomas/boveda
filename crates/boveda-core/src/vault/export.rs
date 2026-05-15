@@ -21,9 +21,18 @@ pub struct ExportAccount {
     pub group_name: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ExportPin {
+    pub name: SecretString,
+    pub pin: SecretString,
+    pub notes: Option<SecretString>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct ExportPayload {
     pub accounts: Vec<ExportAccount>,
+    #[serde(default)]
+    pub pins: Vec<ExportPin>,
     pub preferences: Vec<(String, String)>,
     pub timestamp: String,
 }
@@ -97,6 +106,7 @@ mod tests {
                     group_name: Some("Work".to_string()),
                 }
             ],
+            pins: vec![],
             preferences: vec![("theme".to_string(), "dark".to_string())],
             timestamp: "2024-01-01T00:00:00Z".to_string(),
         };
@@ -125,6 +135,7 @@ mod tests {
         
         let payload = ExportPayload {
             accounts: vec![],
+            pins: vec![],
             preferences: vec![],
             timestamp: "2024".to_string(),
         };

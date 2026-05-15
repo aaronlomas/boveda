@@ -235,6 +235,7 @@ async fn test_deduplication() {
                 group_name: None,
             }
         ],
+        pins: vec![],
         preferences: vec![],
         timestamp: "2024".to_string(),
     };

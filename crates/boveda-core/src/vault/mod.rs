@@ -585,11 +585,28 @@ impl BovedaEngine {
             });
         }
         
+        // 1.5 Get all pins (DECRYPTED)
+        let pins = self.get_pins().await?;
+        let mut export_pins = Vec::with_capacity(pins.len());
+        
+        for p in pins {
+            let notes = p.encrypted_notes.as_ref()
+                .map(|c| self.decrypt_secret(c))
+                .transpose()?;
+                
+            export_pins.push(export::ExportPin {
+                name: p.name,
+                pin: self.decrypt_secret(&p.encrypted_pin)?,
+                notes,
+            });
+        }
+        
         // 2. Get all preferences
         let preferences = storage::get_all_preferences(&self.db).await?;
         
         let payload = export::ExportPayload {
             accounts: export_accounts,
+            pins: export_pins,
             preferences,
             timestamp: chrono::Utc::now().to_rfc3339(),
         };
@@ -625,6 +642,8 @@ impl BovedaEngine {
         if matches!(strategy, ImportStrategy::Replace) {
             // Clear current accounts
             sqlx::query("DELETE FROM accounts").execute(&self.db).await?;
+            // Clear current pins
+            sqlx::query("DELETE FROM pins").execute(&self.db).await?;
             // Note: Preferences are overwritten anyway by set_preference later, 
             // but we might want to clear them too if we want a full replacement.
             // For now, let's just clear accounts as that's what "duplicates" refers to.
@@ -655,7 +674,26 @@ impl BovedaEngine {
             }
         }
 
-        // 3. Apply preferences (Optional merge)
+        // 3.5 Insert pins
+        let existing_pins = if matches!(strategy, ImportStrategy::Merge) {
+            self.get_pins().await?
+        } else {
+            vec![]
+        };
+
+        for p in payload.pins {
+            if matches!(strategy, ImportStrategy::Merge) {
+                let duplicate = existing_pins.iter().any(|existing| {
+                    existing.name.as_str() == p.name.as_str()
+                });
+                if duplicate {
+                    continue; // Skip existing entry
+                }
+            }
+            self.add_pin(p.name, p.pin, p.notes).await?;
+        }
+
+        // 4. Apply preferences (Optional merge)
         for (key, value) in payload.preferences {
             let _ = self.set_preference(&key, &value).await;
         }

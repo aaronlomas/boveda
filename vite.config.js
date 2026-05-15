@@ -15,6 +15,7 @@ export default defineConfig(async () => ({
   ],
   define: {
     "import.meta.env.APP_VERSION": JSON.stringify(pkg.version),
+    "import.meta.env.APP_STATUS": JSON.stringify(pkg.status),
   },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

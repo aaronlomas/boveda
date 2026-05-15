@@ -9,9 +9,9 @@ Actualmente, solo proporcionamos parches de seguridad para las versiones estable
 
 | Componente | Versión Soportada | Estado |
 | :--- | :--- | :--- |
-| **Bóveda** (Aplicación) | `1.1.x` | ✅ Soportada |
-| **Bóveda** (Aplicación) | `< 1.1.0` | ❌ No soportada |
-| **boveda-core** (Motor) | `1.0.x` | ✅ Soportada |
+| **Bóveda** (Aplicación) | `1.x.x` | ✅ Soportada |
+| **Bóveda** (Aplicación) | `< 1.0.0` | ❌ No soportada |
+| **boveda-core** (Motor) | `1.x.x` | ✅ Soportada |
 | **boveda-core** (Motor) | `< 1.0.0` | ❌ No soportada |
 
 Para detalles técnicos sobre nuestra implementación criptográfica y medidas de endurecimiento de memoria, consulta el [Libro Blanco de Seguridad](./crates/boveda-core/docs/SECURITY_WHITE_PAPER.md).

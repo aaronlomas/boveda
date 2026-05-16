@@ -14,9 +14,22 @@ impl BovedaEngine {
     pub async fn setup_totp(&self) -> BovedaResult<TotpSetupPayload> {
         self.check_unlocked()?;
 
-        // SEC-4: Prevent overwriting existing setup without explicit disable
-        if self.get_preference("totp_secret_cipher").await?.is_some() {
-            return Err(BovedaError::Other("TOTP ya está configurado. Desactívalo primero para re-vincular.".to_string()));
+        let cipher_exists = self.get_preference("totp_secret_cipher").await?.is_some();
+        let is_enabled = self.get_preference("totp_enabled").await?.as_deref() == Some("true");
+
+        if cipher_exists {
+            if is_enabled {
+                // SEC-4: Prevent overwriting an active, confirmed 2FA without explicit disable
+                return Err(BovedaError::Other("TOTP ya está configurado. Desactívalo primero para re-vincular.".to_string()));
+            } else {
+                // Orphaned cipher from a previous cancelled setup — clean it up silently
+                let mut tx = self.db.begin().await?;
+                sqlx::query("DELETE FROM preferences WHERE key = 'totp_secret_cipher'")
+                    .execute(&mut *tx).await?;
+                sqlx::query("DELETE FROM preferences WHERE key = 'totp_recovery_cipher'")
+                    .execute(&mut *tx).await?;
+                tx.commit().await?;
+            }
         }
 
         // 1. Generate a new seed (20 bytes random)

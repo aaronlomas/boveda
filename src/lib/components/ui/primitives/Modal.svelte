@@ -44,12 +44,12 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
     <!-- Backdrop: Separate element to avoid bubbling issues -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="fixed inset-0 bg-bg-primary/80 backdrop-blur-sm"
+      class="fixed inset-0"
       transition:fade={{ duration: 200 }}
       onclick={onclose}
       aria-hidden="true"
@@ -57,7 +57,7 @@
 
     <!-- Modal Content -->
     <div
-      class="relative z-50 grid w-full max-w-lg gap-4 border border-surface/10 bg-surface/2 p-6 shadow-2xl sm:rounded-2xl {className}"
+      class="relative z-50 grid w-full max-w-lg gap-4 border border-surface/10 bg-panel/50 backdrop-blur-xl p-6 shadow-sm sm:rounded-2xl {className}"
       transition:scale={{ duration: 300, start: 0.95, easing: backOut }}
       role="dialog"
       aria-modal="true"

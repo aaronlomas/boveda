@@ -62,7 +62,7 @@
     "recovery_code_placeholder": "ABCD-1234-EFGH",
     "notes_label": "Notas (opcional)",
     "notes_placeholder": "Información adicional...",
-    "save_button": "Guardar PIN",
+    "save_button": "Guardar",
     "cancel_button": "Cancelar",
     "error_name": "El nombre es requerido.",
     "error_pin": "El PIN es requerido.",

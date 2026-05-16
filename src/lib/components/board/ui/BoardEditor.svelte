@@ -26,7 +26,7 @@
   let isBold = $state(false);
   let isItalic = $state(false);
   let textAlign = $state<"left" | "center" | "right">("left");
-  let currentSize = $state(11);
+  let currentSize = $state(14);
   let showSizeDropdown = $state(false);
 
   // Initialize content once
@@ -197,9 +197,8 @@
 
 <style>
   .editor-pizarra {
-    font-size: 11px;
+    font-size: 14px;
   }
-
   .editor-pizarra:empty:before {
     content: attr(placeholder);
     color: #666; /* Fallback */

@@ -31,18 +31,18 @@
 
   async function handleDelete(id: string) {
     modal.openConfirm({
-      title: $_("dashboard.delete_confirm_title"),
-      message: $_("dashboard.delete_confirm_message"),
-      confirmText: $_("dashboard.delete_tooltip"),
+      title: $_("pin_security.delete_confirm_pin"),
+      message: $_("pin_security.delete_confirm_message"),
+      confirmText: $_("pin_security.delete_tooltip"),
       type: "danger",
       onconfirm: async () => {
         try {
           await deletePin(id);
           await refresh();
-          toast.success($_("dashboard.deleted_success"));
+          toast.success($_("pin_security.deleted_success"));
         } catch (e) {
           console.error(e);
-          toast.error($_("dashboard.delete_error"));
+          toast.error($_("pin_security.delete_error"));
         }
       }
     });

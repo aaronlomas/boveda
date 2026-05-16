@@ -65,7 +65,14 @@
     "save_button": "Guardar PIN",
     "cancel_button": "Cancelar",
     "error_name": "El nombre es requerido.",
-    "error_pin": "El PIN es requerido."
+    "error_pin": "El PIN es requerido.",
+
+
+    "delete_confirm_pin": "Deseas eliminar este PIN?",
+    "delete_tooltip": "Eliminar",
+    "delete_confirm_message": "Esta acción no se puede deshacer.",
+    "deleted_success": "PIN eliminado correctamente",
+    "deleted_error": "Error al eliminar el PIN"
   },
   "documents": {
     "title": "Documentos",
@@ -224,9 +231,6 @@
     "select_bg_image_title": "Seleccionar Imagen de Fondo",
     "images_filter_name": "Imágenes"
   },
-
-
-
 
   "add_credential": {
     "title": "Nueva Credencial",

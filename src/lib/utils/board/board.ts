@@ -28,11 +28,11 @@ export function getAlignment(): "left" | "center" | "right" {
 }
 
 /**
- * Apply an exact pixel font-size to the current text selection.
+ * Apply an exact point (pt) font-size to the current text selection.
  * Works by wrapping the selected Range in a <span> with an explicit
  * inline style, avoiding the browser's limited 1-7 scale.
  */
-export function setFontSize(px: number): void {
+export function setFontSize(size: number): void {
   if (typeof document === "undefined") return;
 
   const sel = window.getSelection();
@@ -44,7 +44,7 @@ export function setFontSize(px: number): void {
     // No text selected — store the size for the next character typed
     // using a zero-width span so future typed text inherits the size.
     const span = document.createElement("span");
-    span.style.fontSize = `${px}px`;
+    span.style.fontSize = `${size}pt`;
     // Insert a zero-width space so the caret enters the span
     span.innerHTML = "\u200B";
     range.insertNode(span);
@@ -60,7 +60,7 @@ export function setFontSize(px: number): void {
   // Text is selected — wrap it
   try {
     const span = document.createElement("span");
-    span.style.fontSize = `${px}px`;
+    span.style.fontSize = `${size}pt`;
     // surroundContents throws if selection crosses block boundaries;
     // fall back to execCommand in that case.
     range.surroundContents(span);
@@ -68,7 +68,7 @@ export function setFontSize(px: number): void {
     // Fallback for complex selections: clone content, wrap, delete & insert
     const fragment = range.extractContents();
     const span = document.createElement("span");
-    span.style.fontSize = `${px}px`;
+    span.style.fontSize = `${size}pt`;
     span.appendChild(fragment);
     range.insertNode(span);
   }
@@ -82,8 +82,9 @@ export function setFontSize(px: number): void {
 }
 
 /**
- * Read the computed font-size (in px as an integer) at the current
- * caret / selection anchor. Returns null when nothing can be determined.
+ * Read the computed font-size at the current caret / selection anchor.
+ * Converts browser's computed px back to pt (1px = 0.75pt).
+ * Returns null when nothing can be determined.
  */
 export function getFontSizeAtCaret(): number | null {
   if (typeof document === "undefined") return null;
@@ -98,6 +99,9 @@ export function getFontSizeAtCaret(): number | null {
   if (!(node instanceof HTMLElement)) return null;
 
   const raw = window.getComputedStyle(node).fontSize; // e.g. "16px"
-  const parsed = parseFloat(raw);
-  return isNaN(parsed) ? null : Math.round(parsed);
+  const pxParsed = parseFloat(raw);
+  if (isNaN(pxParsed)) return null;
+  
+  // Convert px to pt (1pt = 1.333px, so 1px = 0.75pt)
+  return Math.round(pxParsed * 0.75);
 }

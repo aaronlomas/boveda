@@ -6,6 +6,10 @@
     IconAlignLeft,
     IconAlignCenter,
     IconAlignRight,
+    IconUnderline,
+    IconStrikethrough,
+    IconList,
+    IconListNumbers,
     IconEye,
     IconLock,
     IconChevronDown,
@@ -25,6 +29,10 @@
   let editorRef: HTMLDivElement | undefined = $state();
   let isBold = $state(false);
   let isItalic = $state(false);
+  let isUnderline = $state(false);
+  let isStrikethrough = $state(false);
+  let isListUl = $state(false);
+  let isListOl = $state(false);
   let textAlign = $state<"left" | "center" | "right">("left");
   let currentSize = $state(14);
   let showSizeDropdown = $state(false);
@@ -39,6 +47,10 @@
   function updateState() {
     isBold = getCommandState("bold");
     isItalic = getCommandState("italic");
+    isUnderline = getCommandState("underline");
+    isStrikethrough = getCommandState("strikeThrough");
+    isListUl = getCommandState("insertUnorderedList");
+    isListOl = getCommandState("insertOrderedList");
     textAlign = getAlignment();
     const detected = getFontSizeAtCaret();
     if (detected !== null) currentSize = detected;
@@ -55,9 +67,9 @@
     if (editorRef) content = editorRef.innerHTML;
   }
 
-  function handleFontSize(px: number) {
-    setFontSize(px);
-    currentSize = px;
+  function handleFontSize(size: number) {
+    setFontSize(size);
+    currentSize = size;
     if (editorRef) content = editorRef.innerHTML;
   }
 </script>
@@ -104,11 +116,11 @@
             {/each}
           </div>
 
-          <!-- Backdrop to close dropdown -->
           <div
             role="presentation"
             class="fixed inset-0 z-40"
             onclick={() => (showSizeDropdown = false)}
+            onkeydown={(e) => { if (e.key === 'Escape') showSizeDropdown = false; }}
           ></div>
         {/if}
       </div>
@@ -127,6 +139,41 @@
         title={$_("documents.italic")}
       >
         <IconItalic size={18} stroke={2.5} />
+      </button>
+      
+      <button
+        class="p-2 rounded-md hover:text-text-primary transition-colors {isUnderline ? 'text-text-primary bg-surface/10' : 'text-text-secondary'}"
+        onclick={() => handleCommand("underline")}
+        title={$_("documents.underline")}
+      >
+        <IconUnderline size={18} stroke={2.5} />
+      </button>
+      
+      <button
+        class="p-2 rounded-md hover:text-text-primary transition-colors {isStrikethrough ? 'text-text-primary bg-surface/10' : 'text-text-secondary'}"
+        onclick={() => handleCommand("strikeThrough")}
+        title={$_("documents.strikethrough")}
+      >
+        <IconStrikethrough size={18} stroke={2.5} />
+      </button>
+    </div>
+
+    <div class="w-px h-6 bg-surface/20 mx-1"></div>
+
+    <div class="flex items-center gap-1 rounded-lg p-1">
+      <button
+        class="p-2 rounded-md transition-colors {isListUl ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
+        onclick={() => handleCommand("insertUnorderedList")}
+        title={$_("documents.list_ul")}
+      >
+        <IconList size={18} stroke={2.5} />
+      </button>
+      <button
+        class="p-2 rounded-md transition-colors {isListOl ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
+        onclick={() => handleCommand("insertOrderedList")}
+        title={$_("documents.list_ol")}
+      >
+        <IconListNumbers size={18} stroke={2.5} />
       </button>
     </div>
 
@@ -171,6 +218,7 @@
       onkeyup={updateState}
       onmouseup={updateState}
       oninput={handleInput}
+      onblur={handleInput}
     ></div>
   </div>
 
@@ -197,7 +245,7 @@
 
 <style>
   .editor-pizarra {
-    font-size: 14px;
+    font-size: 14pt;
   }
   .editor-pizarra:empty:before {
     content: attr(placeholder);
@@ -205,5 +253,18 @@
     color: var(--color-text-muted);
     opacity: 0.5;
     pointer-events: none;
+  }
+  
+  /* Ensure proper list styling in editor */
+  .editor-pizarra :global(ul) {
+    list-style-type: disc;
+    padding-left: 2em;
+    margin: 0.5em 0;
+  }
+  
+  .editor-pizarra :global(ol) {
+    list-style-type: decimal;
+    padding-left: 2em;
+    margin: 0.5em 0;
   }
 </style>

@@ -45,6 +45,15 @@
       icon: IconRocket,
     },
   ]);
+
+  const ActivePanel = $derived(
+    ({
+      theme: ThemePanel,
+      language: LanguagePanel,
+      security: SecurityPanel,
+      performance: PerformancePanel,
+    } as const)[activeSection]
+  );
 </script>
 
 <div
@@ -115,23 +124,11 @@
     class="bg-surface/4 w-full h-full p-4 overflow-y-auto backdrop-blur-sm shadow-xl shadow-black/5"
   >
     <div class="max-w-2xl mx-auto h-full">
-      {#if activeSection === "theme"}
+      {#key activeSection}
         <div class="animate-in fade-in slide-in-from-right-4 duration-300">
-          <ThemePanel />
+          <ActivePanel />
         </div>
-      {:else if activeSection === "language"}
-        <div class="animate-in fade-in slide-in-from-right-4 duration-300">
-          <LanguagePanel />
-        </div>
-      {:else if activeSection === "security"}
-        <div class="animate-in fade-in slide-in-from-right-4 duration-300">
-          <SecurityPanel />
-        </div>
-      {:else if activeSection === "performance"}
-        <div class="animate-in fade-in slide-in-from-right-4 duration-300">
-          <PerformancePanel />
-        </div>
-      {/if}
+      {/key}
     </div>
   </main>
 </div>

@@ -1,0 +1,46 @@
+<script lang="ts">
+  import type { Snippet } from "svelte";
+  import { IconAlertCircle, IconAlertTriangle, IconCheck, IconInfoCircle } from "@tabler/icons-svelte";
+
+  interface Props {
+    variant?: "default" | "destructive" | "success" | "warning";
+    title?: string;
+    children?: Snippet;
+    class?: string;
+  }
+
+  let {
+    variant = "default",
+    title,
+    children,
+    class: className = "",
+  }: Props = $props();
+
+  const variants = {
+    default: "bg-surface/5 text-text-primary border-surface/20",
+    destructive: "bg-danger/10 text-danger border-danger/20",
+    success: "bg-success/10 text-success border-success/20",
+    warning: "bg-warning/10 text-warning border-warning/20",
+  };
+
+  const icons = {
+    default: IconInfoCircle,
+    destructive: IconAlertCircle,
+    success: IconCheck,
+    warning: IconAlertTriangle,
+  };
+
+  const Icon = $derived(icons[variant]);
+</script>
+
+<div class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground {variants[variant]} {className}" role="alert">
+  <Icon size={16} />
+  {#if title}
+    <h5 class="mb-1 font-medium leading-none tracking-tight">{title}</h5>
+  {/if}
+  <div class="text-sm [&_p]:leading-relaxed opacity-90">
+    {#if children}
+      {@render children()}
+    {/if}
+  </div>
+</div>

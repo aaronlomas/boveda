@@ -1,0 +1,18 @@
+/** All valid dashboard view identifiers. */
+export type ViewId =
+  | "general"
+  | "accounts"
+  | "documents"
+  | "about"
+  | "pin"
+  | "tokens"
+  | "settings";
+
+export class UIState {
+  sidebarCollapsed = $state(false);
+  activeView = $state<ViewId>("general");
+  /** The currently selected group filter; null means "All". */
+  activeGroup = $state<string | null>(null);
+}
+
+export const uiState = new UIState();

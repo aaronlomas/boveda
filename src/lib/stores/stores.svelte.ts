@@ -1,49 +1,28 @@
-// ─── Domain Types ─────────────────────────────────────────────────────────────
+export * from './ui.svelte';
+export * from './data.svelte';
+export * from './session.svelte';
 
-export interface Account {
-  id: string;
-  site: string;
-  username: string;
-  password_cipher: string;
-  recovery_code_cipher: string | null;
-  notes_cipher: string | null;
-  favicon_url: string | null;
-  group_name: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import { uiState } from './ui.svelte';
+import { dataState } from './data.svelte';
+import { sessionState } from './session.svelte';
 
-export interface Pin {
-  id: string;
-  name: string;
-  encrypted_pin: string;
-  encrypted_notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-/** All valid dashboard view identifiers. Adding a new view? Add it here first. */
-export type ViewId =
-  | "general"
-  | "accounts"
-  | "documents"
-  | "about"
-  | "pin"
-  | "tokens"
-  | "settings";
-
-// ─── Global State (Svelte 5 Runes) ────────────────────────────────────────────
-
-class AppState {
-  isUnlocked = $state(false);
-  accounts = $state<Account[]>([]);
-  pins = $state<Pin[]>([]);
-  sidebarCollapsed = $state(false);
-  activeView = $state<ViewId>("general");
-  /** The currently selected group filter; null means "All". */
-  activeGroup = $state<string | null>(null);
-  /** Persisted list of group names (loaded from preferences on unlock). */
-  groups = $state<string[]>([]);
-}
-
-export const globalState = new AppState();
+/** 
+ * @deprecated Use uiState, dataState or sessionState instead for specialized concerns.
+ * This object maintains backward compatibility during the transition period.
+ */
+export const globalState = {
+  get isUnlocked() { return sessionState.isUnlocked; },
+  set isUnlocked(v) { sessionState.isUnlocked = v; },
+  get accounts() { return dataState.accounts; },
+  set accounts(v) { dataState.accounts = v; },
+  get pins() { return dataState.pins; },
+  set pins(v) { dataState.pins = v; },
+  get sidebarCollapsed() { return uiState.sidebarCollapsed; },
+  set sidebarCollapsed(v) { uiState.sidebarCollapsed = v; },
+  get activeView() { return uiState.activeView; },
+  set activeView(v) { uiState.activeView = v; },
+  get activeGroup() { return uiState.activeGroup; },
+  set activeGroup(v) { uiState.activeGroup = v; },
+  get groups() { return dataState.groups; },
+  set groups(v) { dataState.groups = v; }
+};

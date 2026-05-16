@@ -140,6 +140,8 @@
     });
   }
 
+  import { UI_CONFIG } from "$lib/config/ui";
+  
   function toggle() {
     globalState.sidebarCollapsed = !globalState.sidebarCollapsed;
   }
@@ -155,12 +157,12 @@
 </script>
 
 <aside
-  class="h-screen bg-panel/30 border-r border-surface/8 transition-full overflow-hidden backdrop-blur-2xl flex flex-col py-4 px-2"
+  class="h-screen bg-panel/30 border-r border-surface/8 transition-all overflow-hidden backdrop-blur-2xl flex flex-col py-4 px-2"
   style="width: {globalState.sidebarCollapsed
-    ? 'var(--sidebar-collapsed)'
-    : 'var(--sidebar-w)'}; min-width: {globalState.sidebarCollapsed
-    ? 'var(--sidebar-collapsed)'
-    : 'var(--sidebar-w)'};"
+    ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
+    : UI_CONFIG.SIDEBAR_FULL_WIDTH}; min-width: {globalState.sidebarCollapsed
+    ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
+    : UI_CONFIG.SIDEBAR_FULL_WIDTH}; transition-duration: {UI_CONFIG.ANIMATION_DURATION_MS}ms;"
 >
   <!-- Brand -->
   <div

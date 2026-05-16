@@ -23,7 +23,8 @@
     "@tauri-apps/plugin-dialog": "^2.7.1",
     "@tauri-apps/plugin-opener": "^2",
     "svelte-i18n": "^4.0.1",
-    "svelte-virtual-list": "^3.0.1"
+    "svelte-virtual-list": "^3.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

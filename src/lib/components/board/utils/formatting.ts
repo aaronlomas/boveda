@@ -1,30 +1,11 @@
 /**
- * Utilities for the rich text board
+ * Utilities for formatting rich text in the board
  */
 
 export function execBoardCommand(command: string, value: string | undefined = undefined): void {
   if (typeof document !== "undefined") {
     document.execCommand(command, false, value);
   }
-}
-
-export function getCommandState(command: string): boolean {
-  if (typeof document !== "undefined") {
-    try {
-      return document.queryCommandState(command);
-    } catch (e) {
-      return false;
-    }
-  }
-  return false;
-}
-
-export function getAlignment(): "left" | "center" | "right" {
-  if (typeof document !== "undefined") {
-    if (document.queryCommandState("justifyCenter")) return "center";
-    if (document.queryCommandState("justifyRight")) return "right";
-  }
-  return "left";
 }
 
 /**
@@ -82,26 +63,35 @@ export function setFontSize(size: number): void {
 }
 
 /**
- * Read the computed font-size at the current caret / selection anchor.
- * Converts browser's computed px back to pt (1px = 0.75pt).
- * Returns null when nothing can be determined.
+ * Handle paste events with security sanitization
  */
-export function getFontSizeAtCaret(): number | null {
-  if (typeof document === "undefined") return null;
-
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return null;
-
-  let node: Node | null = sel.getRangeAt(0).startContainer;
-  // Walk up to the nearest Element
-  if (node.nodeType === Node.TEXT_NODE) node = node.parentElement;
-
-  if (!(node instanceof HTMLElement)) return null;
-
-  const raw = window.getComputedStyle(node).fontSize; // e.g. "16px"
-  const pxParsed = parseFloat(raw);
-  if (isNaN(pxParsed)) return null;
+export function handlePasteSecurity(e: ClipboardEvent, onWarning: (msg: string) => void): string | null {
+  e.preventDefault();
+  let text = e.clipboardData?.getData("text/plain");
   
-  // Convert px to pt (1pt = 1.333px, so 1px = 0.75pt)
-  return Math.round(pxParsed * 0.75);
+  if (!text) return null;
+
+  // 1. Sanitize: Remove zero-width spaces and dangerous non-printable control characters
+  const sanitizedText = text.replace(/[\u200B-\u200D\uFEFF\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+  
+  // 2. Detect: Expanded dangerous patterns
+  const dangerousPatterns = /(\bsudo\b|\bcurl\b|\bwget\b|\bpowershell\b|\bbash\b|\bsh -c\b|\brm -rf\b|\biex\b|\binvoke-expression\b|\bshutdown\b|\bnet user\b|\bformat\b|\bdel \/f\b)/gi;
+  
+  if (dangerousPatterns.test(sanitizedText)) {
+    // This will be translated in the component if needed, but here we provide a default or let the component handle it
+    onWarning("dangerous_patterns_detected");
+    
+    // 3. Unmasking: Highlight malicious parts in red
+    // Escape HTML to prevent XSS from the text itself
+    const escaped = sanitizedText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const highlightedHTML = escaped.replace(dangerousPatterns, (match) => {
+      return `<span style="color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.15); padding: 1px 4px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3);" title="Detección de Bóveda: Comando peligroso">${match}</span>`;
+    });
+    
+    document.execCommand("insertHTML", false, highlightedHTML);
+    return null; // Return null because we already inserted the HTML
+  } else {
+    document.execCommand("insertText", false, sanitizedText);
+    return sanitizedText;
+  }
 }

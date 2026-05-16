@@ -13,6 +13,7 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import DisableTotpModal from "../../modals/warnings/DisableTotpModal.svelte";
+  import { UI_CONFIG } from "$lib/config/ui";
 
   let isEnabled = $state(false);
   let loading = $state(true);
@@ -104,7 +105,7 @@
     try {
       await writeText(text);
       copied = true;
-      setTimeout(() => (copied = false), 2000);
+      setTimeout(() => (copied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
     } catch (e) {
       console.error("Failed to copy recovery codes:", e);
     }

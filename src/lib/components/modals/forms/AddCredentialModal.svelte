@@ -11,11 +11,7 @@
 
   function handleSubmit(e: Event) {
     e.preventDefault();
-    form.submit({
-      siteError: $_("add_credential.error_site"),
-      userError: $_("add_credential.error_user"),
-      pwError: $_("add_credential.error_password"),
-    });
+    form.handleSubmit();
   }
 </script>
 
@@ -26,20 +22,21 @@
     onsubmit={handleSubmit}
   >
     <CredentialFields
-      bind:site={form.site}
-      bind:username={form.username}
-      bind:password={form.password}
-      bind:recoveryCode={form.recoveryCode}
-      bind:notes={form.notes}
+      bind:site={form.values.site}
+      bind:username={form.values.username}
+      bind:password={form.values.password}
+      bind:recoveryCode={form.values.recoveryCode}
+      bind:notes={form.values.notes}
+      errors={form.errors}
     />
 
-    {#if form.error}
-      <Alert variant="destructive">{form.error}</Alert>
+    {#if form.globalError}
+      <Alert variant="destructive">{form.globalError}</Alert>
     {/if}
   </form>
 
   {#snippet footer()}
-    <Button variant="ghost" onclick={onclose}>
+    <Button variant="ghost" onclick={props.onclose}>
       {$_("add_credential.cancel_button")}
     </Button>
     <Button type="submit" form="add-credential-form" disabled={form.loading}>

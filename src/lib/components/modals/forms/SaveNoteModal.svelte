@@ -1,6 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { IconLock, IconX } from "@tabler/icons-svelte";
+  import { useForm } from "$lib/validation/useForm";
+  import { noteSchema, type NoteForm } from "$lib/validation/schemas";
 
   let { 
     onclose, 
@@ -10,22 +12,19 @@
     onsave: (title: string, description: string) => void 
   } = $props();
 
-  let title = $state("");
-  let description = $state("");
-  let error = $state("");
+  const form = useForm<NoteForm>(
+    noteSchema,
+    { title: "", description: "" },
+    async (values) => {
+      onsave(values.title, values.description || "");
+    }
+  );
+
   let titleInput: HTMLInputElement | undefined = $state();
 
   $effect(() => {
     titleInput?.focus();
   });
-
-  function handleSubmit() {
-    if (!title.trim()) {
-      error = $_("documents.note_title_label") + " is required";
-      return;
-    }
-    onsave(title, description);
-  }
 </script>
 
 <div
@@ -63,36 +62,43 @@
 
     <!-- Body -->
     <div class="p-8 space-y-6">
-      <div class="space-y-2">
-        <label for="note-title" class="text-sm font-bold text-text-secondary">
-          {$_("documents.note_title_label")}
-        </label>
-        <input
-          id="note-title"
-          bind:this={titleInput}
-          bind:value={title}
-          placeholder={$_("documents.note_title_placeholder")}
-          class="w-full bg-surface/10 border border-surface/20 rounded-sm px-4 py-2 text-text-primary outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 transition-all shadow-inner"
-        />
-      </div>
+      <form id="save-note-form" onsubmit={(e) => { e.preventDefault(); form.handleSubmit(); }}>
+        <div class="space-y-2 mb-6">
+          <label for="note-title" class="text-sm font-bold text-text-secondary">
+            {$_("documents.note_title_label")}
+          </label>
+          <input
+            id="note-title"
+            bind:this={titleInput}
+            bind:value={form.values.title}
+            placeholder={$_("documents.note_title_placeholder")}
+            class="w-full bg-surface/10 border {form.errors.title ? 'border-danger' : 'border-surface/20'} rounded-sm px-4 py-2 text-text-primary outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 transition-all shadow-inner"
+          />
+          {#if form.errors.title}
+            <span class="text-[11px] text-danger animate-in fade-in slide-in-from-top-1">
+              {$_("documents.note_title_label")} {$_("common.is_required") || "es obligatorio"}
+            </span>
+          {/if}
+        </div>
 
-      <div class="space-y-2">
-        <label for="note-desc" class="text-sm font-bold text-text-secondary">
-          {$_("documents.note_desc_label")}
-        </label>
-        <textarea
-          id="note-desc"
-          bind:value={description}
-          placeholder={$_("documents.note_desc_placeholder")}
-          class="w-full bg-surface/10 border border-surface/20 rounded-sm px-4 py-2 text-text-primary outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 transition-all min-h-8 resize-none shadow-inner"
-        ></textarea>
-      </div>
+        <div class="space-y-2">
+          <label for="note-desc" class="text-sm font-bold text-text-secondary">
+            {$_("documents.note_desc_label")}
+          </label>
+          <textarea
+            id="note-desc"
+            bind:value={form.values.description}
+            placeholder={$_("documents.note_desc_placeholder")}
+            class="w-full bg-surface/10 border border-surface/20 rounded-sm px-4 py-2 text-text-primary outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 transition-all min-h-8 resize-none shadow-inner"
+          ></textarea>
+        </div>
 
-      {#if error}
-        <p class="text-danger text-sm bg-danger/10 p-3 rounded-xl border border-danger/20">
-          {error}
-        </p>
-      {/if}
+        {#if form.globalError}
+          <p class="text-danger text-sm bg-danger/10 p-3 rounded-xl border border-danger/20 mt-4">
+            {form.globalError}
+          </p>
+        {/if}
+      </form>
     </div>
 
     <!-- Footer -->
@@ -104,9 +110,14 @@
         {$_("documents.cancel")}
       </button>
       <button
-        onclick={handleSubmit}
+        form="save-note-form"
+        type="submit"
         class="px-4 py-2 rounded-xl bg-accent text-bg-primary font-bold hover:bg-accent-light hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20 active:translate-y-0 transition-all flex items-center justify-center gap-2"
+        disabled={form.loading}
       >
+        {#if form.loading}
+          <span class="w-4 h-4 border-2 border-bg-primary/30 border-t-bg-primary rounded-full animate-spin"></span>
+        {/if}
         {$_("documents.encrypt_save")}
       </button>
     </div>

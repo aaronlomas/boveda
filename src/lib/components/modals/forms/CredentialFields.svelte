@@ -11,6 +11,7 @@
     password?: string;
     recoveryCode?: string;
     notes?: string;
+    errors?: Record<string, string>;
   }
 
   let {
@@ -19,6 +20,7 @@
     password = $bindable(""),
     recoveryCode = $bindable(""),
     notes = $bindable(""),
+    errors = {}
   }: Props = $props();
 
   let showPw = $state(false);
@@ -32,6 +34,7 @@
     label={$_("add_credential.site_label")}
     bind:value={site}
     placeholder={$_("add_credential.site_placeholder")}
+    error={errors.site ? $_(`add_credential.${errors.site}`) : undefined}
   />
 
   <!-- Username -->
@@ -41,6 +44,7 @@
     bind:value={username}
     placeholder={$_("add_credential.user_placeholder")}
     autocomplete="off"
+    error={errors.username ? $_(`add_credential.${errors.username}`) : undefined}
   />
 
   <!-- Password -->
@@ -60,7 +64,7 @@
     <div class="relative">
       <input
         id="add-pw"
-        class="flex h-10 w-full rounded-md border border-surface/10 bg-surface/4 px-3 py-2 text-sm text-text-primary ring-offset-bg-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent disabled:cursor-not-allowed disabled:opacity-50 pr-10"
+        class="flex h-10 w-full rounded-md border {errors.password ? 'border-danger' : 'border-surface/10'} bg-surface/4 px-3 py-2 text-sm text-text-primary ring-offset-bg-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent disabled:cursor-not-allowed disabled:opacity-50 pr-10"
         type={showPw ? "text" : "password"}
         bind:value={password}
         placeholder={$_("add_credential.placeholder") || "•••••••••••••••"}
@@ -78,6 +82,12 @@
         {/if}
       </button>
     </div>
+    
+    {#if errors.password}
+      <span class="text-[11px] text-danger mt-1 animate-in fade-in slide-in-from-top-1">
+        {$_(`add_credential.${errors.password}`)}
+      </span>
+    {/if}
 
     <PasswordStrength {password} />
 

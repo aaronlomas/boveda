@@ -2,6 +2,7 @@
   import { generatePassword } from "$lib/utils/tauri";
   import { _ } from "svelte-i18n";
   import Button from "../../ui/primitives/Button.svelte";
+  import { UI_CONFIG } from "$lib/config/ui";
 
   let { onuse }: { onuse: (pw: string) => void } = $props();
 
@@ -24,7 +25,7 @@
       const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
       await writeText(genPreview);
       genCopied = true;
-      setTimeout(() => (genCopied = false), 2000);
+      setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
       return;
     } catch (e) {
       console.warn("Tauri clipboard error:", e);
@@ -33,7 +34,7 @@
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(genPreview);
         genCopied = true;
-        setTimeout(() => (genCopied = false), 2000);
+        setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
         return;
       }
     } catch (err) {}
@@ -48,7 +49,7 @@
       document.execCommand("copy");
       document.body.removeChild(textArea);
       genCopied = true;
-      setTimeout(() => (genCopied = false), 2000);
+      setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
     } catch (err2) {}
   }
 

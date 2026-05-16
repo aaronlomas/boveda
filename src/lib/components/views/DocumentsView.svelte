@@ -7,7 +7,7 @@
     IconArrowLeft,
   } from "@tabler/icons-svelte";
   import SaveNoteModal from "../modals/forms/SaveNoteModal.svelte";
-  import BoardEditor from "../board/ui/BoardEditor.svelte";
+  import BoardEditor from "../board/BoardEditor.svelte";
 
   let content = $state("");
   let currentView: "selection" | "editor" | "import" | "list" = $state(

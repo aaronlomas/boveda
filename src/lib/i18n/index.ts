@@ -30,7 +30,7 @@ export async function initI18n() {
     isInitialized = true;
   } catch (error) {
     console.error("Failed to initialize i18n:", error);
-    // Fallback
+    // Ultimate fallback
     init({
       fallbackLocale: "es",
       initialLocale: "es",
@@ -46,4 +46,23 @@ export async function changeLanguage(lang: "en" | "es") {
   } catch (error) {
     console.error("Failed to save language preference:", error);
   }
+}
+
+/**
+ * Robust translation helper with fallback
+ * Usage: t("key", "Default Text")
+ */
+import { _ } from "svelte-i18n";
+import { get } from "svelte/store";
+
+export function t(key: string, defaultText?: string, vars?: any): string {
+  const translate = get(_);
+  const result = translate(key, vars);
+  
+  // svelte-i18n returns the key if it's missing
+  if (result === key && defaultText) {
+    return defaultText;
+  }
+  
+  return result;
 }

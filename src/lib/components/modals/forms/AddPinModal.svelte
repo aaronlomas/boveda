@@ -3,39 +3,23 @@
   import { IconEye, IconEyeOff } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
   import { focus } from "$lib/utils/actions";
+  import { useForm } from "$lib/validation/useForm";
+  import { pinSchema, type PinForm } from "$lib/validation/schemas";
 
   let { onadded, onclose }: { onadded?: () => void; onclose?: () => void } =
     $props();
 
-  let name = $state("");
-  let pin = $state("");
-  let notes = $state("");
-  let loading = $state(false);
-  let error = $state("");
   let showPin = $state(false);
 
-  async function submit() {
-    error = "";
-    if (!name.trim()) {
-      error = $_("pin_security.error_name");
-      return;
-    }
-    if (!pin.trim()) {
-      error = $_("pin_security.error_pin");
-      return;
-    }
-
-    loading = true;
-    try {
-      await addPin(name.trim(), pin.trim(), notes.trim());
+  const form = useForm<PinForm>(
+    pinSchema,
+    { name: "", pin: "", notes: "" },
+    async (values) => {
+      await addPin(values.name.trim(), values.pin.trim(), values.notes?.trim() || "");
       onadded?.();
       onclose?.();
-    } catch (e: any) {
-      error = e.toString();
-    } finally {
-      loading = false;
     }
-  }
+  );
 
   function close() {
     onclose?.();
@@ -73,7 +57,7 @@
         class="flex flex-col gap-4"
         onsubmit={(e) => {
           e.preventDefault();
-          submit();
+          form.handleSubmit();
         }}
       >
         <!-- Name -->
@@ -83,12 +67,17 @@
           >
           <input
             id="pin-name"
-            class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
-            bind:value={name}
+            class="w-full px-4 py-2.5 bg-surface/5 border {form.errors.name ? 'border-danger' : 'border-surface/10'} rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all"
+            bind:value={form.values.name}
             placeholder={$_("pin_security.name_placeholder")}
             autocomplete="off"
             use:focus
           />
+          {#if form.errors.name}
+            <span class="text-[11px] text-danger animate-in fade-in slide-in-from-top-1">
+              {$_(`pin_security.${form.errors.name}`)}
+            </span>
+          {/if}
         </div>
 
         <!-- PIN -->
@@ -99,9 +88,9 @@
           <div class="relative">
             <input
               id="pin-code"
-              class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all pr-10"
+              class="w-full px-4 py-2.5 bg-surface/5 border {form.errors.pin ? 'border-danger' : 'border-surface/10'} rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all pr-10"
               type={showPin ? "text" : "password"}
-              bind:value={pin}
+              bind:value={form.values.pin}
               placeholder={$_("pin_security.pin_placeholder")}
               autocomplete="new-password"
             />
@@ -117,6 +106,11 @@
               {/if}
             </button>
           </div>
+          {#if form.errors.pin}
+            <span class="text-[11px] text-danger animate-in fade-in slide-in-from-top-1">
+              {$_(`pin_security.${form.errors.pin}`)}
+            </span>
+          {/if}
         </div>
 
         <!-- Notes -->
@@ -127,17 +121,17 @@
           <textarea
             id="pin-notes"
             class="w-full px-4 py-2.5 bg-surface/5 border border-surface/10 rounded-lg text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 focus:bg-surface/8 transition-all resize-vertical min-h-18"
-            bind:value={notes}
+            bind:value={form.values.notes}
             placeholder={$_("pin_security.notes_placeholder")}
             rows="3"
           ></textarea>
         </div>
 
-        {#if error}
+        {#if form.globalError}
           <p
             class="text-danger text-xs py-2 px-3 bg-danger/10 border border-danger/20 rounded-md"
           >
-            {error}
+            {form.globalError}
           </p>
         {/if}
       </form>
@@ -156,9 +150,9 @@
         form="add-pin-form"
         type="submit"
         class="inline-flex items-center justify-center h-10 px-5 rounded-sm text-sm font-bold cursor-pointer transition-all border-none bg-accent text-white shadow-lg shadow-accent/20 hover:brightness-110 hover:-translate-y-px active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed min-w-24 gap-1.5"
-        disabled={loading}
+        disabled={form.loading}
       >
-        {#if loading}
+        {#if form.loading}
           <span
             class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin"
           ></span>

@@ -1,7 +1,8 @@
 /**
- * Utilities for formatting rich text in the board
+ * Ejecuta un comando nativo de edición de texto en el documento.
+ * @param {string} command - El nombre del comando (ej. 'bold', 'italic').
+ * @param {string | undefined} [value] - Valor opcional para el comando.
  */
-
 export function execBoardCommand(command: string, value: string | undefined = undefined): void {
   if (typeof document !== "undefined") {
     document.execCommand(command, false, value);
@@ -9,9 +10,9 @@ export function execBoardCommand(command: string, value: string | undefined = un
 }
 
 /**
- * Apply an exact point (pt) font-size to the current text selection.
- * Works by wrapping the selected Range in a <span> with an explicit
- * inline style, avoiding the browser's limited 1-7 scale.
+ * Aplica un tamaño de fuente exacto en puntos (pt) a la selección actual.
+ * Crea un <span> con estilos inline para evitar las limitaciones del scale 1-7 del navegador.
+ * @param {number} size - El tamaño de la fuente en puntos.
  */
 export function setFontSize(size: number): void {
   if (typeof document === "undefined") return;
@@ -63,7 +64,10 @@ export function setFontSize(size: number): void {
 }
 
 /**
- * Handle paste events with security sanitization
+ * Maneja eventos de pegado con saneamiento de seguridad y detección de patrones peligrosos.
+ * @param {ClipboardEvent} e - El evento de portapapeles.
+ * @param {(msg: string) => void} onWarning - Callback para notificar advertencias de seguridad.
+ * @returns {string | null} El texto saneado o null si ya se manejó la inserción.
  */
 export function handlePasteSecurity(e: ClipboardEvent, onWarning: (msg: string) => void): string | null {
   e.preventDefault();

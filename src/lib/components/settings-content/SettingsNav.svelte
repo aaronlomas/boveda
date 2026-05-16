@@ -1,4 +1,12 @@
 <script lang="ts">
+  /**
+   * @component SettingsNav
+   * @description Navegación lateral para la vista de configuración.
+   * 
+   * @param {Object} props
+   * @param {Section[]} props.sections - Lista de secciones disponibles.
+   * @param {string} props.activeSection - (bindable) El ID de la sección actualmente seleccionada.
+   */
   import { _ } from "svelte-i18n";
 
   interface Section {

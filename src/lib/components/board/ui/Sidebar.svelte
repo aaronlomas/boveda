@@ -1,4 +1,13 @@
 <script lang="ts">
+  /**
+   * @component Sidebar
+   * @description Barra lateral para el editor de documentos (Board).
+   * Muestra información de ayuda y acciones secundarias.
+   * 
+   * @param {Object} props
+   * @param {BoardStore} props.store - Store que maneja el estado del editor.
+   * @param {() => void} [props.onviewnotes] - Callback opcional para ver notas adicionales.
+   */
   import { _ } from "svelte-i18n";
   import { t } from "$lib/i18n";
   import { IconEye, IconInfoCircle } from "@tabler/icons-svelte";

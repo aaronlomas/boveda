@@ -1,4 +1,13 @@
 <script lang="ts">
+  /**
+   * @component AddCredentialModal
+   * @description Formulario para agregar nuevas credenciales a la bóveda.
+   * Maneja la validación y el envío de datos de usuario, contraseña y códigos de recuperación.
+   * 
+   * @param {Object} props
+   * @param {() => void} props.onadded - Callback ejecutado exitosamente tras guardar la credencial.
+   * @param {() => void} props.onclose - Callback para cerrar el modal.
+   */
   import { _ } from "svelte-i18n";
   import Modal from "../../ui/primitives/Modal.svelte";
   import Button from "../../ui/primitives/Button.svelte";

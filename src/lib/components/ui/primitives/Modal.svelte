@@ -1,4 +1,17 @@
 <script lang="ts">
+  /**
+   * @component Modal
+   * @description Componente de diálogo modal con transiciones suaves y accesibilidad mejorada.
+   * 
+   * @param {Object} props
+   * @param {boolean} [props.show=false] - Controla la visibilidad del modal.
+   * @param {() => void} [props.onclose] - Callback para cerrar el modal.
+   * @param {import("svelte").Snippet} [props.children] - Contenido principal del modal.
+   * @param {string} [props.title] - Título del modal.
+   * @param {string} [props.description] - Descripción opcional para accesibilidad.
+   * @param {import("svelte").Snippet} [props.footer] - Contenido para el pie del modal (ej. botones).
+   * @param {string} [props.class=""] - Clases CSS adicionales para el contenedor.
+   */
   import type { Snippet } from "svelte";
   import { fade, scale } from "svelte/transition";
   import { backOut } from "svelte/easing";

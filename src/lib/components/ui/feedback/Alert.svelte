@@ -1,4 +1,14 @@
 <script lang="ts">
+  /**
+   * @component Alert
+   * @description Componente para mostrar mensajes de retroalimentación (errores, advertencias, éxitos).
+   * 
+   * @param {Object} props
+   * @param {"default" | "destructive" | "success" | "warning"} [props.variant="default"] - El estilo visual del alert.
+   * @param {string} [props.title] - Título opcional para el alert.
+   * @param {import("svelte").Snippet} [props.children] - Contenido principal del alert.
+   * @param {string} [props.class=""] - Clases CSS adicionales.
+   */
   import type { Snippet } from "svelte";
   import { IconAlertCircle, IconAlertTriangle, IconCheck, IconInfoCircle } from "@tabler/icons-svelte";
 

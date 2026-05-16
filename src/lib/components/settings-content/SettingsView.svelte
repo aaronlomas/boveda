@@ -1,4 +1,10 @@
 <script lang="ts">
+  /**
+   * @component SettingsView
+   * @description Vista principal de configuración de la aplicación. 
+   * Organiza las opciones en paneles (Tema, Idioma, Seguridad, Rendimiento, etc.)
+   * y maneja la navegación lateral.
+   */
   import { themeStore } from "$lib/stores/theme.svelte";
   import { performanceStore } from "$lib/stores/performance.svelte";
   import { globalState } from "$lib/stores/stores.svelte";

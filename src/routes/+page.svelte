@@ -1,7 +1,7 @@
 <!-- Fix for Tailwind 4 parser bug -->
 <script lang="ts">
   import Sidebar from "$lib/components/ui/Sidebar.svelte";
-  import Dashboard from "$lib/components/views/Dashboard.svelte";
+  import MainView from "$lib/components/views/MainView.svelte";
   import UnlockScreen from "$lib/components/views/UnlockScreen.svelte";
   import { globalState } from "$lib/stores/stores.svelte";
   import { themeStore } from "$lib/stores/theme.svelte";
@@ -21,7 +21,7 @@
   <div class="app-layout">
     <Sidebar />
     <main class="main-content" class:collapsed={globalState.sidebarCollapsed}>
-      <Dashboard />
+      <MainView />
     </main>
   </div>
 {:else}

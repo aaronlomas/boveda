@@ -13,6 +13,9 @@
     IconEye,
     IconLock,
     IconChevronDown,
+    IconEraser,
+    IconAlertTriangle,
+    IconX
   } from "@tabler/icons-svelte";
   import { execBoardCommand, getCommandState, getAlignment, setFontSize, getFontSizeAtCaret } from "$lib/utils/board/board";
 
@@ -36,6 +39,7 @@
   let textAlign = $state<"left" | "center" | "right">("left");
   let currentSize = $state(14);
   let showSizeDropdown = $state(false);
+  let pasteWarning = $state("");
 
   // Initialize content once
   $effect(() => {
@@ -71,6 +75,36 @@
     setFontSize(size);
     currentSize = size;
     if (editorRef) content = editorRef.innerHTML;
+  }
+
+  function handlePaste(e: ClipboardEvent) {
+    e.preventDefault();
+    let text = e.clipboardData?.getData("text/plain");
+    
+    if (text) {
+      // 1. Sanitize: Remove zero-width spaces and dangerous non-printable control characters
+      const sanitizedText = text.replace(/[\u200B-\u200D\uFEFF\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+      
+      // 2. Detect: Expanded dangerous patterns
+      const dangerousPatterns = /(\bsudo\b|\bcurl\b|\bwget\b|\bpowershell\b|\bbash\b|\bsh -c\b|\brm -rf\b|\biex\b|\binvoke-expression\b|\bshutdown\b|\bnet user\b|\bformat\b|\bdel \/f\b)/gi;
+      
+      if (dangerousPatterns.test(sanitizedText)) {
+        pasteWarning = $_("documents.paste_warning") || "¡Atención! El texto pegado contiene comandos de sistema. Nunca copies y pegues esto en una terminal a menos que sepas exactamente lo que hace.";
+        
+        // 3. Unmasking: Highlight malicious parts in red
+        // Escape HTML to prevent XSS from the text itself
+        const escaped = sanitizedText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const highlightedHTML = escaped.replace(dangerousPatterns, (match) => {
+          return `<span style="color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.15); padding: 1px 4px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3);" title="Detección de Bóveda: Comando peligroso">${match}</span>`;
+        });
+        
+        document.execCommand("insertHTML", false, highlightedHTML);
+      } else {
+        document.execCommand("insertText", false, sanitizedText);
+      }
+      
+      if (editorRef) content = editorRef.innerHTML;
+    }
   }
 </script>
 
@@ -202,7 +236,30 @@
         <IconAlignRight size={18} stroke={2.5} />
       </button>
     </div>
+
+    <div class="w-px h-6 bg-surface/20 mx-1"></div>
+
+    <button
+      class="p-2 rounded-md text-text-secondary hover:text-danger transition-colors"
+      onclick={() => handleCommand("removeFormat")}
+      title={$_("documents.clear_format")}
+    >
+      <IconEraser size={18} stroke={2.5} />
+    </button>
   </div>
+
+  <!-- Security Alert Banner -->
+  {#if pasteWarning}
+    <div class="px-4 py-2.5 bg-warning/10 border-b border-warning/20 flex items-center justify-between text-warning text-xs animate-in fade-in slide-in-from-top-2 duration-300">
+      <div class="flex items-center gap-2">
+        <IconAlertTriangle size={16} class="min-w-4" />
+        <span class="font-medium">{pasteWarning}</span>
+      </div>
+      <button class="hover:text-warning-light p-1 rounded-md transition-colors" onclick={() => (pasteWarning = "")}>
+        <IconX size={14} />
+      </button>
+    </div>
+  {/if}
 
   <!-- Editor Area -->
   <div class="relative flex-1 min-h-70 p-0">
@@ -219,6 +276,7 @@
       onmouseup={updateState}
       oninput={handleInput}
       onblur={handleInput}
+      onpaste={handlePaste}
     ></div>
   </div>
 

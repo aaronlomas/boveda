@@ -83,6 +83,8 @@
     "align_center": "Align Center",
     "align_right": "Align Right",
     "placeholder": "Write or paste your secret notes here...",
+    "clear_format": "Clear Formatting",
+    "paste_warning": "Warning! The pasted text contains system commands. Never copy and paste this into a terminal unless you know what it does.",
     "save_existing": "Save existing",
     "generate_encrypt": "Generate and encrypt",
     "view_notes": "View Notes",

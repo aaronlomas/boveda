@@ -87,6 +87,8 @@
     "align_center": "Centrar",
     "align_right": "Alinear a la derecha",
     "placeholder": "Escribe o pega tus notas secretas aquí...",
+    "clear_format": "Borrar formato",
+    "paste_warning": "¡Atención! El texto pegado contiene comandos de sistema. Nunca copies y pegues esto en una terminal a menos que sepas exactamente lo que hace.",
     "save_existing": "Guardar existente",
     "generate_encrypt": "Generar y cifrar",
     "view_notes": "Ver notas",

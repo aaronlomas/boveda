@@ -18,7 +18,6 @@
   import { _ } from "svelte-i18n";
   import { focus } from "$lib/utils/actions";
 
-
   const version = import.meta.env.APP_VERSION;
   const status = import.meta.env.APP_STATUS;
 
@@ -32,7 +31,7 @@
   let showPassword = $state(false);
   let showConfirmPassword = $state(false);
   let cooldown = $state(0);
-  
+
   let recoveryCode = $state("");
   let isRecovery = $state(false);
   let recoverySuccess = $state(false);
@@ -55,7 +54,7 @@
   async function submit() {
     if (cooldown > 0) return;
     error = "";
-    
+
     if (!pendingTotp) {
       if (!password) {
         error = $_("unlock_screen.error_empty");
@@ -71,7 +70,7 @@
         const status = await unlockVault(password);
         if (status === "totp_required") {
           pendingTotp = true;
-          // We don't clear password yet because we might need it for re-auth if TOTP fails? 
+          // We don't clear password yet because we might need it for re-auth if TOTP fails?
           // Actually, once status is totp_required, the vault is partially unlocked in the backend.
         } else {
           password = ""; // Security: Clear password from memory
@@ -105,7 +104,7 @@
       }
     }
   }
-  
+
   async function submitRecovery() {
     if (recoverySuccess) {
       completeRecovery();
@@ -116,7 +115,9 @@
     loading = true;
     error = "";
     try {
-      const valid = await invoke<boolean>("totp_recovery_check", { code: cleanRecovery });
+      const valid = await invoke<boolean>("totp_recovery_check", {
+        code: cleanRecovery,
+      });
       if (valid) {
         recoverySuccess = true;
       }
@@ -140,7 +141,7 @@
   function handleError(e: any) {
     error = $_("unlock_screen.error_incorrect");
     isShaking = true;
-    setTimeout(() => isShaking = false, 500);
+    setTimeout(() => (isShaking = false), 500);
 
     // Add cooldown (1-3 seconds) to prevent rapid brute force
     cooldown = Math.floor(Math.random() * 3) + 1;
@@ -158,7 +159,6 @@
     error = "";
     invoke("lock_vault");
   }
-
 </script>
 
 <div class="h-full grid grid-rows-[auto_1fr_auto]">
@@ -173,12 +173,13 @@
       <IconSignRight size={16} />
     </a>
 
-    <div class="flex items-center gap-3">
-    </div>
+    <div class="flex items-center gap-3"></div>
   </header>
 
   <div
-    class="max-w-90 m-auto p-8 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 {isShaking ? 'animate-shake' : ''}"
+    class="max-w-90 m-auto p-8 flex flex-col items-center gap-2 bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 {isShaking
+      ? 'animate-shake'
+      : ''}"
   >
     <div class="flex mb-4">
       {#if recoverySuccess}
@@ -223,7 +224,10 @@
           >
 
           <div
-            class="flex border border-surface/10 rounded-lg px-4 py-2 gap-x-2 bg-transparent {cooldown > 0 ? 'opacity-50 grayscale' : ''}"
+            class="flex border border-surface/10 rounded-lg px-4 py-2 gap-x-2 bg-transparent {cooldown >
+            0
+              ? 'opacity-50 grayscale'
+              : ''}"
           >
             <input
               id="master-pw"
@@ -287,12 +291,16 @@
           </div>
         {/if}
       {:else if isRecovery}
-        <div class="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-4">
+        <div
+          class="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-4"
+        >
           {#if !recoverySuccess}
             <label for="recovery-unlock" class="text-xs text-text-primary"
               >{$_("settings.security.totp_recovery_title")}</label
             >
-            <div class="flex border border-surface/10 rounded-lg px-4 py-2 bg-transparent">
+            <div
+              class="flex border border-surface/10 rounded-lg px-4 py-2 bg-transparent"
+            >
               <input
                 id="recovery-unlock"
                 use:focus
@@ -304,10 +312,13 @@
                 disabled={recoverySuccess}
               />
             </div>
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="text-xs text-text-muted hover:text-accent-light transition-all flex items-center gap-1 mt-2 self-start cursor-pointer"
-              onclick={() => { isRecovery = false; error = ""; }}
+              onclick={() => {
+                isRecovery = false;
+                error = "";
+              }}
             >
               <IconArrowLeft size={14} />
               {$_("settings.security.totp_back_to_password")}
@@ -315,11 +326,15 @@
           {/if}
         </div>
       {:else}
-        <div class="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-4">
+        <div
+          class="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-4"
+        >
           <label for="totp-unlock" class="text-xs text-text-primary"
             >{$_("settings.security.totp_verify_label")}</label
           >
-          <div class="flex border border-surface/10 rounded-lg px-4 py-2 bg-transparent">
+          <div
+            class="flex border border-surface/10 rounded-lg px-4 py-2 bg-transparent"
+          >
             <input
               id="totp-unlock"
               use:focus
@@ -332,10 +347,10 @@
               placeholder="000000"
             />
           </div>
-          
+
           <div class="flex items-center mt-2">
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="text-xs text-text-muted hover:text-accent-light transition-all flex items-center gap-1 cursor-pointer"
               onclick={resetUnlock}
             >
@@ -365,9 +380,13 @@
           ></span>
           {$_("unlock_screen.button_processing")}
         {:else if cooldown > 0}
-          <span class="animate-pulse">{$_("unlock_screen.wait_seconds", { values: { seconds: cooldown } })}</span>
+          <span class="animate-pulse"
+            >{$_("unlock_screen.wait_seconds", {
+              values: { seconds: cooldown },
+            })}</span
+          >
         {:else if recoverySuccess}
-           <IconCircleCheck size={18} /> {$_("settings.done_btn") || "OK"}
+          <IconCircleCheck size={18} /> {$_("settings.done_btn") || "OK"}
         {:else if isRecovery}
           <IconLifebuoy size={18} /> {$_("settings.security.totp_recovery_btn")}
         {:else if isNew}
@@ -378,15 +397,17 @@
       </button>
 
       {#if pendingTotp && !isRecovery && !recoverySuccess}
-        <button 
+        <button
           type="button"
           class="text-[10px] uppercase tracking-wider text-text-muted hover:text-warning transition-all cursor-pointer font-bold mt-2 self-center"
-          onclick={() => { isRecovery = true; error = ""; }}
+          onclick={() => {
+            isRecovery = true;
+            error = "";
+          }}
         >
           {$_("settings.security.totp_recovery_link")}
         </button>
       {/if}
-
     </form>
 
     {#if isNew}
@@ -406,4 +427,3 @@
     </p>
   </footer>
 </div>
-

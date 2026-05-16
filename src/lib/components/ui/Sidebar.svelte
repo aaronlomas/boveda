@@ -210,7 +210,7 @@
 
   <!-- Logout button -->
   <button
-    class="mt-auto flex justify-center items-center gap-3 p-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-full whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
+    class="mt-auto flex justify-center items-center gap-3 py-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-full whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
     onclick={logout}
     data-tooltip={globalState.sidebarCollapsed
       ? $_("sidebar.logout")

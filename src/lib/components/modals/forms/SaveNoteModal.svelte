@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { IconLock, IconX } from "@tabler/icons-svelte";
-  import { useForm } from "$lib/validation/useForm";
+  import { useForm } from "$lib/validation/useForm.svelte";
   import { noteSchema, type NoteForm } from "$lib/validation/schemas";
 
   let { 
@@ -112,7 +112,7 @@
       <button
         form="save-note-form"
         type="submit"
-        class="px-4 py-2 rounded-xl bg-accent text-bg-primary font-bold hover:bg-accent-light hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20 active:translate-y-0 transition-all flex items-center justify-center gap-2"
+        class="px-4 py-2 rounded-xl bg-accent text-white font-bold hover:bg-accent-light hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20 active:translate-y-0 transition-all flex items-center justify-center gap-2"
         disabled={form.loading}
       >
         {#if form.loading}

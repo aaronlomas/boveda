@@ -23,11 +23,11 @@
   }: Props = $props();
 
   const variants = {
-    default: "border-transparent bg-text-primary text-bg-primary hover:bg-text-primary/80",
+    default: "border-transparent bg-text-primary text-panel hover:bg-text-primary/80",
     secondary: "border-transparent bg-surface/10 text-text-secondary hover:bg-surface/20",
     destructive: "border-transparent bg-danger text-white hover:bg-danger/80",
     outline: "text-text-primary border-surface/20",
-    accent: "border-transparent bg-accent text-bg-primary hover:bg-accent-light",
+    accent: "border-transparent bg-accent text-white hover:bg-accent-light",
   };
 </script>
 

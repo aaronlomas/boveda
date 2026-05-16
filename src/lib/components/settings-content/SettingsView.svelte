@@ -44,8 +44,8 @@
     { id: "language", label: $_("settings.tabs.language"), icon: IconLanguage },
     { id: "security", label: $_("settings.tabs.security"), icon: IconShieldCheck },
     { id: "performance", label: $_("settings.tabs.performance"), icon: IconRocket },
-    { id: "backup", label: $_("settings.tabs.backup") || "Backup", icon: IconDatabaseExport },
-    { id: "about", label: $_("settings.tabs.about") || "About", icon: IconInfoCircle },
+    { id: "backup", label: t("settings.tabs.backup", "Copias de Seguridad"), icon: IconDatabaseExport },
+    { id: "about", label: t("settings.tabs.about", "Acerca de"), icon: IconInfoCircle },
   ]);
 
   const panelMap: any = {
@@ -61,10 +61,10 @@
 </script>
 
 <div
-  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10 h-full flex flex-col"
+  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10 h-full grid grid-rows-[auto_auto_1fr] gap-4"
 >
   <!-- HEADER -->
-  <header class="flex items-center justify-between mb-8 gap-4 shrink-0">
+  <header class="flex items-center justify-between gap-4 shrink-0">
     <div class="flex gap-x-4 items-center">
       <button
         class="p-2 bg-surface/5 hover:bg-surface/10 rounded-full text-text-muted hover:text-text-primary transition-colors cursor-pointer"
@@ -94,23 +94,26 @@
     </button>
   </header>
 
-  <!-- MAIN LAYOUT -->
-  <div class="flex-1 flex overflow-hidden bg-surface/4 backdrop-blur-2xl rounded-3xl border border-surface/8 shadow-2xl">
+  <!-- OPTIONS -->
+  <div class="flex overflow-hidden border border-surface/8">
+    <!-- Sidebar Navigation -->
     <SettingsNav {sections} bind:activeSection />
-
-    <!-- CONTENT AREA -->
-    <main class="flex-1 p-8 overflow-y-auto custom-scrollbar">
-      <div class="max-w-2xl">
-        {#key activeSection}
-          <div class="animate-in fade-in slide-in-from-right-4 duration-300">
-            {#if ActivePanel}
-              <ActivePanel />
-            {/if}
-          </div>
-        {/key}
-      </div>
-    </main>
   </div>
+
+  <!-- CONTENT AREA -->
+  <main
+    class="bg-surface/4 w-full h-full p-4 overflow-y-auto backdrop-blur-sm shadow-xl shadow-black/5"
+  >
+    <div class="max-w-2xl mx-auto h-full">
+      {#key activeSection}
+        <div class="animate-in fade-in slide-in-from-right-4 duration-300">
+          {#if ActivePanel}
+            <ActivePanel />
+          {/if}
+        </div>
+      {/key}
+    </div>
+  </main>
 </div>
 
 <style>

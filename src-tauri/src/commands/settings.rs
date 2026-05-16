@@ -61,6 +61,20 @@ pub async fn import_secure_package(
     state.cmd_import_secure_package(&src_path, password, strategy).await
 }
 
+#[derive(serde::Serialize)]
+pub struct AppInfo {
+    pub app_version: String,
+    pub core_version: String,
+}
+
+#[tauri::command]
+pub fn get_app_info() -> AppInfo {
+    AppInfo {
+        app_version: env!("CARGO_PKG_VERSION").to_string(),
+        core_version: boveda_core::VERSION.to_string(),
+    }
+}
+
 /// Importa una base de datos externa: cierra el pool, copia archivos y reinicia la app.
 /// La lógica de archivos vive en boveda-core; solo `app.restart()` permanece aquí.
 #[tauri::command]

@@ -1,5 +1,5 @@
 import { addAccount } from "$lib/utils/tauri";
-import { useForm } from "$lib/validation/useForm";
+import { useForm } from "$lib/validation/useForm.svelte";
 import { credentialSchema, type CredentialForm } from "$lib/validation/schemas";
 
 export function useCredentialForm(getCallbacks: () => { onadded?: () => void; onclose?: () => void }) {

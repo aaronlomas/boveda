@@ -23,13 +23,14 @@
     size = "md",
     children,
     class: className = "",
+    onclick,
     ...rest
   }: Props = $props();
 
   const baseStyles = "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 disabled:pointer-events-none";
 
   const variants = {
-    primary: "bg-accent text-bg-primary hover:bg-accent-light",
+    primary: "bg-accent text-white hover:bg-accent-light",
     secondary: "bg-surface/5 text-text-secondary border border-surface/10 hover:bg-surface/10 hover:text-text-primary",
     danger: "bg-danger text-white hover:bg-danger/90",
     ghost: "bg-transparent text-text-secondary hover:bg-surface/5 hover:text-text-primary",
@@ -45,6 +46,7 @@
 
 <button
   class="{baseStyles} {variants[variant]} {sizes[size]} {className}"
+  {onclick}
   {...rest}
 >
   {#if children}

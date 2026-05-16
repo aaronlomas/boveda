@@ -103,6 +103,7 @@
 
   <div class="flex gap-2 justify-end mt-1 flex-wrap">
     <Button
+      type="button"
       variant="secondary"
       size="sm"
       onclick={copyGenerated}
@@ -110,6 +111,7 @@
       {genCopied ? $_("add_credential.copied_button") : $_("add_credential.copy_button")}
     </Button>
     <Button
+      type="button"
       variant="primary"
       size="sm"
       onclick={() => onuse(genPreview)}

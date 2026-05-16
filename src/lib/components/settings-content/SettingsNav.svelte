@@ -24,23 +24,23 @@
   } = $props();
 </script>
 
-<aside class="w-64 shrink-0 flex flex-col border-r border-surface/8">
+<aside class="shrink-0 flex">
   {#each sections as section}
     {@const Icon = section.icon}
     <button
-      class="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-all text-left border-b border-surface/5 cursor-pointer
+      class="flex items-center gap-3 px-4 py-2 text-sm font-medium transition-all text-left border
         {activeSection === section.id
-        ? 'bg-accent/10 text-accent-light shadow-sm'
-        : 'bg-transparent text-text-muted hover:bg-surface/5 hover:text-text-secondary'}"
+        ? 'bg-accent/10 border-accent/20 text-accent-light shadow-sm'
+        : 'bg-transparent border-transparent text-text-muted hover:bg-surface/5 hover:text-text-secondary'}"
       onclick={() => (activeSection = section.id)}
     >
       <Icon
         size={18}
         class={activeSection === section.id ? "text-accent" : ""}
       />
-      <span class="flex-1">{section.label}</span>
+      <span>{section.label}</span>
       {#if activeSection === section.id}
-        <div class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse ml-1"></div>
       {/if}
     </button>
   {/each}

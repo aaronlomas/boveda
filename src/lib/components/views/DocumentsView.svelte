@@ -134,7 +134,7 @@
         segura en tu bóveda. Soportamos documentos de texto, PDF e imágenes.
       </p>
       <button
-        class="px-10 py-4 rounded-2xl bg-accent text-bg-primary font-bold hover:bg-accent-light hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/30 active:translate-y-0 transition-all flex items-center gap-3 text-lg"
+        class="px-10 py-4 rounded-2xl bg-accent text-white font-bold hover:bg-accent-light hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/30 active:translate-y-0 transition-all flex items-center gap-3 text-lg"
       >
         <IconFileImport size={24} />
         Seleccionar archivo

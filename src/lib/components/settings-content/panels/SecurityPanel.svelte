@@ -95,6 +95,7 @@
     } catch (e: any) {
       error = e.toString();
     } finally {
+      error = ""; // Clear any previous errors (like the "configured" one)
       processing = false;
     }
   }
@@ -156,14 +157,29 @@
           </div>
         </div>
 
-        {#if !isEnabled && step === 1}
-          <button
-            class="px-4 py-2 bg-accent text-white text-xs font-bold rounded-lg hover:bg-accent-hover transition-all disabled:opacity-50"
-            onclick={startSetup}
-            disabled={processing}
-          >
-            {$_("settings.security.totp_enable_btn")}
-          </button>
+        {#if (!isEnabled && step === 1) || (error && error.includes("configurado"))}
+          <div class="flex items-center gap-2">
+            {#if !isEnabled && step === 1}
+              <button
+                class="px-4 py-2 bg-accent text-white text-xs font-bold rounded-lg hover:bg-accent-hover transition-all disabled:opacity-50"
+                onclick={startSetup}
+                disabled={processing}
+              >
+                {$_("settings.security.totp_enable_btn")}
+              </button>
+            {/if}
+            
+            {#if error && error.includes("configurado")}
+              <button
+                class="p-2 text-danger hover:bg-danger/10 rounded-lg transition-all"
+                onclick={confirmDisable}
+                title={$_("settings.security.totp_disable_btn")}
+                disabled={processing}
+              >
+                <IconTrash size={20} />
+              </button>
+            {/if}
+          </div>
         {:else if isEnabled}
           <button
             class="p-2 text-danger hover:bg-danger/10 rounded-lg transition-all"

@@ -7,6 +7,7 @@
   import { modal } from "$lib/stores/modal.svelte";
   import { performanceStore } from "$lib/stores/performance.svelte";
   import CredentialCard from "../ui/CredentialCard.svelte";
+  import Button from "../ui/primitives/Button.svelte";
   import VirtualList from "svelte-virtual-list";
   import { IconPlus, IconSearch, IconRocket, IconPencil, IconTrash, IconCheck, IconX, IconShieldLock } from "@tabler/icons-svelte";
   import { focus, selectOnFocus } from "$lib/utils/actions";
@@ -141,7 +142,7 @@
   <header class="flex items-center justify-between mb-7 gap-4">
     <div class="flex gap-x-4">
       <button
-        class="p-2 bg-surface/5 hover:bg-surface/10 rounded-lg text-text-muted hover:text-text-primary transition-colors row-span-2 my-auto cursor-pointer"
+        class="p-2 bg-surface/5 hover:bg-surface/10 rounded-lg text-text-muted hover:text-text-primary transition-colors my-auto cursor-pointer"
         onclick={() => (globalState.activeView = "general")}
         aria-label="Back"
       >
@@ -161,13 +162,14 @@
       </div>
     </div>
 
-    <button
-      class="inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium cursor-pointer transition-all border border-transparent bg-accent text-white hover:scale-[0.98] shadow-md shadow-accent/20"
+    <Button
+      variant="primary"
       onclick={() => modal.openAddCredential({ onadded: refresh })}
+      class="shadow-md shadow-accent/20"
     >
-      <IconPlus size={16} />
+      <IconPlus size={16} class="mr-2" />
       {$_("sidebar.new_credential")}
-    </button>
+    </Button>
   </header>
 
   <!-- Search -->
@@ -320,13 +322,14 @@
         {globalState.activeGroup ? "" : $_("accounts.no_credentials_desc")}
       </p>
       {#if !globalState.activeGroup}
-        <button
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 mt-2 rounded-lg text-sm font-medium cursor-pointer transition-all border border-transparent bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20"
+        <Button
+          variant="primary"
           onclick={() => modal.openAddCredential({ onadded: refresh })}
+          class="mt-2 shadow-lg shadow-accent/20"
         >
-          <IconPlus size={16} />
+          <IconPlus size={16} class="mr-2" />
           {$_("sidebar.new_credential")}
-        </button>
+        </Button>
       {/if}
     </div>
 

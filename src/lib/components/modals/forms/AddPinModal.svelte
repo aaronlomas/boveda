@@ -3,7 +3,7 @@
   import { IconEye, IconEyeOff } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
   import { focus } from "$lib/utils/actions";
-  import { useForm } from "$lib/validation/useForm";
+  import { useForm } from "$lib/validation/useForm.svelte";
   import { pinSchema, type PinForm } from "$lib/validation/schemas";
 
   let { onadded, onclose }: { onadded?: () => void; onclose?: () => void } =

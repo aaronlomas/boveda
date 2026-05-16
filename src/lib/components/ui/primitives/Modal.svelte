@@ -90,7 +90,7 @@
         </button>
       {/if}
 
-      <div class="py-4">
+      <div class="py-4 max-h-[70vh] overflow-y-auto custom-scrollbar pr-2">
         {#if children}
           {@render children()}
         {/if}

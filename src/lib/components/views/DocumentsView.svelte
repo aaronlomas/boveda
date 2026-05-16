@@ -51,10 +51,10 @@
       <h1
         class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent"
       >
-        {$_("documents.title")}
+        {$_("documents_mode.title")}
       </h1>
       <p class="text-text-muted text-sm mt-1">
-        {$_("documents.desc")}
+        {$_("documents_mode.desc")}
       </p>
     </div>
     {#if currentView !== "selection"}

@@ -1,6 +1,7 @@
 {
   "sidebar": {
     "general": "General",
+    "desc": "Select a category to manage your security.",
     "new_credential": "New Credential",
     "import_db": "Import DB",
     "export_db": "Export DB",
@@ -8,12 +9,12 @@
     "logout": "Logout",
     "collapse": "Collapse",
     "my_credentials": "MY CREDENTIALS",
-    "import_confirm_title": "Import Database",
-    "import_confirm_message": "This will overwrite your current database with the selected one. This action CANNOT be undone and the application will restart. Are you sure you want to continue?",
-    "import_confirm_button": "Yes, Import",
-    "import_pack": "Import Package",
     "documents": "Documents",
     "about": "About Bóveda"
+  },
+  "general_view": {
+    "general": "General",
+    "desc": "Select a category to manage your security."
   },
   "accounts_mode": {
     "title": "Accounts",
@@ -45,10 +46,46 @@
     "delete_error": "Error deleting credential.",
     "load_error": "Could not load credentials."
   },
-
-  "pin_security": {
+  "add_credential": {
+    "title": "New Credential",
+    "site_label": "Site / App",
+    "site_placeholder": "github.com",
+    "user_label": "Username / Email",
+    "user_placeholder": "you@email.com",
+    "password_label": "Password:",
+    "placeholder": "•••••••••••••••",
+    "recovery_code_label": "Recovery Code (optional)",
+    "recovery_code_placeholder": "ABCD-1234-EFGH",
+    "notes_label": "Notes (optional)",
+    "notes_placeholder": "Additional information…",
+    "generate": "Generate",
+    "hide": "Hide",
+    "regenerate_tooltip": "Regenerate",
+    "generating": "Generating…",
+    "length_label": "Length:",
+    "symbols_label": "Symbols",
+    "copy_button": "Copy",
+    "copied_button": "Copied",
+    "use_password_button": "Use this password",
+    "cancel_button": "Cancel",
+    "save_button": "Save",
+    "saving": "Saving…",
+    "error_site": "Site is required.",
+    "error_user": "Username is required.",
+    "error_password": "Password is required.",
+    "strength": {
+      "very_weak": "Very Weak",
+      "weak": "Weak",
+      "regular": "Regular",
+      "strong": "Strong",
+      "very_strong": "Very Strong"
+    }
+  },
+  "pin_security_mode": {
     "title": "Save PIN",
-    "desc": "Securely store the PINs for your bank cards, access codes, or applications.",
+    "desc": "Securely store the PINs for your bank cards, access codes, or applications."
+  },
+  "pin_security": {
     "new_pin": "New PIN",
     "no_pins": "No PINs saved",
     "no_pins_desc": "Add your first PIN to get started.",
@@ -70,9 +107,11 @@
     "deleted_success": "PIN deleted successfully",
     "deleted_error": "Error deleting PIN"
   },
-  "documents": {
+  "documents_mode": {
     "title": "Documents",
-    "desc": "Secure document storage.",
+    "desc": "Secure document storage."
+  },
+  "documents": {
     "bold": "Bold",
     "italic": "Italic",
     "underline": "Underline",
@@ -100,10 +139,28 @@
     "encrypt_save": "Save",
     "cancel": "Cancel"
   },
-  "code_recovery": {
-    "title": "Code Recovery",
-    "desc": "Save your recovery codes.",
-    "generate_button": "Save"
+  "import_pack": {
+    "title": "Import Package",
+    "desc": "Enter the password and choose how you want to integrate the data.",
+    "button": "Decrypt",
+    "strategy_label": "Import Type",
+    "keep_both": "Keep Both",
+    "keep_both_desc": "Merge data",
+    "replace": "Replace",
+    "replace_desc": "Clear and overwrite",
+    "password_label": "Package Password",
+    "password_error": "The password must be at least 8 characters long.",
+    "success_replace": "Vault replaced successfully.",
+    "success_merge": "Vault imported and merged successfully."
+  },
+  "export_pack": {
+    "title": "Export Package",
+    "button": "Export",
+    "password_label": "Package Password",
+    "password_error": "The password must be at least 8 characters long to ensure package security.",
+    "warning": "The data will be encrypted for security, make sure you remember the password.",
+    "success": "Package exported successfully to:\n{path}",
+    "error": "Error generating the package."
   },
   "settings": {
     "title": "Settings",
@@ -233,45 +290,6 @@
     "select_bg_image_title": "Select Background Image",
     "images_filter_name": "Images"
   },
-
-
-
-
-  "add_credential": {
-    "title": "New Credential",
-    "site_label": "Site / App",
-    "site_placeholder": "github.com",
-    "user_label": "Username / Email",
-    "user_placeholder": "you@email.com",
-    "password_label": "Password:",
-    "placeholder": "•••••••••••••••",
-    "recovery_code_label": "Recovery Code (optional)",
-    "recovery_code_placeholder": "ABCD-1234-EFGH",
-    "notes_label": "Notes (optional)",
-    "notes_placeholder": "Additional information…",
-    "generate": "Generate",
-    "hide": "Hide",
-    "regenerate_tooltip": "Regenerate",
-    "generating": "Generating…",
-    "length_label": "Length:",
-    "symbols_label": "Symbols",
-    "copy_button": "Copy",
-    "copied_button": "Copied",
-    "use_password_button": "Use this password",
-    "cancel_button": "Cancel",
-    "save_button": "Save",
-    "saving": "Saving…",
-    "error_site": "Site is required.",
-    "error_user": "Username is required.",
-    "error_password": "Password is required.",
-    "strength": {
-      "very_weak": "Very Weak",
-      "weak": "Weak",
-      "regular": "Regular",
-      "strong": "Strong",
-      "very_strong": "Very Strong"
-    }
-  },
   "about_view": {
     "title": "Why trust Bóveda?",
     "subtitle": "Transparency, open source, and security by isolation.",
@@ -319,28 +337,5 @@
     "deleted_success": "Group deleted.",
     "deleted_error": "Error deleting the group.",
     "no_accounts_in_group": "No accounts in \"{group}\""
-  },
-  "import_pack": {
-    "title": "Import Package",
-    "desc": "Enter the password and choose how you want to integrate the data.",
-    "button": "Decrypt",
-    "strategy_label": "Import Type",
-    "keep_both": "Keep Both",
-    "keep_both_desc": "Merge data",
-    "replace": "Replace",
-    "replace_desc": "Clear and overwrite",
-    "password_label": "Package Password",
-    "password_error": "The password must be at least 8 characters long.",
-    "success_replace": "Vault replaced successfully.",
-    "success_merge": "Vault imported and merged successfully."
-  },
-  "export_pack": {
-    "title": "Export Package",
-    "button": "Export",
-    "password_label": "Package Password",
-    "password_error": "The password must be at least 8 characters long to ensure package security.",
-    "warning": "The data will be encrypted for security, make sure you remember the password.",
-    "success": "Package exported successfully to:\n{path}",
-    "error": "Error generating the package."
   }
 }

@@ -8,14 +8,13 @@
     "logout": "Cerrar Sesión",
     "collapse": "Ocultar",
     "my_credentials": "MIS CREDENCIALES",
-    "import_confirm_title": "Importar Base de Datos",
-    "import_confirm_message": "Esto sobrescribirá tu base de datos actual con la seleccionada. Esta acción NO se puede deshacer y la aplicación se reiniciará. ¿Estás seguro de que deseas continuar?",
-    "import_confirm_button": "Sí, Importar",
-    "import_pack": "Importar Paquete",
     "documents": "Documentos",
     "about": "Sobre Bóveda"
   },
-
+  "general_view":{
+    "general": "General",
+    "desc": "Selecciona una categoría para administrar tu seguridad."
+  },
   "accounts_mode": {
     "title": "Cuentas",
     "desc": "Gestiona tus cuentas con Bóveda"
@@ -46,10 +45,46 @@
     "delete_error": "Error al eliminar la credencial.",
     "load_error": "No se pudieron cargar las credenciales."
   },
-
-  "pin_security": {
+  "add_credential": {
+    "title": "Nueva Credencial",
+    "site_label": "Sitio / Aplicación",
+    "site_placeholder": "github.com",
+    "user_label": "Usuario / Email",
+    "user_placeholder": "tu@email.com",
+    "password_label": "Contraseña:",
+    "placeholder": "•••••••••••••••",
+    "recovery_code_label": "Código de recuperación (opcional)",
+    "recovery_code_placeholder": "ABCD-1234-EFGH",
+    "notes_label": "Notas (opcional)",
+    "notes_placeholder": "Información adicional…",
+    "generate": "Generar",
+    "hide": "Ocultar",
+    "regenerate_tooltip": "Regenerar",
+    "generating": "Generando…",
+    "length_label": "Longitud:",
+    "symbols_label": "Símbolos",
+    "copy_button": "Copiar",
+    "copied_button": "Copiado",
+    "use_password_button": "Usar esta contraseña",
+    "cancel_button": "Cancelar",
+    "save_button": "Guardar",
+    "saving": "Guardando…",
+    "error_site": "El sitio es requerido.",
+    "error_user": "El usuario es requerido.",
+    "error_password": "La contraseña es requerida.",
+    "strength": {
+      "very_weak": "Muy Débil",
+      "weak": "Débil",
+      "regular": "Regular",
+      "strong": "Fuerte",
+      "very_strong": "Muy Fuerte"
+    }
+  },
+  "pin_security_mode":{
     "title": "Guardar PIN",
-    "desc": "Guarda de forma segura los PINs de tus tarjetas bancarias, accesos o aplicaciones.",
+    "desc": "Guarda de forma segura los PINs de tus tarjetas bancarias, accesos o aplicaciones."
+  },
+  "pin_security": {
     "new_pin": "Nuevo PIN",
     "no_pins": "No hay PINs guardados",
     "no_pins_desc": "Agrega tu primer PIN para empezar.",
@@ -66,17 +101,17 @@
     "cancel_button": "Cancelar",
     "error_name": "El nombre es requerido.",
     "error_pin": "El PIN es requerido.",
-
-
     "delete_confirm_pin": "Deseas eliminar este PIN?",
     "delete_tooltip": "Eliminar",
     "delete_confirm_message": "Esta acción no se puede deshacer.",
     "deleted_success": "PIN eliminado correctamente",
     "deleted_error": "Error al eliminar el PIN"
   },
-  "documents": {
+  "documents_mode": {
     "title": "Documentos",
-    "desc": "Almacenamiento seguro de documentos y notas.",
+    "desc": "Almacenamiento seguro de documentos y notas."
+  },
+  "documents": {
     "bold": "Negrita",
     "italic": "Cursiva",
     "underline": "Subrayado",
@@ -104,10 +139,28 @@
     "encrypt_save": "Guardar",
     "cancel": "Cancelar"
   },
-  "code_recovery": {
-    "title": "Código de Recuperación",
-    "desc": "Guarda tus códigos de recuperación.",
-    "generate_button": "Guardar"
+  "import_pack": {
+    "title": "Importar Paquete",
+    "desc": "Introduce la contraseña y elige cómo quieres integrar los datos.",
+    "button": "Descifrar",
+    "strategy_label": "Tipo de Importación",
+    "keep_both": "Conservar ambos",
+    "keep_both_desc": "Fusionar datos",
+    "replace": "Reemplazar",
+    "replace_desc": "Limpiar y sobreescribir",
+    "password_label": "Contraseña del Paquete",
+    "password_error": "La contraseña debe tener al menos 8 caracteres.",
+    "success_replace": "Baúl reemplazado con éxito.",
+    "success_merge": "Baúl importado y fusionado con éxito."
+  },
+  "export_pack": {
+    "title": "Exportar Paquete",
+    "button": "Exportar",
+    "password_label": "Contraseña del Paquete",
+    "password_error": "La contraseña debe tener al menos 8 caracteres para garantizar la seguridad del paquete.",
+    "warning": "Los datos serán cifrados por seguridad, asegúrate de recordar la contraseña.",
+    "success": "Paquete exportado con éxito a:\n{path}",
+    "error": "Error al generar el paquete."
   },
   "settings": {
     "title": "Configuración",
@@ -208,8 +261,6 @@
     }
   },
   "unlock_screen": {
-    "header_import": "Importar DB",
-    "header_settings": "Configuración",
     "welcome_title": "Bóveda",
     "new_vault_desc": "Crea tu contraseña maestra para proteger tu bóveda.",
     "unlock_vault_desc": "Ingresa tu contraseña maestra para desbloquear.",
@@ -238,41 +289,6 @@
     "images_filter_name": "Imágenes"
   },
 
-  "add_credential": {
-    "title": "Nueva Credencial",
-    "site_label": "Sitio / Aplicación",
-    "site_placeholder": "github.com",
-    "user_label": "Usuario / Email",
-    "user_placeholder": "tu@email.com",
-    "password_label": "Contraseña:",
-    "placeholder": "•••••••••••••••",
-    "recovery_code_label": "Código de recuperación (opcional)",
-    "recovery_code_placeholder": "ABCD-1234-EFGH",
-    "notes_label": "Notas (opcional)",
-    "notes_placeholder": "Información adicional…",
-    "generate": "Generar",
-    "hide": "Ocultar",
-    "regenerate_tooltip": "Regenerar",
-    "generating": "Generando…",
-    "length_label": "Longitud:",
-    "symbols_label": "Símbolos",
-    "copy_button": "Copiar",
-    "copied_button": "Copiado",
-    "use_password_button": "Usar esta contraseña",
-    "cancel_button": "Cancelar",
-    "save_button": "Guardar",
-    "saving": "Guardando…",
-    "error_site": "El sitio es requerido.",
-    "error_user": "El usuario es requerido.",
-    "error_password": "La contraseña es requerida.",
-    "strength": {
-      "very_weak": "Muy Débil",
-      "weak": "Débil",
-      "regular": "Regular",
-      "strong": "Fuerte",
-      "very_strong": "Muy Fuerte"
-    }
-  },
   "about_view": {
     "title": "¿Por qué confiar en Bóveda?",
     "subtitle": "Transparencia, código abierto y seguridad por aislamiento.",
@@ -289,10 +305,6 @@
     "maximize": "Maximizar",
     "restore": "Restaurar",
     "close": "Cerrar"
-  },
-  "views": {
-    "documents_title": "Documentos",
-    "documents_desc": "Almacenamiento seguro de documentos (Próximamente)."
   },
   "groups": {
     "all": "Todas",
@@ -320,28 +332,5 @@
     "deleted_success": "Grupo eliminado.",
     "deleted_error": "Error al eliminar el grupo.",
     "no_accounts_in_group": "No hay cuentas en \"{group}\""
-  },
-  "import_pack": {
-    "title": "Importar Paquete",
-    "desc": "Introduce la contraseña y elige cómo quieres integrar los datos.",
-    "button": "Descifrar",
-    "strategy_label": "Tipo de Importación",
-    "keep_both": "Conservar ambos",
-    "keep_both_desc": "Fusionar datos",
-    "replace": "Reemplazar",
-    "replace_desc": "Limpiar y sobreescribir",
-    "password_label": "Contraseña del Paquete",
-    "password_error": "La contraseña debe tener al menos 8 caracteres.",
-    "success_replace": "Baúl reemplazado con éxito.",
-    "success_merge": "Baúl importado y fusionado con éxito."
-  },
-  "export_pack": {
-    "title": "Exportar Paquete",
-    "button": "Exportar",
-    "password_label": "Contraseña del Paquete",
-    "password_error": "La contraseña debe tener al menos 8 caracteres para garantizar la seguridad del paquete.",
-    "warning": "Los datos serán cifrados por seguridad, asegúrate de recordar la contraseña.",
-    "success": "Paquete exportado con éxito a:\n{path}",
-    "error": "Error al generar el paquete."
   }
 }

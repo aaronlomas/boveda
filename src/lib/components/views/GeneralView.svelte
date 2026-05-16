@@ -11,10 +11,10 @@
     <h1
       class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent"
     >
-      {$_("sidebar.general")}
+      {$_("general_view.general")}
     </h1>
     <p class="text-text-muted text-sm mt-1">
-      Selecciona una categoría para administrar tu seguridad.
+      {$_("general_view.desc")}
     </p>
   </div>
 

@@ -72,10 +72,10 @@
         <h1
           class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent pointer-events-none"
         >
-          {$_("pin_security.title")}
+          {$_("pin_security_mode.title")}
         </h1>
         <p class="text-text-muted text-sm mt-0.5 pointer-events-none">
-          {$_("pin_security.desc")}
+          {$_("pin_security_mode.desc")}
         </p>
       </div>
     </div>

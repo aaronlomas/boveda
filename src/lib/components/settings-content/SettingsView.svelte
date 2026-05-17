@@ -28,7 +28,6 @@
   import LanguagePanel from "./panels/LanguagePanel.svelte";
   import PerformancePanel from "./panels/PerformancePanel.svelte";
   import SecurityPanel from "./panels/SecurityPanel.svelte";
-  import BackupPanel from "./panels/BackupPanel.svelte";
   import AboutPanel from "./panels/AboutPanel.svelte";
 
   let activeSection = $state("theme");
@@ -44,7 +43,6 @@
     { id: "language", label: $_("settings.tabs.language"), icon: IconLanguage },
     { id: "security", label: $_("settings.tabs.security"), icon: IconShieldCheck },
     { id: "performance", label: $_("settings.tabs.performance"), icon: IconRocket },
-    { id: "backup", label: t("settings.tabs.backup", "Copias de Seguridad"), icon: IconDatabaseExport },
     { id: "about", label: t("settings.tabs.about", "Acerca de"), icon: IconInfoCircle },
   ]);
 
@@ -53,7 +51,6 @@
     language: LanguagePanel,
     security: SecurityPanel,
     performance: PerformancePanel,
-    backup: BackupPanel,
     about: AboutPanel
   };
 

@@ -35,12 +35,12 @@
         class="w-full px-4 py-2 rounded-xl border border-surface/20 text-text-secondary text-sm font-medium hover:bg-surface/10 hover:text-text-primary transition-all flex items-center justify-center gap-2"
       >
         <IconEye size={18} />
-        {$_("documents.view_notes")}
+        {$_("board.view_notes")}
       </button>
     {/if}
   </div>
   
-  <div class="p-4 border-t border-surface/8 text-[10px] text-text-muted text-center italic">
+  <div class="p-4 border-t border-surface/8 text-xs text-text-muted text-center italic">
     Bóveda Secure Editor v1.0
   </div>
 </aside>

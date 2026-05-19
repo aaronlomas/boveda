@@ -30,26 +30,28 @@
   }
 
   async function handleDelete(id: string) {
-    modal.openConfirm({
+    const confirmed = await modal.openConfirm({
       title: $_("pin_security.delete_confirm_pin"),
       message: $_("pin_security.delete_confirm_message"),
-      confirmText: $_("pin_security.delete_tooltip"),
+      confirmText: $_("actions.delete"),
       type: "danger",
-      onconfirm: async () => {
-        try {
-          await deletePin(id);
-          await refresh();
-          toast.success($_("pin_security.deleted_success"));
-        } catch (e) {
-          console.error(e);
-          toast.error($_("pin_security.delete_error"));
-        }
-      }
     });
+
+    if (!confirmed) return;
+
+    try {
+      await deletePin(id);
+      await refresh();
+      toast.success($_("pin_security.deleted_success"));
+    } catch (e) {
+      console.error(e);
+      toast.error($_("pin_security.delete_error"));
+    }
   }
 
-  function handleNewPin() {
-    modal.openAddPin({ onadded: refresh });
+  async function handleNewPin() {
+    const added = await modal.openAddPin();
+    if (added) refresh();
   }
 
   onMount(refresh);
@@ -106,7 +108,7 @@
   {#if loadError}
     <div class="text-center py-16">
        <p class="text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 inline-block">{loadError}</p>
-       <button class="block mx-auto mt-4 text-accent underline cursor-pointer" onclick={refresh}>Reintentar</button>
+       <button class="block mx-auto mt-4 text-accent underline cursor-pointer" onclick={refresh}>{$_("actions.retry")}</button>
     </div>
   {:else if filtered.length === 0}
     <div

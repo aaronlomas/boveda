@@ -12,18 +12,68 @@
   import Modal from "../../ui/primitives/Modal.svelte";
   import Button from "../../ui/primitives/Button.svelte";
   
-  let { onconfirm, oncancel, title, desc = "", buttonText } = $props<{
+  import { open } from "@tauri-apps/plugin-dialog";
+  import { invoke } from "@tauri-apps/api/core";
+  import { toast } from "$lib/stores/toast.svelte";
+  import { get } from "svelte/store";
+  
+  let { onconfirm, oncancel } = $props<{
     onconfirm: (password: string, strategy: 'merge' | 'replace') => void;
     oncancel: () => void;
-    title: string;
-    desc?: string;
-    buttonText: string;
   }>();
 
   let password = $state("");
   let strategy = $state<'merge' | 'replace'>('merge');
   let showPassword = $state(false);
   let error = $state("");
+  let loading = $state(false);
+
+  async function handleImport() {
+    const t = get(_);
+    loading = true;
+    try {
+      const filePath = await open({
+        title: $_("global.select_db_title") || "Select Database",
+        filters: [
+          { name: "Bóveda Vaults", extensions: ["bvda", "db", "pack", "bvda.pack"] },
+        ],
+      });
+      
+      if (!filePath) return;
+
+      if (filePath.endsWith(".pack") || filePath.endsWith(".bvda.pack")) {
+        // Secure Package Import
+        try {
+          await invoke("import_secure_package", { 
+            srcPath: filePath, 
+            password: password, 
+            strategy: strategy 
+          });
+          toast.success(strategy === 'replace' ? t("import_pack.success_replace") : t("import_pack.success_merge"));
+          onconfirm(password, strategy);
+        } catch (e: any) {
+          console.error("Secure import failed:", e);
+          error = e.toString();
+          toast.error(t("global.error_import") + ": " + e.toString());
+        }
+      } else {
+        // Legacy DB Import (SQLite file replacement)
+        try {
+          await invoke("import_db", { srcPath: filePath });
+          toast.success($_("sidebar.import_confirm_button") || "Base de datos importada");
+          onconfirm(password, strategy);
+        } catch (e: any) {
+          console.error("Import failed:", e);
+          error = e.toString();
+          toast.error(t("global.error_import") + ": " + e.toString());
+        }
+      }
+    } catch (e: any) {
+      console.error("Import selection failed:", e);
+    } finally {
+      loading = false;
+    }
+  }
 
   function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -31,35 +81,22 @@
       error = "La contraseña debe tener al menos 8 caracteres.";
       return;
     }
-    onconfirm(password, strategy);
+    handleImport();
   }
 </script>
 
 <Modal 
   show={true} 
   onclose={oncancel} 
-  title={$_(title)}
+  title={$_("import_pack.title")}
 >
   <div class="space-y-6">
-    <div class="flex items-center gap-3 mb-2">
-      <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
-        <IconDatabaseImport size={24} />
-      </div>
-      <div>
-        {#if desc}
-          <p class="text-xs text-text-muted">{$_(desc)}</p>
-        {/if}
-      </div>
-    </div>
 
     <form onsubmit={handleSubmit} class="space-y-6" id="import-form">
       <!-- Strategy Selection -->
       <div class="space-y-3">
-        <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-1">
-          {$_("import_pack.strategy_label")}
-        </span>
         
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2">
           <button
             type="button"
             class="flex flex-col items-center gap-2 p-3 rounded-xl border transition-all text-center {strategy === 'merge' ? 'bg-accent/10 border-accent text-accent' : 'bg-surface/5 border-surface/10 text-text-muted hover:bg-surface/10'}"
@@ -68,7 +105,7 @@
             <IconCopy size={24} />
             <div class="flex flex-col">
               <span class="text-sm font-bold">{$_("import_pack.keep_both")}</span>
-              <span class="text-[10px] opacity-70">{$_("import_pack.keep_both_desc")}</span>
+              <span class="text-xs opacity-70">{$_("import_pack.keep_both_desc")}</span>
             </div>
           </button>
 
@@ -79,8 +116,8 @@
           >
             <IconReplace size={24} />
             <div class="flex flex-col">
-              <span class="text-sm font-bold">{$_("import_pack.replace")}</span>
-              <span class="text-[10px] opacity-70">{$_("import_pack.replace_desc")}</span>
+              <span class="text-sm font-bold">{$_("actions.replace")}</span>
+              <span class="text-xs opacity-70">{$_("import_pack.replace_desc")}</span>
             </div>
           </button>
         </div>
@@ -117,7 +154,7 @@
           </button>
         </div>
         {#if error}
-          <p class="text-[10px] text-danger font-medium animate-in fade-in slide-in-from-top-1">
+          <p class="text-xs text-danger font-medium animate-in fade-in slide-in-from-top-1">
             {$_("import_pack.password_error")}
           </p>
         {/if}
@@ -127,11 +164,16 @@
 
   {#snippet footer()}
     <Button variant="ghost" onclick={oncancel}>
-      {$_("global.cancel")}
+      {$_("actions.cancel")}
     </Button>
-    <Button type="submit" form="import-form" class="gap-2">
-      <IconDatabaseImport size={18} />
-      {$_(buttonText)}
+    <Button type="submit" form="import-form" class="gap-2" disabled={loading}>
+      {#if loading}
+        <span class="w-3 h-3 border-2 border-surface/30 border-t-white rounded-full animate-spin mr-1.5"></span>
+        {$_("actions.status.decryption")}
+      {:else}
+        <IconDatabaseImport size={18} />
+        {$_("actions.import")}
+      {/if}
     </Button>
   {/snippet}
 </Modal>

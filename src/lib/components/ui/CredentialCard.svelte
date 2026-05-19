@@ -176,13 +176,13 @@
 
   // ── Group actions ────────────────────────────────────────────────────────────
 
-  function openAssignGroup(): void {
+  async function openAssignGroup(): Promise<void> {
     menuOpen = false;
-    modal.openAssignGroup({
+    const assigned = await modal.openAssignGroup({
       accountId: account.id,
       currentGroup: account.group_name,
-      onassigned: onrefresh,
     });
+    if (assigned) onrefresh?.();
   }
 
   async function removeFromGroup(): Promise<void> {
@@ -287,7 +287,7 @@
               role="menuitem"
             >
               <IconTrash size={15} class="shrink-0" />
-              {$_("accounts.delete_tooltip")}
+              {$_("actions.delete")}
             </button>
           </div>
         {/if}
@@ -318,11 +318,11 @@
           class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
           onclick={toggleReveal}
           aria-label={revealed
-            ? $_("accounts.hide_tooltip")
-            : $_("accounts.show_tooltip")}
+            ? $_("actions.hide")
+            : $_("actions.show")}
           data-tooltip={revealed
-            ? $_("accounts.hide_tooltip")
-            : $_("accounts.show_tooltip")}
+            ? $_("actions.hide")
+            : $_("actions.show")}
         >
           {#if revealed}
             <IconEyeOff size={16} />
@@ -338,10 +338,10 @@
             ? 'text-accent-light'
             : ''}"
           onclick={copyPassword}
-          aria-label={$_("accounts.copy_password_tooltip")}
+          aria-label={$_("actions.copy")}
           data-tooltip={copyTimer !== null
-            ? $_("accounts.clearing_in", { values: { seconds: copyTimer } })
-            : $_("accounts.copy_password_tooltip")}
+            ? $_("actions.status.clearing", { values: { seconds: copyTimer } })
+            : $_("actions.copy")}
         >
           <div class="w-4 h-4 flex items-center justify-center">
             {#if copyTimer !== null}
@@ -379,10 +379,10 @@
               ? 'text-accent-light'
               : ''}"
             onclick={copyRecoveryCode}
-            aria-label={$_("accounts.copy_recovery_tooltip")}
+            aria-label={$_("actions.copy")}
             data-tooltip={recoveryCopyTimer !== null
-              ? $_("accounts.clearing_in", { values: { seconds: recoveryCopyTimer } })
-              : $_("accounts.copy_recovery_tooltip")}
+              ? $_("actions.status.clearing", { values: { seconds: recoveryCopyTimer } })
+              : $_("actions.copy")}
           >
             <div class="w-4 h-4 flex items-center justify-center">
               {#if recoveryCopyTimer !== null}
@@ -413,8 +413,8 @@
       <button
         class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
         onclick={() => copyToClipboard(account.username, "user")}
-        aria-label={$_("accounts.copy_username_tooltip")}
-        data-tooltip={$_("accounts.copy_username_tooltip")}
+        aria-label={$_("actions.copy")}
+        data-tooltip={$_("actions.copy")}
       >
         <IconCopy size={16} />
       </button>

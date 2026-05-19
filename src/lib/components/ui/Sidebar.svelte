@@ -2,11 +2,7 @@
   import { globalState } from "$lib/stores/stores.svelte";
   import { lockVault } from "$lib/utils/tauri";
   import { modal } from "$lib/stores/modal.svelte";
-  import { invoke } from "@tauri-apps/api/core";
-  import { open, save } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
-  import { get } from "svelte/store";
-  import { toast } from "$lib/stores/toast.svelte";
   import {
     IconShieldHalfFilled,
     IconLayoutGrid,
@@ -36,13 +32,13 @@
       icon: IconArchive,
       label: $_("sidebar.export_db"),
       id: "export",
-      action: () => handleExportSecure(),
+      action: () => modal.openExportPackage(),
     },
     {
       icon: IconDatabaseImport,
       label: $_("sidebar.import_db"),
       id: "import",
-      action: () => handleImport(),
+      action: () => modal.openImportPackage(),
     },
     {
       icon: IconInfoCircle,
@@ -57,88 +53,6 @@
       action: () => (globalState.activeView = "settings"),
     },
   ]);
-
-  async function handleImport() {
-    try {
-      const filePath = await open({
-        title: $_("global.select_db_title"),
-        filters: [
-          { name: "Bóveda Vaults", extensions: ["bvda", "db", "pack", "bvda.pack"] },
-        ],
-      });
-      
-      if (!filePath) return;
-
-      if (filePath.endsWith(".pack") || filePath.endsWith(".bvda.pack")) {
-        // Secure Package Import
-        modal.openImportPackage({
-          title: "import_pack.title",
-          buttonText: "import_pack.button",
-          onconfirm: async (password, strategy) => {
-            const t = get(_);
-            try {
-              await invoke("import_secure_package", { srcPath: filePath, password, strategy });
-              toast.success(strategy === 'replace' ? t("import_pack.success_replace") : t("import_pack.success_merge"));
-            } catch (e: any) {
-              console.error("Secure import failed:", e);
-              toast.error(t("global.error_import") + ": " + e.toString());
-            }
-          }
-        });
-      } else {
-        // Legacy DB Import (SQLite file replacement)
-        modal.openConfirm({
-          title: $_("sidebar.import_confirm_title"),
-          message: $_("sidebar.import_confirm_message"),
-          confirmText: $_("sidebar.import_confirm_button"),
-          type: "danger",
-          onconfirm: async () => {
-            try {
-              await invoke("import_db", { srcPath: filePath });
-              toast.success($_("sidebar.import_confirm_button"));
-            } catch (e) {
-              console.error("Import failed:", e);
-              toast.error($_("global.error_import"));
-            }
-          },
-        });
-      }
-    } catch (e) {
-      console.error("Import selection failed:", e);
-    }
-  }
-
-  async function handleExportSecure() {
-    const t = get(_);
-    modal.openExportPackage({
-      title: "export_pack.title",
-      buttonText: "export_pack.button",
-      onconfirm: async (password) => {
-        try {
-          const filePath = await save({
-            title: t("export_pack.title"),
-            defaultPath: "Boveda_Export.bvda.pack",
-            filters: [
-              { name: "Bóveda Secure Package", extensions: ["pack", "bvda.pack"] },
-            ],
-          });
-
-          if (filePath) {
-            await invoke("export_secure_package", {
-              destPath: filePath,
-              password: password,
-            });
-            toast.success(
-              t("export_pack.success", { values: { path: filePath } }),
-            );
-          }
-        } catch (e) {
-          console.error("Export failed:", e);
-          toast.error(t("export_pack.error"));
-        }
-      },
-    });
-  }
 
   import { UI_CONFIG } from "$lib/config/ui";
   

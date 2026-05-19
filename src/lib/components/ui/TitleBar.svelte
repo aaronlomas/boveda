@@ -70,8 +70,8 @@
     <button
       class="w-12 h-full flex items-center justify-center text-text-muted hover:bg-surface/10 hover:text-text-primary transition-colors"
       onclick={handleMinimize}
-      aria-label={$_("titlebar.minimize")}
-      title={$_("titlebar.minimize")}
+      aria-label={$_("actions.minimize")}
+      title={$_("actions.minimize")}
     >
       <svg width="10" height="1" viewBox="0 0 10 1"
         ><rect width="10" height="1" fill="currentColor" /></svg
@@ -82,9 +82,9 @@
       class="w-12 h-full flex items-center justify-center text-text-muted hover:bg-surface/10 hover:text-text-primary transition-colors"
       onclick={handleMaximize}
       aria-label={isMaximized
-        ? $_("titlebar.restore")
-        : $_("titlebar.maximize")}
-      title={isMaximized ? $_("titlebar.restore") : $_("titlebar.maximize")}
+        ? $_("actions.restore")
+        : $_("actions.maximize")}
+      title={isMaximized ? $_("actions.restore") : $_("actions.maximize")}
     >
       {#if isMaximized}
         <svg width="10" height="10" viewBox="0 0 10 10"
@@ -113,8 +113,8 @@
     <button
       class="w-12 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-white transition-colors"
       onclick={handleClose}
-      aria-label={$_("titlebar.close")}
-      title={$_("titlebar.close")}
+      aria-label={$_("actions.close")}
+      title={$_("actions.close")}
     >
       <svg width="10" height="10" viewBox="0 0 10 10"
         ><path

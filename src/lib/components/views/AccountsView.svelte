@@ -60,23 +60,24 @@
     }
   }
 
-  function handleDelete(id: string): void {
-    modal.openConfirm({
+  async function handleDelete(id: string): Promise<void> {
+    const confirmed = await modal.openConfirm({
       title: $_("accounts.delete_confirm_title"),
       message: $_("accounts.delete_confirm_message"),
-      confirmText: $_("accounts.delete_confirm_button"),
+      confirmText: $_("actions.delete"),
       type: "danger",
-      onconfirm: async () => {
-        try {
-          await deleteAccount(id);
-          await refresh();
-          toast.success($_("accounts.delete_success"));
-        } catch (e) {
-          console.error("Delete failed:", e);
-          toast.error($_("accounts.delete_error"));
-        }
-      },
     });
+
+    if (!confirmed) return;
+
+    try {
+      await deleteAccount(id);
+      await refresh();
+      toast.success($_("accounts.delete_success"));
+    } catch (e) {
+      console.error("Delete failed:", e);
+      toast.error($_("accounts.delete_error"));
+    }
   }
 
   // ── Group panel actions ─────────────────────────────────────────────────────
@@ -164,11 +165,11 @@
 
     <Button
       variant="primary"
-      onclick={() => modal.openAddCredential({ onadded: refresh })}
+      onclick={async () => { const added = await modal.openAddCredential(); if (added) refresh(); }}
       class="shadow-md shadow-accent/20"
     >
       <IconPlus size={16} class="mr-2" />
-      {$_("sidebar.new_credential")}
+      {$_("accounts.new_credential")}
     </Button>
   </header>
 
@@ -216,7 +217,7 @@
             <button class="text-accent cursor-pointer" onclick={confirmRename} aria-label={$_("groups.confirm_rename")}>
               <IconCheck size={11} />
             </button>
-            <button class="text-text-muted cursor-pointer" onclick={cancelRename} aria-label={$_("global.cancel")}>
+            <button class="text-text-muted cursor-pointer" onclick={cancelRename} aria-label={$_("actions.cancel")}>
               <IconX size={11} />
             </button>
           </div>
@@ -272,7 +273,7 @@
         <button class="text-accent cursor-pointer" onclick={handleAddGroup} aria-label={$_("groups.confirm_new_group")}>
           <IconCheck size={11} />
         </button>
-        <button class="text-text-muted cursor-pointer" onclick={() => { addingGroup = false; newGroupName = ""; }} aria-label={$_("global.cancel")}>
+        <button class="text-text-muted cursor-pointer" onclick={() => { addingGroup = false; newGroupName = ""; }} aria-label={$_("actions.cancel")}>
           <IconX size={11} />
         </button>
       </div>
@@ -324,11 +325,11 @@
       {#if !globalState.activeGroup}
         <Button
           variant="primary"
-          onclick={() => modal.openAddCredential({ onadded: refresh })}
+          onclick={async () => { const added = await modal.openAddCredential(); if (added) refresh(); }}
           class="mt-2 shadow-lg shadow-accent/20"
         >
           <IconPlus size={16} class="mr-2" />
-          {$_("sidebar.new_credential")}
+          {$_("accounts.new_credential")}
         </Button>
       {/if}
     </div>

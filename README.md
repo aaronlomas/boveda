@@ -56,7 +56,7 @@ flowchart TD
 - [Node.js](https://nodejs.org/) (v20+)
 - [pnpm](https://pnpm.io/) (v9+)
 - [Rust](https://rustup.rs/) (v1.77+)
-- [Tauri Prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites)
+- [Tauri Prerequisites](https://tauri.app/start/prerequisites/)
 
 ```bash
 # Instalar dependencias

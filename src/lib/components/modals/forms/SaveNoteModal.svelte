@@ -1,6 +1,5 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { IconLock } from "@tabler/icons-svelte";
   import { useForm } from "$lib/validation/useForm.svelte";
   import { noteSchema, type NoteForm } from "$lib/validation/schemas";
   import Modal from "../../ui/primitives/Modal.svelte";
@@ -37,12 +36,6 @@
   <!-- Body -->
   <div class="space-y-6">
     <div class="flex items-center gap-4 mb-2">
-      <div class="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
-        <IconLock size={22} />
-      </div>
-      <p class="text-xs text-text-muted leading-relaxed">
-        {$_("documents.save_note_desc") || "Asigna un nombre para identificar este documento cifrado en tu bóveda."}
-      </p>
     </div>
 
     <form 
@@ -64,7 +57,7 @@
         />
         {#if form.errors.title}
           <span class="text-xs text-danger animate-in fade-in slide-in-from-top-1">
-            {$_("documents.note_title_label")} {$_("common.is_required") || "es obligatorio"}
+            {$_("documents.error_title_required") || "es obligatorio"}
           </span>
         {/if}
       </div>
@@ -92,7 +85,7 @@
 
   {#snippet footer()}
     <Button variant="ghost" onclick={onclose}>
-      {$_("global.cancel")}
+      {$_("actions.cancel")}
     </Button>
     <Button 
       type="submit" 
@@ -102,9 +95,9 @@
     >
       {#if form.loading}
         <span class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin mr-2"></span>
-        {$_("common.saving") || "Guardando..."}
+        {$_("actions.status.saving") || "Guardando..."}
       {:else}
-        {$_("documents.save_button_action") || "Guardar Documento"}
+        {$_("actions.save")}
       {/if}
     </Button>
   {/snippet}

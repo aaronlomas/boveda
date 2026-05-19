@@ -13,7 +13,7 @@
   import DocumentsView from "./DocumentsView.svelte";
   import AboutView from "./AboutView.svelte";
   import PinView from "./PinView.svelte";
-  import SettingsView from "../settings-content/SettingsView.svelte";
+  import SettingsView from "../settings/SettingsView.svelte";
 
   const viewMap: Partial<Record<ViewId, Component>> = {
     general: GeneralView,

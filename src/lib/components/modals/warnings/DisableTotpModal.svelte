@@ -26,13 +26,13 @@
       </p>
     </div>
     <p class="text-sm text-text-muted px-1">
-      {$_("settings.security.totp_disable_desc") || "¿Estás seguro de que deseas desactivar la autenticación de dos factores? Esto reducirá la seguridad de tu bóveda."}
+      {$_("settings.security.totp_disable_confirm") || "¿Estás seguro de que deseas desactivar la autenticación de dos factores? Esto reducirá la seguridad de tu bóveda."}
     </p>
   </div>
 
   {#snippet footer()}
     <Button variant="ghost" onclick={oncancel} disabled={processing}>
-      {$_("global.cancel")}
+      {$_("actions.cancel")}
     </Button>
     <Button 
       variant="danger" 

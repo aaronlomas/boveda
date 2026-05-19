@@ -57,7 +57,7 @@
 
     <!-- Modal Content -->
     <div
-      class="relative z-50 grid w-full max-w-lg gap-4 border border-surface/10 bg-panel/50 backdrop-blur-xl p-6 shadow-sm sm:rounded-2xl {className}"
+      class="relative z-50 grid w-full max-w-sm gap-4 border border-surface/10 bg-panel/50 backdrop-blur-xl p-6 shadow-sm sm:rounded-2xl {className}"
       transition:scale={{ duration: 300, start: 0.95, easing: backOut }}
       role="dialog"
       aria-modal="true"

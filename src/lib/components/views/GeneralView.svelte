@@ -51,9 +51,9 @@
       </div>
       <div>
         <h3 class="text-lg font-semibold text-text-primary mb-1">
-          {$_("pin_security.title")}
+          {$_("pin_security_mode.title")}
         </h3>
-        <p class="text-sm text-text-muted">{$_("pin_security.desc")}</p>
+        <p class="text-sm text-text-muted">{$_("pin_security_mode.desc")}</p>
       </div>
     </button>
   </div>

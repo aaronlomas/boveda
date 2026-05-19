@@ -51,21 +51,12 @@
   <div
     class="p-4 border-t border-surface/8 bg-surface/5 flex justify-end gap-3 items-center"
   >
-    <!-- We keep the desktop view notes here too for mobile or if sidebar is hidden -->
-    <button
-      onclick={onviewnotes}
-      class="lg:hidden px-4 py-2 rounded-xl border border-surface/20 text-text-secondary font-medium hover:bg-surface/10 hover:text-text-primary transition-all flex items-center gap-2"
-    >
-      <IconEye size={20} />
-      {$_("documents.view_notes")}
-    </button>
-    
     <button
       onclick={onsave}
       class="px-6 py-2.5 rounded-xl bg-accent text-white font-bold hover:bg-accent-light hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20 active:translate-y-0 transition-all flex items-center gap-2"
     >
       <IconLock size={20} />
-      {$_("documents.generate_encrypt")}
+      {$_("board.generate_encrypt")}
     </button>
   </div>
 </div>

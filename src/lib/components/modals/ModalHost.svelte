@@ -17,16 +17,28 @@
 {#if modal.current?.kind === 'add-credential'}
   <AddCredentialModal
     onadded={() => {
-      modal.current?.kind === 'add-credential' && modal.current.payload.onadded?.();
+      const payload = modal.current?.kind === 'add-credential' ? modal.current.payload : null;
+      modal.close();
+      payload?.onadded?.();
     }}
-    onclose={() => modal.close()}
+    onclose={() => {
+      const payload = modal.current?.kind === 'add-credential' ? modal.current.payload : null;
+      modal.close();
+      payload?.oncancel?.();
+    }}
   />
 {:else if modal.current?.kind === 'add-pin'}
   <AddPinModal
     onadded={() => {
-      modal.current?.kind === 'add-pin' && modal.current.payload.onadded?.();
+      const payload = modal.current?.kind === 'add-pin' ? modal.current.payload : null;
+      modal.close();
+      payload?.onadded?.();
     }}
-    onclose={() => modal.close()}
+    onclose={() => {
+      const payload = modal.current?.kind === 'add-pin' ? modal.current.payload : null;
+      modal.close();
+      payload?.oncancel?.();
+    }}
   />
 {:else if modal.current?.kind === 'confirm'}
   <ConfirmModal
@@ -51,15 +63,18 @@
     accountId={modal.current.payload.accountId}
     currentGroup={modal.current.payload.currentGroup}
     onassigned={() => {
-      modal.current?.kind === 'assign-group' && modal.current.payload.onassigned?.();
+      const payload = modal.current?.kind === 'assign-group' ? modal.current.payload : null;
+      modal.close();
+      payload?.onassigned?.();
     }}
-    onclose={() => modal.close()}
+    onclose={() => {
+      const payload = modal.current?.kind === 'assign-group' ? modal.current.payload : null;
+      modal.close();
+      payload?.oncancel?.();
+    }}
   />
 {:else if modal.current?.kind === 'export-package'}
   <ExportPasswordModal
-    title={modal.current.payload.title}
-    desc={modal.current.payload.desc}
-    buttonText={modal.current.payload.buttonText}
     onconfirm={(password) => {
       const payload = modal.current?.kind === 'export-package' ? modal.current.payload : null;
       modal.close();
@@ -73,9 +88,6 @@
   />
 {:else if modal.current?.kind === 'import-package'}
   <ImportPackageModal
-    title={modal.current.payload.title}
-    desc={modal.current.payload.desc}
-    buttonText={modal.current.payload.buttonText}
     onconfirm={(password, strategy) => {
       const payload = modal.current?.kind === 'import-package' ? modal.current.payload : null;
       modal.close();

@@ -10,9 +10,8 @@
   import BoardEditor from "../board/BoardEditor.svelte";
 
   let content = $state("");
-  let currentView: "selection" | "editor" | "import" | "list" = $state(
-    "selection"
-  );
+  let currentView: "selection" | "editor" | "import" | "list" =
+    $state("selection");
   let showSaveModal = $state(false);
 
   function startNew() {
@@ -63,7 +62,7 @@
         class="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors bg-surface/10 px-4 py-2 rounded-xl border border-surface/20"
       >
         <IconArrowLeft size={18} />
-        Volver
+        {$_("actions.back")}
       </button>
     {/if}
   </div>
@@ -84,10 +83,10 @@
         <h3
           class="text-xl font-bold text-text-primary mb-2 group-hover:text-accent transition-colors"
         >
-          {$_("documents.create_note")}
+          {$_("documents_mode.create_note")}
         </h3>
         <p class="text-text-muted text-sm max-w-xs">
-          {$_("documents.create_note_desc")}
+          {$_("documents_mode.create_note_desc")}
         </p>
         <div
           class="absolute inset-0 border-2 border-accent/0 group-hover:border-accent/20 rounded-3xl transition-all duration-500 pointer-events-none"
@@ -166,7 +165,8 @@
             Nota Secreta {i + 1}
           </h4>
           <p class="text-text-muted text-sm line-clamp-2 leading-relaxed">
-            Este es un resumen del contenido protegido que se encuentra almacenado de forma segura en tu base de datos local...
+            Este es un resumen del contenido protegido que se encuentra
+            almacenado de forma segura en tu base de datos local...
           </p>
           <div
             class="mt-6 pt-4 border-t border-surface/8 flex items-center justify-between"

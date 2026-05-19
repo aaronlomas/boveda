@@ -46,16 +46,16 @@
 
   {#snippet footer()}
     <Button variant="ghost" onclick={props.onclose}>
-      {$_("add_credential.cancel_button")}
+      {$_("actions.cancel")}
     </Button>
     <Button type="submit" form="add-credential-form" disabled={form.loading}>
       {#if form.loading}
         <span
           class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin mr-1.5"
         ></span>
-        {$_("add_credential.saving")}
+        {$_("actions.status.saving")}
       {:else}
-        {$_("add_credential.save_button")}
+        {$_("actions.save")}
       {/if}
     </Button>
   {/snippet}

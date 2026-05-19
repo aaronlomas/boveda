@@ -115,7 +115,10 @@
 <!-- Click-outside handler to close menu -->
 <svelte:window
   onclick={(e) => {
-    if (menuOpen && !(e.target as HTMLElement)?.closest(`[data-pin-id="${pinEntry.id}"]`)) {
+    if (
+      menuOpen &&
+      !(e.target as HTMLElement)?.closest(`[data-pin-id="${pinEntry.id}"]`)
+    ) {
       menuOpen = false;
     }
   }}
@@ -138,7 +141,9 @@
         class="block font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis"
         >{pinEntry.name}</span
       >
-      <span class="text-text-muted text-xs">{formatDate(pinEntry.created_at)}</span>
+      <span class="text-text-muted text-xs"
+        >{formatDate(pinEntry.created_at)}</span
+      >
     </div>
 
     <!-- Actions row -->
@@ -157,11 +162,14 @@
             class="absolute right-0 top-full mt-1 z-20 min-w-32 border border-surface/20 rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150 bg-panel/50 backdrop-blur-2xl"
           >
             <button
-              class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
-              onclick={() => { menuOpen = false; ondelete(pinEntry.id); }}
+              class="w-full flex items-center gap-2 px-3 py-2 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
+              onclick={() => {
+                menuOpen = false;
+                ondelete(pinEntry.id);
+              }}
             >
               <IconTrash size={15} class="shrink-0" />
-              {$_("accounts.delete_tooltip")}
+              {$_("actions.delete")}
             </button>
           </div>
         {/if}
@@ -181,7 +189,7 @@
         class="flex-1 font-mono text-lg text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-[0.2em]"
         class:text-white={revealed}
       >
-        {revealed && decryptedPin ? decryptedPin : "••••+"}
+        {revealed && decryptedPin ? decryptedPin : "••••"}
       </code>
 
       <div class="flex items-center gap-0.5">
@@ -198,13 +206,16 @@
         </button>
 
         <button
-          class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer {copyTimer !== null ? 'text-accent-light' : ''}"
+          class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer {copyTimer !==
+          null
+            ? 'text-accent-light'
+            : ''}"
           onclick={copyPin}
           aria-label="Copy PIN"
         >
           <div class="w-[18px] h-[18px] flex items-center justify-center">
             {#if copyTimer !== null}
-              <span class="text-[11px] font-bold leading-none">{copyTimer}</span>
+              <span class="text-xs font-bold leading-none">{copyTimer}</span>
             {:else}
               <IconCopy size={18} />
             {/if}
@@ -218,12 +229,12 @@
   {#if pinEntry.encrypted_notes}
     {#if decryptedNotes}
       <div
-        class="text-xs text-text-muted p-2 px-2.5 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-15 overflow-auto mt-1"
+        class="text-xs text-text-muted p-2 px-2 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-15 overflow-auto mt-1"
       >
         {decryptedNotes}
       </div>
     {:else}
-      <div class="text-xs text-text-muted/40 italic p-1 px-2.5 mt-1">
+      <div class="text-xs text-text-muted/40 italic p-1 px-2 mt-1">
         [{$_("pin_security.notes_label")}]
       </div>
     {/if}

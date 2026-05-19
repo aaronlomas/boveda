@@ -38,10 +38,10 @@
     loadingImage = true;
     try {
       const filePath = await open({
-        title: $_("global.select_bg_image_title"),
+        title: $_("actions.select"),
         filters: [
           {
-            name: $_("global.images_filter_name"),
+            name: $_("actions.images_filter_name"),
             extensions: ["jpg", "jpeg", "png", "webp", "gif"],
           },
         ],
@@ -251,7 +251,7 @@
         </p>
       </div>
       <div
-        class="shrink-0 flex items-center gap-2 bg-surface/5 px-2.5 py-1.5 rounded-lg border border-surface/10"
+        class="shrink-0 flex items-center gap-2 bg-surface/5 px-3 py-2 rounded-lg border border-surface/10"
       >
         <span class="text-xs font-mono text-text-secondary uppercase"
           >{themeStore.textSecondary}</span

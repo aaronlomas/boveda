@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: "Pixelify Sans", "Press Start 2P", system-ui, sans-serif;
+  --font-mono: "VT323", "Press Start 2P", monospace;
+
   /* Colors — Violet (default theme) */
   --color-bg-base: #07070e;
   --color-bg-surface: #0d0d1a;
@@ -34,10 +37,23 @@
   --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 
   @keyframes shake {
-    10%, 90% { transform: translate3d(-1px, 0, 0); }
-    20%, 80% { transform: translate3d(2px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-    40%, 60% { transform: translate3d(4px, 0, 0); }
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(4px, 0, 0);
+    }
   }
 }
 
@@ -55,7 +71,9 @@
   body {
     height: 100%;
     overflow: hidden;
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     color: var(--color-text-primary);
     -webkit-font-smoothing: antialiased;
   }

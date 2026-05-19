@@ -58,7 +58,7 @@
         class="bg-none border-none text-accent-light text-xs cursor-pointer transition-opacity hover:opacity-80"
         onclick={() => (showGenerator = !showGenerator)}
       >
-        {showGenerator ? $_("add_credential.hide") : $_("add_credential.generate")}
+        {showGenerator ? $_("actions.hide") : $_("actions.generate")}
       </button>
     </div>
     <div class="relative">
@@ -84,7 +84,7 @@
     </div>
     
     {#if errors.password}
-      <span class="text-[11px] text-danger mt-1 animate-in fade-in slide-in-from-top-1">
+      <span class="text-xs text-danger mt-1 animate-in fade-in slide-in-from-top-1">
         {$_(`add_credential.${errors.password}`)}
       </span>
     {/if}
@@ -112,7 +112,7 @@
     </label>
     <textarea
       id="add-notes"
-      class="flex min-h-[80px] w-full rounded-md border border-surface/10 bg-surface/4 px-3 py-2 text-sm text-text-primary ring-offset-bg-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent disabled:cursor-not-allowed disabled:opacity-50 resize-vertical"
+      class="flex min-h-20 w-full rounded-md border border-surface/10 bg-surface/4 px-3 py-2 text-sm text-text-primary ring-offset-bg-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent disabled:cursor-not-allowed disabled:opacity-50 resize-vertical"
       bind:value={notes}
       placeholder={$_("add_credential.notes_placeholder")}
       rows="3"

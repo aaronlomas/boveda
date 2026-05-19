@@ -27,7 +27,7 @@
   import ThemePanel from "./panels/ThemePanel.svelte";
   import LanguagePanel from "./panels/LanguagePanel.svelte";
   import PerformancePanel from "./panels/PerformancePanel.svelte";
-  import SecurityPanel from "./panels/SecurityPanel.svelte";
+  import SecurityPanel from "./panels/security/SecurityPanel.svelte";
   import AboutPanel from "./panels/AboutPanel.svelte";
 
   let activeSection = $state("theme");
@@ -76,7 +76,7 @@
         >
           {$_("settings.title")}
         </h1>
-        <p class="text-text-muted text-sm mt-0.5 pointer-events-none">
+        <p class="text-text-muted text-sm mt-1 pointer-events-none">
           {t("settings.subtitle", "Personaliza tu experiencia en Bóveda")}
         </p>
       </div>
@@ -87,7 +87,7 @@
       onclick={handleRestore}
     >
       <IconRefresh size={16} />
-      {$_("settings.restore")}
+      {$_("actions.restore")}
     </button>
   </header>
 

@@ -108,7 +108,7 @@
       size="sm"
       onclick={copyGenerated}
     >
-      {genCopied ? $_("add_credential.copied_button") : $_("add_credential.copy_button")}
+      {genCopied ? $_("actions.copied") : $_("actions.copy")}
     </Button>
     <Button
       type="button"

@@ -68,7 +68,7 @@
     <button
       class="p-2 rounded-md hover:text-accent-light transition-colors {store.isBold ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("bold")}
-      title={$_("documents.bold")}
+      title={$_("board.bold")}
     >
       <IconBold size={18} stroke={2.5} />
     </button>
@@ -76,7 +76,7 @@
     <button
       class="p-2 rounded-md hover:text-text-primary transition-colors {store.isItalic ? 'text-text-primary bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("italic")}
-      title={$_("documents.italic")}
+      title={$_("board.italic")}
     >
       <IconItalic size={18} stroke={2.5} />
     </button>
@@ -84,7 +84,7 @@
     <button
       class="p-2 rounded-md hover:text-text-primary transition-colors {store.isUnderline ? 'text-text-primary bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("underline")}
-      title={$_("documents.underline")}
+      title={$_("board.underline")}
     >
       <IconUnderline size={18} stroke={2.5} />
     </button>
@@ -92,7 +92,7 @@
     <button
       class="p-2 rounded-md hover:text-text-primary transition-colors {store.isStrikethrough ? 'text-text-primary bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("strikeThrough")}
-      title={$_("documents.strikethrough")}
+      title={$_("board.strikethrough")}
     >
       <IconStrikethrough size={18} stroke={2.5} />
     </button>
@@ -104,14 +104,14 @@
     <button
       class="p-2 rounded-md transition-colors {store.isListUl ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("insertUnorderedList")}
-      title={$_("documents.list_ul")}
+      title={$_("board.list_ul")}
     >
       <IconList size={18} stroke={2.5} />
     </button>
     <button
       class="p-2 rounded-md transition-colors {store.isListOl ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("insertOrderedList")}
-      title={$_("documents.list_ol")}
+      title={$_("board.list_ol")}
     >
       <IconListNumbers size={18} stroke={2.5} />
     </button>
@@ -123,21 +123,21 @@
     <button
       class="p-2 rounded-md transition-colors {store.textAlign === 'left' ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("justifyLeft")}
-      title={$_("documents.align_left")}
+      title={$_("board.align_left")}
     >
       <IconAlignLeft size={18} stroke={2.5} />
     </button>
     <button
       class="p-2 rounded-md transition-colors {store.textAlign === 'center' ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("justifyCenter")}
-      title={$_("documents.align_center")}
+      title={$_("board.align_center")}
     >
       <IconAlignCenter size={18} stroke={2.5} />
     </button>
     <button
       class="p-2 rounded-md transition-colors {store.textAlign === 'right' ? 'text-accent-light bg-surface/10' : 'text-text-secondary'}"
       onclick={() => store.handleCommand("justifyRight")}
-      title={$_("documents.align_right")}
+      title={$_("board.align_right")}
     >
       <IconAlignRight size={18} stroke={2.5} />
     </button>
@@ -148,7 +148,7 @@
   <button
     class="p-2 rounded-md text-text-secondary hover:text-danger transition-colors"
     onclick={() => store.handleCommand("removeFormat")}
-    title={$_("documents.clear_format")}
+    title={$_("board.clear_format")}
   >
     <IconEraser size={18} stroke={2.5} />
   </button>

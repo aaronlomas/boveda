@@ -147,14 +147,14 @@
 
   {#snippet footer()}
     <Button variant="ghost" onclick={onclose}>
-      {$_("global.cancel")}
+      {$_("actions.cancel")}
     </Button>
     <Button 
       onclick={handleSave} 
       disabled={saving}
       class="min-w-24"
     >
-      {saving ? $_("groups.saving") : $_("groups.save")}
+      {saving ? $_("actions.saving") : $_("actions.save")}
     </Button>
   {/snippet}
 </Modal>

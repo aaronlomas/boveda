@@ -378,7 +378,7 @@
           <span
             class="w-3.5 h-3.5 border-2 border-surface/30 border-t-white rounded-full animate-spin"
           ></span>
-          {$_("unlock_screen.button_processing")}
+          {$_("actions.status.processing")}
         {:else if cooldown > 0}
           <span class="animate-pulse"
             >{$_("unlock_screen.wait_seconds", {

@@ -4,10 +4,10 @@
 
   // ── Props (Svelte 5 runes) ──────────────────────────────────────────────────
   let {
-    title = $_("global.confirm"),
+    title = $_("actions.confirm"),
     message = "",
-    confirmText = $_("global.confirm"),
-    cancelText = $_("global.cancel"),
+    confirmText = $_("actions.confirm"),
+    cancelText = $_("actions.cancel"),
     type = "danger" as "danger" | "warning" | "info",
     onconfirm,
     oncancel,

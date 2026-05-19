@@ -6,7 +6,7 @@
   import { toast } from "$lib/stores/toast.svelte";
   import { modal } from "$lib/stores/modal.svelte";
   import { performanceStore } from "$lib/stores/performance.svelte";
-  import CredentialCard from "../ui/CredentialCard.svelte";
+  import CredentialCard from "../ui/accounts/CredentialCard.svelte";
   import Button from "../ui/primitives/Button.svelte";
   import VirtualList from "svelte-virtual-list";
   import { IconPlus, IconSearch, IconRocket, IconPencil, IconTrash, IconCheck, IconX, IconShieldLock } from "@tabler/icons-svelte";

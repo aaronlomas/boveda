@@ -3,7 +3,7 @@
   import { IconEye, IconEyeOff } from "@tabler/icons-svelte";
   import PasswordStrength from "./PasswordStrength.svelte";
   import PasswordGenerator from "./PasswordGenerator.svelte";
-  import Input from "../../ui/primitives/Input.svelte";
+  import Input from "../../core/primitives/Input.svelte";
 
   interface Props {
     site?: string;

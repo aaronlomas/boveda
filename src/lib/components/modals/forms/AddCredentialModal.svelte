@@ -9,9 +9,9 @@
    * @param {() => void} props.onclose - Callback para cerrar el modal.
    */
   import { _ } from "svelte-i18n";
-  import Modal from "../../ui/primitives/Modal.svelte";
-  import Button from "../../ui/primitives/Button.svelte";
-  import Alert from "../../ui/feedback/Alert.svelte";
+  import Modal from "../../core/primitives/Modal.svelte";
+  import Button from "../../core/primitives/Button.svelte";
+  import Alert from "../../core/feedback/Alert.svelte";
   import CredentialFields from "./CredentialFields.svelte";
   import { useCredentialForm } from "./useCredentialForm.svelte";
 

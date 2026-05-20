@@ -32,6 +32,10 @@ flowchart TD
         M_Other["...other modals"]
     end
 
+    subgraph Primitive["Core Primitive Layer"]
+        MP["Modal.svelte\n(Enforces Design Tokens)"]
+    end
+
     %% Define Connections
     C1 -- "1. Awaits modal.openConfirm()" --> SM
     SM -- "2. Returns Promise & sets current" --> Promo
@@ -44,6 +48,11 @@ flowchart TD
     MH -- "Mounts based on 'kind'" --> M3
     MH -- "Mounts based on 'kind'" --> M_Other
     
+    M1 -. "Wraps content in" .-> MP
+    M2 -. "Wraps content in" .-> MP
+    M3 -. "Wraps content in" .-> MP
+    M_Other -. "Wraps content in" .-> MP
+
     M1 -- "4. User clicks Confirm/Cancel" --> MH
     MH -- "5. Calls callback & closes" --> SM
     SM -- "6. Resolves Promise with data" --> C1
@@ -64,13 +73,17 @@ This component is mounted **only once**, usually in your root `+layout.svelte`.
 - When a modal is active, it mounts the correct Svelte component and wires the internal callbacks.
 - It acts as an interceptor: when the modal component fires `onconfirm` or `oncancel`, the `ModalHost` intercepts it, calls `modal.close()`, and fires the promise resolution callback, fulfilling the `await` statement at the caller side.
 
-### 3. Specific Modals (`src/lib/components/modals/...`)
+### 3. Core Primitive (`src/lib/components/core/primitives/Modal.svelte`)
+This is the unified design foundation for all modals in the application. It guarantees UI consistency by enforcing the project's Design Tokens (sizing, backgrounds, borders, backdrop blur, transitions). Specific modal implementations must wrap their content in this primitive rather than defining their own structural HTML and CSS.
+
+### 4. Specific Modals (`src/lib/components/modals/...`)
 These are the actual UI components containing the layout, text, and buttons. 
 - Example: `ConfirmModal.svelte` or `AddCredentialModal.svelte`.
 - They receive data via `$props()` (passed down by `ModalHost`).
+- They use the `<Modal>` primitive to handle the visual overlay, structure, and accessibility.
 - They emit actions (like `onconfirm` or `onclose`) back up to `ModalHost`.
 
-### 4. The Callers (e.g., `src/lib/components/views/AccountsView.svelte`)
+### 5. The Callers (e.g., `src/lib/components/features/accounts/AccountsView.svelte`)
 Any component or function that needs to show a modal simply imports the `modal` store and awaits the returned promise.
 ```typescript
 import { modal } from '$lib/stores/modal.svelte';

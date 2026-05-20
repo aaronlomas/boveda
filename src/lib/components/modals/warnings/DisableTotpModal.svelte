@@ -6,8 +6,8 @@
     IconLoader2,
   } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
-  import Modal from "../../ui/primitives/Modal.svelte";
-  import Button from "../../ui/primitives/Button.svelte";
+  import Modal from "../../core/primitives/Modal.svelte";
+  import Button from "../../core/primitives/Button.svelte";
 
   let { onconfirm, oncancel, processing = false } = $props();
 </script>

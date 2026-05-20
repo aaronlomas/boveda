@@ -3,24 +3,24 @@
   import Sidebar from "$lib/components/ui/Sidebar.svelte";
   import MainView from "$lib/components/views/MainView.svelte";
   import UnlockScreen from "$lib/components/views/UnlockScreen.svelte";
-  import { globalState } from "$lib/stores/stores.svelte";
+  import { sessionState, uiState } from "$lib/stores/stores.svelte";
   import { themeStore } from "$lib/stores/theme.svelte";
   import { startAutoLock, stopAutoLock } from "$lib/utils/autoLock";
 
   // Watch for unlock state changes to start/stop the auto-lock timer
   $effect(() => {
-    if (globalState.isUnlocked) {
-      startAutoLock({ onLock: () => (globalState.isUnlocked = false) });
+    if (sessionState.isUnlocked) {
+      startAutoLock({ onLock: () => (sessionState.isUnlocked = false) });
     } else {
       stopAutoLock();
     }
   });
 </script>
 
-{#if globalState.isUnlocked}
+{#if sessionState.isUnlocked}
   <div class="app-layout">
     <Sidebar />
-    <main class="main-content" class:collapsed={globalState.sidebarCollapsed}>
+    <main class="main-content" class:collapsed={uiState.sidebarCollapsed}>
       <MainView />
     </main>
   </div>

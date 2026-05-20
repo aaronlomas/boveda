@@ -1,4 +1,9 @@
 <script lang="ts">
+  /**
+   * @component PinView
+   * @description Vista para la administración de PINs guardados. Encapsula la lógica
+   * mediante el composable usePins, desacoplándose de la obtención de datos directa.
+   */
   import { onMount } from "svelte";
   import { _, locale } from "svelte-i18n";
   import { 
@@ -7,54 +12,33 @@
     IconSearch,
     IconDialpad
   } from "@tabler/icons-svelte";
-  import { globalState } from "$lib/stores/stores.svelte";
+  import { uiState } from "$lib/stores/stores.svelte";
   import { modal } from "$lib/stores/modal.svelte";
-  import { toast } from "$lib/stores/toast.svelte";
-  import { getPins, deletePin } from "$lib/utils/tauri";
-  import PinCard from "$lib/components/ui/PinCard.svelte";
+  import { usePins } from "$lib/composables/usePins.svelte";
+  import PinCard from "$lib/components/features/pins/PinCard.svelte";
 
+  // ── Composable e Inicialización ────────────────────────────────────────────
+  const pinService = usePins();
   let search = $state("");
-  let loadError = $state("");
 
+  // ── Derived State ──────────────────────────────────────────────────────────
   let filtered = $derived(
-    globalState.pins.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
+    pinService.pins.filter((p) => 
+      p.name?.toLowerCase().includes(search.toLowerCase())
+    )
   );
 
-  async function refresh() {
-    try {
-      globalState.pins = await getPins();
-    } catch (e) {
-      console.error(e);
-      loadError = "Error al cargar PINs";
-    }
-  }
-
-  async function handleDelete(id: string) {
-    const confirmed = await modal.openConfirm({
-      title: $_("pin_security.delete_confirm_pin"),
-      message: $_("pin_security.delete_confirm_message"),
-      confirmText: $_("actions.delete"),
-      type: "danger",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      await deletePin(id);
-      await refresh();
-      toast.success($_("pin_security.deleted_success"));
-    } catch (e) {
-      console.error(e);
-      toast.error($_("pin_security.delete_error"));
-    }
-  }
-
+  // ── Handlers ───────────────────────────────────────────────────────────────
   async function handleNewPin() {
     const added = await modal.openAddPin();
-    if (added) refresh();
+    if (added) {
+      await pinService.refresh();
+    }
   }
 
-  onMount(refresh);
+  onMount(() => {
+    pinService.refresh();
+  });
 </script>
 
 <div
@@ -65,7 +49,7 @@
     <div class="flex gap-x-4">
       <button
         class="p-2 bg-surface/5 hover:bg-surface/10 rounded-lg text-text-muted hover:text-text-primary transition-colors row-span-2 my-auto cursor-pointer"
-        onclick={() => (globalState.activeView = "general")}
+        onclick={() => (uiState.activeView = "general")}
         aria-label="Back"
       >
         <IconArrowLeft size={20} />
@@ -105,10 +89,17 @@
     />
   </div>
 
-  {#if loadError}
+  {#if pinService.error}
     <div class="text-center py-16">
-       <p class="text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 inline-block">{loadError}</p>
-       <button class="block mx-auto mt-4 text-accent underline cursor-pointer" onclick={refresh}>{$_("actions.retry")}</button>
+       <p class="text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 inline-block">
+         {pinService.error}
+       </p>
+       <button 
+         class="block mx-auto mt-4 text-accent underline cursor-pointer" 
+         onclick={() => pinService.refresh()}
+       >
+         {$_("actions.retry")}
+       </button>
     </div>
   {:else if filtered.length === 0}
     <div
@@ -139,7 +130,7 @@
         <PinCard 
           {pinEntry} 
           locale={$locale ?? "es"} 
-          ondelete={handleDelete} 
+          ondelete={(id) => pinService.delete(id)} 
         />
       {/each}
     </div>

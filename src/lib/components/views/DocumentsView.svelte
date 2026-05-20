@@ -7,39 +7,10 @@
     IconArrowLeft,
   } from "@tabler/icons-svelte";
   import SaveNoteModal from "../modals/forms/SaveNoteModal.svelte";
-  import BoardEditor from "../board/BoardEditor.svelte";
+  import BoardEditor from "../features/documents/BoardEditor.svelte";
+  import { useDocuments } from "$lib/composables/useDocuments.svelte";
 
-  let content = $state("");
-  let currentView: "selection" | "editor" | "import" | "list" =
-    $state("selection");
-  let showSaveModal = $state(false);
-
-  function startNew() {
-    content = "";
-    currentView = "editor";
-  }
-
-  function startExisting() {
-    currentView = "import";
-  }
-
-  function startList() {
-    currentView = "list";
-  }
-
-  function startSave() {
-    showSaveModal = true;
-  }
-
-  function handleSave(title: string, description: string) {
-    console.log("Saving note:", { title, description, content });
-    showSaveModal = false;
-    // Aquí irá la lógica de cifrado real
-  }
-
-  function goBack() {
-    currentView = "selection";
-  }
+  const docState = useDocuments();
 </script>
 
 <div
@@ -56,9 +27,9 @@
         {$_("documents_mode.desc")}
       </p>
     </div>
-    {#if currentView !== "selection"}
+    {#if docState.currentView !== "selection"}
       <button
-        onclick={goBack}
+        onclick={docState.goBack}
         class="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors bg-surface/10 px-4 py-2 rounded-xl border border-surface/20"
       >
         <IconArrowLeft size={18} />
@@ -67,12 +38,12 @@
     {/if}
   </div>
 
-  {#if currentView === "selection"}
+  {#if docState.currentView === "selection"}
     <div
       class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in zoom-in-95 duration-500"
     >
       <button
-        onclick={startNew}
+        onclick={docState.startNew}
         class="group relative flex flex-col items-center text-center p-8 bg-surface/4 backdrop-blur-2xl rounded-3xl border border-surface/8 hover:border-accent/30 hover:bg-surface/10 transition-all duration-300 shadow-xl"
       >
         <div
@@ -94,7 +65,7 @@
       </button>
 
       <button
-        onclick={startExisting}
+        onclick={docState.startExisting}
         class="group relative flex flex-col items-center text-center p-8 bg-surface/4 backdrop-blur-2xl rounded-3xl border border-surface/8 hover:border-accent/30 hover:bg-surface/10 transition-all duration-300 shadow-xl"
       >
         <div
@@ -116,7 +87,7 @@
         ></div>
       </button>
     </div>
-  {:else if currentView === "import"}
+  {:else if docState.currentView === "import"}
     <div
       class="flex flex-col items-center justify-center py-24 px-5 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
@@ -139,7 +110,7 @@
         Seleccionar archivo
       </button>
     </div>
-  {:else if currentView === "list"}
+  {:else if docState.currentView === "list"}
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
@@ -188,12 +159,12 @@
       {/each}
     </div>
   {:else}
-    <BoardEditor bind:content onviewnotes={startList} onsave={startSave} />
+    <BoardEditor bind:content={docState.content} onviewnotes={docState.startList} onsave={docState.startSave} />
   {/if}
 </div>
 
-{#if showSaveModal}
-  <SaveNoteModal onclose={() => (showSaveModal = false)} onsave={handleSave} />
+{#if docState.showSaveModal}
+  <SaveNoteModal onclose={() => (docState.showSaveModal = false)} onsave={docState.handleSave} />
 {/if}
 
 <style>

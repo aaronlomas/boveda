@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n";
   import { useForm } from "$lib/validation/useForm.svelte";
   import { noteSchema, type NoteForm } from "$lib/validation/schemas";
-  import Modal from "../../ui/primitives/Modal.svelte";
-  import Button from "../../ui/primitives/Button.svelte";
+  import Modal from "../../core/primitives/Modal.svelte";
+  import Button from "../../core/primitives/Button.svelte";
 
   let { 
     onclose, 

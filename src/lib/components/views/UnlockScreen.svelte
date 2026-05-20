@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { globalState } from "$lib/stores/stores.svelte";
+  import { sessionState } from "$lib/stores/stores.svelte";
   import { unlockVault, isVaultInitialized } from "$lib/utils/tauri";
   import { onMount } from "svelte";
   import {
@@ -74,7 +74,7 @@
           // Actually, once status is totp_required, the vault is partially unlocked in the backend.
         } else {
           password = ""; // Security: Clear password from memory
-          globalState.isUnlocked = true;
+          sessionState.isUnlocked = true;
         }
       } catch (e: any) {
         handleError(e);
@@ -93,7 +93,7 @@
         if (valid) {
           password = ""; // Security: Clear secrets
           totpCode = "";
-          globalState.isUnlocked = true;
+          sessionState.isUnlocked = true;
         } else {
           error = $_("settings.security.totp_error_invalid");
         }

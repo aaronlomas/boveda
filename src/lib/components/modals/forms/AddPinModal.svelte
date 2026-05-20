@@ -5,8 +5,8 @@
   import { focus } from "$lib/utils/actions";
   import { useForm } from "$lib/validation/useForm.svelte";
   import { pinSchema, type PinForm } from "$lib/validation/schemas";
-  import Modal from "../../ui/primitives/Modal.svelte";
-  import Button from "../../ui/primitives/Button.svelte";
+  import Modal from "../../core/primitives/Modal.svelte";
+  import Button from "../../core/primitives/Button.svelte";
 
   let { onadded, onclose }: { onadded?: () => void; onclose?: () => void } =
     $props();

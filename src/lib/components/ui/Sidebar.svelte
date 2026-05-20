@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { globalState } from "$lib/stores/stores.svelte";
+  import { uiState, sessionState } from "$lib/stores/stores.svelte";
   import { lockVault } from "$lib/utils/tauri";
   import { modal } from "$lib/stores/modal.svelte";
   import { _ } from "svelte-i18n";
@@ -20,13 +20,13 @@
       icon: IconLayoutGrid,
       label: $_("sidebar.general"),
       id: "general",
-      action: () => (globalState.activeView = "general"),
+      action: () => (uiState.activeView = "general"),
     },
     {
       icon: IconFiles,
       label: $_("sidebar.documents"),
       id: "documents",
-      action: () => (globalState.activeView = "documents"),
+      action: () => (uiState.activeView = "documents"),
     },
     {
       icon: IconArchive,
@@ -44,26 +44,26 @@
       icon: IconInfoCircle,
       label: $_("sidebar.about"),
       id: "about",
-      action: () => (globalState.activeView = "about"),
+      action: () => (uiState.activeView = "about"),
     },
     {
       icon: IconSettings,
       label: $_("sidebar.settings"),
       id: "settings",
-      action: () => (globalState.activeView = "settings"),
+      action: () => (uiState.activeView = "settings"),
     },
   ]);
 
   import { UI_CONFIG } from "$lib/config/ui";
   
   function toggle() {
-    globalState.sidebarCollapsed = !globalState.sidebarCollapsed;
+    uiState.sidebarCollapsed = !uiState.sidebarCollapsed;
   }
 
   async function logout() {
     try {
       await lockVault();
-      globalState.isUnlocked = false;
+      sessionState.isUnlocked = false;
     } catch (e) {
       console.error("Logout error:", e);
     }
@@ -72,9 +72,9 @@
 
 <aside
   class="h-screen bg-panel/30 border-r border-surface/8 transition-all overflow-hidden backdrop-blur-2xl flex flex-col py-4 px-2"
-  style="width: {globalState.sidebarCollapsed
+  style="width: {uiState.sidebarCollapsed
     ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
-    : UI_CONFIG.SIDEBAR_FULL_WIDTH}; min-width: {globalState.sidebarCollapsed
+    : UI_CONFIG.SIDEBAR_FULL_WIDTH}; min-width: {uiState.sidebarCollapsed
     ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
     : UI_CONFIG.SIDEBAR_FULL_WIDTH}; transition-duration: {UI_CONFIG.ANIMATION_DURATION_MS}ms;"
 >
@@ -87,7 +87,7 @@
     >
       <IconShieldHalfFilled size={40} />
     </div>
-    {#if !globalState.sidebarCollapsed}
+    {#if !uiState.sidebarCollapsed}
       <div class="flex flex-col">
         <span
           class="text-base font-bold text-text-primary block pointer-events-none"
@@ -106,16 +106,16 @@
     {#each navItems as item}
       {@const Icon = item.icon}
       <button
-        class="nav-item-btn {globalState.activeView === item.id
+        class="nav-item-btn {uiState.activeView === item.id
           ? 'active'
           : ''}"
         onclick={item.action ?? undefined}
-        data-tooltip={globalState.sidebarCollapsed ? item.label : undefined}
+        data-tooltip={uiState.sidebarCollapsed ? item.label : undefined}
       >
         <div class="shrink-0 w-5 flex justify-center">
           <Icon size={20} />
         </div>
-        {#if !globalState.sidebarCollapsed}
+        {#if !uiState.sidebarCollapsed}
           <span class="flex-1">{item.label}</span>
         {/if}
       </button>
@@ -126,14 +126,14 @@
   <button
     class="mt-auto flex justify-center items-center gap-3 py-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-full whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
     onclick={logout}
-    data-tooltip={globalState.sidebarCollapsed
+    data-tooltip={uiState.sidebarCollapsed
       ? $_("sidebar.logout")
       : undefined}
   >
     <div class="shrink-0 w-5 flex justify-center">
       <IconLogout size={20} />
     </div>
-    {#if !globalState.sidebarCollapsed}
+    {#if !uiState.sidebarCollapsed}
       <span class="flex-1">{$_("sidebar.logout")}</span>
     {/if}
   </button>
@@ -146,13 +146,12 @@
   >
     <div
       class="transition-transform duration-300 shrink-0 w-5 flex justify-center"
-      class:rotate-180={globalState.sidebarCollapsed}
+      class:rotate-180={uiState.sidebarCollapsed}
     >
       <IconChevronLeft size={20} />
     </div>
-    {#if !globalState.sidebarCollapsed}
+    {#if !uiState.sidebarCollapsed}
       <span class="text-xs">{$_("sidebar.collapse")}</span>
     {/if}
   </button>
 </aside>
-

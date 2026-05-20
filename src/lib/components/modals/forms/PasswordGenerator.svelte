@@ -1,7 +1,7 @@
 <script lang="ts">
   import { generatePassword } from "$lib/utils/tauri";
   import { _ } from "svelte-i18n";
-  import Button from "../../ui/primitives/Button.svelte";
+  import Button from "../../core/primitives/Button.svelte";
   import { UI_CONFIG } from "$lib/config/ui";
 
   let { onuse }: { onuse: (pw: string) => void } = $props();

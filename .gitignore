@@ -43,3 +43,6 @@ vite.config.ts.timestamp-*
 .DS_Store
 Thumbs.db
 
+
+*storybook.log
+storybook-static

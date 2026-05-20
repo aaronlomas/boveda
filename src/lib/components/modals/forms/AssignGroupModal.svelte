@@ -1,12 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { globalState } from "$lib/stores/stores.svelte";
+  import { dataState } from "$lib/stores/stores.svelte";
   import { updateAccountGroup, saveGroups } from "$lib/utils/tauri";
   import { toast } from "$lib/stores/toast.svelte";
   import { IconPlus, IconCheck } from "@tabler/icons-svelte";
   import { focus } from "$lib/utils/actions";
-  import Modal from "../../ui/primitives/Modal.svelte";
-  import Button from "../../ui/primitives/Button.svelte";
+  import Modal from "../../core/primitives/Modal.svelte";
+  import Button from "../../core/primitives/Button.svelte";
 
   // ── Props ──────────────────────────────────────────────────────────────────
   let {
@@ -52,15 +52,15 @@
   async function handleAddGroup(): Promise<void> {
     const trimmed = newGroupName.trim();
     if (!trimmed) return;
-    if (globalState.groups.includes(trimmed)) {
+    if (dataState.groups.includes(trimmed)) {
       selected = trimmed;
       showNewInput = false;
       newGroupName = "";
       return;
     }
-    const updated = [...globalState.groups, trimmed];
+    const updated = [...dataState.groups, trimmed];
     await saveGroups(updated);
-    globalState.groups = updated;
+    dataState.groups = updated;
     selected = trimmed;
     showNewInput = false;
     newGroupName = "";
@@ -87,7 +87,7 @@
         {$_("groups.none")}
       </button>
 
-      {#each globalState.groups as group (group)}
+      {#each dataState.groups as group (group)}
         <button
           class="px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border
             {selected === group

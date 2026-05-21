@@ -132,7 +132,7 @@
   },
   "documents": {
     "save_existing_desc": "Import and securely encrypt an existing file from your computer.",
-    "save_existing_card": "Save existing",
+    "save_existing_card": "Save document",
     "save_note_title": "Save note",
     "note_desc_label": "Description (optional)",
     "note_title_placeholder": "Example. Secret project",

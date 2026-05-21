@@ -126,7 +126,7 @@
   },
   "documents_mode": {
     "title": "Documentos",
-    "desc": "Almacenamiento seguro de documentos y notas.",
+    "desc": "Almacenamiento seguro.",
     "create_note": "Crear nota",
     "create_note_desc": "Comienza a escribir una nueva nota segura desde cero."
   },

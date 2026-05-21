@@ -126,7 +126,7 @@
   },
   "documents_mode": {
     "title": "Documents",
-    "desc": "Secure storage for documents and notes.",
+    "desc": "Secure storage.",
     "create_note": "Create note",
     "create_note_desc": "Start writing a new secure note from scratch."
   },

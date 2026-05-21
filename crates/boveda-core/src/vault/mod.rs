@@ -93,7 +93,13 @@ impl BovedaEngine {
     }
 
     pub fn is_locked(&self) -> bool {
-        self.master_key.lock().map(|l| l.is_none()).unwrap_or(true)
+        // SEC-H4: Handle potential lock poisoning gracefully
+        self.master_key.lock()
+            .map(|l| l.is_none())
+            .unwrap_or_else(|e| {
+                eprintln!("[WARNING] Master key lock is poisoned: {}. Vault is considered locked.", e);
+                true // Safer default: consider vault locked if we can't acquire the lock
+            })
     }
 
     /// High-level method to unlock the vault.

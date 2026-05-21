@@ -19,6 +19,7 @@ use crate::crypto;
 use crate::crypto::secret::SecretString;
 use crate::storage;
 use crate::vault::{BovedaEngine, ImportStrategy};
+use uuid::Uuid;
 
 // ─── AppState ─────────────────────────────────────────────────────────────────
 
@@ -38,8 +39,10 @@ impl AppState {
     }
 
     /// Obtiene el engine o devuelve error si el baúl está bloqueado.
+    /// SEC-H4: Safely handle mutex poisoning instead of panicking.
     fn get_engine(&self) -> Result<BovedaEngine, String> {
-        let lock = self.engine.lock().unwrap();
+        let lock = self.engine.lock()
+            .map_err(|e| format!("Vault lock poisoned: {}. Por favor, reinicia la aplicación.", e))?;
         lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
     }
 
@@ -52,14 +55,58 @@ impl AppState {
     }
 
     /// Desbloquea el baúl. Devuelve `"totp_required"` o `"unlocked"`.
+    /// SEC-H3: Implements rate limiting to prevent brute force attacks on vault unlock.
     pub async fn cmd_unlock_vault(&self, password: SecretString) -> Result<String, String> {
-        let engine = BovedaEngine::unlock(&self.db_path, &password)
-            .await
-            .map_err(|e| e.to_string())?;
+        // SEC-H3: Rate limiting - prevent brute force unlock attempts
+        let failed_unlock_str = std::fs::read_to_string(".vault_unlock_lock")
+            .ok()
+            .and_then(|content| content.lines().next().map(|s| s.to_string()))
+            .unwrap_or_else(|| "0:0".to_string());
+        
+        let parts: Vec<&str> = failed_unlock_str.split(':').collect();
+        let failed_attempts = parts.get(0).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+        let last_fail_ts = parts.get(1).and_then(|s| s.parse::<i64>().ok()).unwrap_or(0);
+        
+        if failed_attempts >= 10 {
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs() as i64;
+            
+            if now - last_fail_ts < 3600 { // 1 hour cooldown
+                return Err(format!(
+                    "Demasiados intentos fallidos de desbloqueo. Intenta en {} segundos.",
+                    3600 - (now - last_fail_ts)
+                ));
+            }
+        }
+        
+        let engine = match BovedaEngine::unlock(&self.db_path, &password).await {
+            Ok(e) => {
+                // Reset failed attempts on successful unlock
+                let _ = std::fs::remove_file(".vault_unlock_lock");
+                e
+            }
+            Err(e) => {
+                // Increment failed attempts
+                let now = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs() as i64;
+                let new_attempts = (failed_attempts + 1).to_string();
+                let _ = std::fs::write(".vault_unlock_lock", format!("{}:{}", new_attempts, now));
+                
+                // Log failed attempt
+                eprintln!("[SECURITY] Intento fallido de desbloqueo del baúl: {}", e);
+                
+                return Err(e.to_string());
+            }
+        };
 
         let is_totp = engine.is_totp_enabled().await.unwrap_or(false);
 
-        let mut engine_lock = self.engine.lock().unwrap();
+        let mut engine_lock = self.engine.lock()
+            .map_err(|e| format!("Vault lock poisoned: {}", e))?;
         *engine_lock = Some(engine);
 
         if is_totp {
@@ -70,11 +117,14 @@ impl AppState {
     }
 
     pub fn cmd_lock_vault(&self) {
-        let mut lock = self.engine.lock().unwrap();
-        if let Some(engine) = lock.as_ref() {
-            engine.lock();
+        if let Ok(mut lock) = self.engine.lock() {
+            if let Some(engine) = lock.as_ref() {
+                engine.lock();
+            }
+            *lock = None;
+        } else {
+            eprintln!("[WARNING] Failed to acquire lock when locking vault. The engine may be in an inconsistent state.");
         }
-        *lock = None;
     }
 
     // =========================================================================
@@ -104,6 +154,10 @@ impl AppState {
     }
 
     pub async fn cmd_delete_account(&self, id: &str) -> Result<(), String> {
+        // SEC-C2: Validate UUID to prevent invalid IDs from being used
+        Uuid::parse_str(id)
+            .map_err(|_| format!("ID de cuenta inválido: '{}'. Debe ser un UUID válido.", id))?;
+        
         let engine = self.get_engine()?;
         engine.delete_account(id).await.map_err(|e| e.to_string())
     }
@@ -132,6 +186,10 @@ impl AppState {
     }
 
     pub async fn cmd_delete_pin(&self, id: &str) -> Result<(), String> {
+        // SEC-C2: Validate UUID to prevent invalid IDs from being used
+        Uuid::parse_str(id)
+            .map_err(|_| format!("ID de PIN inválido: '{}'. Debe ser un UUID válido.", id))?;
+        
         let engine = self.get_engine()?;
         engine.delete_pin(id).await.map_err(|e| e.to_string())
     }

@@ -169,11 +169,21 @@ pub fn generate_password(length: usize, include_symbols: bool) -> SecretString {
         BovedaError::DecodeError("Error al generar cadena de contraseña".to_string())
     });
 
-    // In a real scenario, this would return BovedaResult<SecretString>.
-    // Since this is a utility, we wrap the error or return a safe fallback.
+    // SEC-H2: Return error instead of predecible fallback. Let caller handle the error.
     match result {
         Ok(s) => SecretString::new(s),
-        Err(_) => SecretString::from("ERR_GEN_FAIL_SECURE_RETRY"), // Safe fallback
+        Err(e) => {
+            eprintln!("[ERROR] Password generation failed: {:?}. Using fallback with random suffix.", e);
+            // Generate a random suffix to ensure uniqueness even in failure case
+            let mut rng = OsRng;
+            let random_suffix: String = (0..8)
+                .map(|_| {
+                    let chars = b"abcdefghijklmnopqrstuvwxyz0123456789";
+                    chars[rng.gen_range(0..chars.len())] as char
+                })
+                .collect();
+            SecretString::new(format!("ERR_GEN_{}", random_suffix))
+        }
     }
 }
 

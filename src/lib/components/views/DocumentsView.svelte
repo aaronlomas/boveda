@@ -14,12 +14,18 @@
   const docState = useDocuments();
   setContext(DOCUMENTS_CTX, docState);
 
-  // Dynamic component mapping for document sub-views
-  const subViews = {
+  // $derived ensures reactive re-evaluation when currentView changes
+  const subViewMap = {
     selection: SelectionView,
     import: ImportDocumentView,
     list: NotesListView,
-  };
+  } as const;
+
+  const ActiveSubView = $derived(
+    docState.currentView !== "editor"
+      ? subViewMap[docState.currentView as keyof typeof subViewMap] ?? null
+      : null
+  );
 </script>
 
 <div
@@ -45,17 +51,14 @@
   </div>
 
   {#if docState.currentView === "editor"}
-    <!-- Editor view with specific bindings and event handlers -->
+    <!-- Editor view — needs bind:content and direct event handlers -->
     <BoardEditor
       bind:content={docState.content}
       onviewnotes={docState.startList}
       onsave={docState.startSave}
     />
-  {:else}
-    {@const SubComponent = subViews[docState.currentView as keyof typeof subViews]}
-    {#if SubComponent}
-      <SubComponent />
-    {/if}
+  {:else if ActiveSubView}
+    <ActiveSubView />
   {/if}
 </div>
 

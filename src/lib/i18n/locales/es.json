@@ -51,10 +51,10 @@
   },
   "accounts_mode": {
     "title": "Cuentas",
-    "desc": "Gestiona tus cuentas con Bóveda"
+    "desc": "Facebook, Instagram, Youtube, Etc."
   },
   "accounts": {
-    "title": "Credenciales",
+    "title": "Cuentas",
     "credentials_count": "Tus credenciales estan aisladas aquí.",
     "new_credential": "Nueva Credencial",
     "search_placeholder": "Buscar por sitio o usuario…",
@@ -101,8 +101,8 @@
     }
   },
   "pin_security_mode": {
-    "title": "Guardar PIN",
-    "desc": "Guarda de forma segura los PINs de tus tarjetas bancarias, accesos o aplicaciones."
+    "title": "PINs",
+    "desc": "Bancos, Aplicaciones, Etc."
   },
   "pin_security": {
     "new_pin": "Nuevo PIN",

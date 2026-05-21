@@ -134,6 +134,8 @@
   },
   "documents": {
     "save_existing_desc": "Import and securely encrypt an existing file from your computer.",
+    "import_document": "Import document",
+    "import_document_desc": "Allowed file list: .doc, .pdf, .xlsx, .txt, .md.",
     "save_existing_card": "Save document",
     "save_note_title": "Save note",
     "note_title_label": "Title",

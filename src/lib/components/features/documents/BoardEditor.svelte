@@ -16,11 +16,18 @@
     onsave: () => void 
   } = $props();
 
+  import { untrack } from "svelte";
+
   const store = new BoardStore(content);
 
   // Sync back to parent content
   $effect(() => {
-    content = store.content;
+    const nextContent = store.content;
+    untrack(() => {
+      if (content !== nextContent) {
+        content = nextContent;
+      }
+    });
   });
 </script>
 

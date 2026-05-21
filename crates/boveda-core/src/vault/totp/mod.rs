@@ -58,16 +58,12 @@ impl BovedaEngine {
         self.set_preference("totp_secret_cipher", &encrypted_seed).await?;
         self.set_preference("totp_recovery_cipher", &encrypted_recovery).await?;
         
-        // SEC-C3: Clear recovery codes from memory after encryption
-        drop(recovery_codes);
-
-        // 7. Return the QR, URL and codes for the frontend
-        // Note: Codes are only available at setup time and immediately consumed by frontend
-        let display_codes = TotpManager::generate_recovery_codes();
+        // 7. Return the QR, URL and the actual codes that were encrypted
+        // SEC-C3: Codes will be zeroized when TotpSetupPayload is dropped by the caller
         Ok(TotpSetupPayload {
             otpauth_url: TotpManager::get_otpauth_url(&seed)?,
             qr_png_b64: TotpManager::generate_qr_png_b64(&seed)?,
-            recovery_codes: display_codes,
+            recovery_codes,
         })
     }
 

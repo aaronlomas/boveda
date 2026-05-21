@@ -75,4 +75,4 @@ Si encuentras un fallo de seguridad, por favor **NO abras un Issue público**. C
 
 ---
 
-Al contribuir, aceptas que tus aportaciones estarán bajo la licencia **Apache-2.0**.
+Al contribuir, aceptas que tus aportaciones estarán bajo la licencia **AGPL-3.0**.

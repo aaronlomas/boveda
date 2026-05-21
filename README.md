@@ -2,7 +2,7 @@
 
 Construida bajo la filosofía de **Seguridad por Aislamiento**. Mientras que otros de la industria priorizan la comodidad de la nube y la recolección de metadatos, Bóveda nace como una alternativa moderna para la soberanía digital total, donde tus secretos nunca tocan el disco sin cifrar ni la red sin tu permiso explícito.
 
-![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-AGPL--3.0-blue?style=for-the-badge)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=for-the-badge)
 ![Svelte](https://img.shields.io/badge/Svelte-5.0-red?style=for-the-badge)
 ![Rust](https://img.shields.io/badge/Rust-1.77+-black?style=for-the-badge)
@@ -91,4 +91,4 @@ Si compartes nuestra visión de una privacidad sin compromisos, tus PRs son bien
 
 ## 📜 Licencia
 
-Bóveda es software libre bajo la licencia **Apache-2.0**. Tu seguridad no debería ser una caja negra.
+Bóveda es software libre bajo la licencia **AGPL-3.0**. Tu seguridad no debería ser una caja negra.

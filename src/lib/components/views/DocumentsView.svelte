@@ -8,6 +8,7 @@
   } from "@tabler/icons-svelte";
   import SaveNoteModal from "../modals/forms/SaveNoteModal.svelte";
   import BoardEditor from "../features/documents/BoardEditor.svelte";
+  import Button from "../core/primitives/Button.svelte";
   import { useDocuments } from "$lib/composables/useDocuments.svelte";
 
   const docState = useDocuments();
@@ -28,13 +29,14 @@
       </p>
     </div>
     {#if docState.currentView !== "selection"}
-      <button
+      <Button
+        variant="secondary"
         onclick={docState.goBack}
-        class="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors bg-surface/10 px-4 py-2 rounded-xl border border-surface/20"
+        class="gap-2"
       >
         <IconArrowLeft size={18} />
         {$_("actions.back")}
-      </button>
+      </Button>
     {/if}
   </div>
 
@@ -103,12 +105,14 @@
         Selecciona un archivo de tu equipo para cifrarlo y guardarlo de forma
         segura en tu bóveda. Soportamos documentos de texto, PDF e imágenes.
       </p>
-      <button
-        class="px-10 py-4 rounded-2xl bg-accent text-white font-bold hover:bg-accent-light hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/30 active:translate-y-0 transition-all flex items-center gap-3 text-lg"
+      <Button
+        variant="primary"
+        size="lg"
+        class="gap-3 font-bold"
       >
         <IconFileImport size={24} />
         Seleccionar archivo
-      </button>
+      </Button>
     </div>
   {:else if docState.currentView === "list"}
     <div

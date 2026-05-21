@@ -5,6 +5,7 @@
   import Toolbar from "./ui/Toolbar.svelte";
   import Canvas from "./ui/Canvas.svelte";
   import Sidebar from "./ui/Sidebar.svelte";
+  import Button from "../../core/primitives/Button.svelte";
 
   let { 
     content = $bindable(""), 
@@ -38,7 +39,7 @@
 
   <!-- Security Alert Banner -->
   {#if store.pasteWarning}
-    <div class="px-4 py-2.5 bg-warning/10 border-b border-warning/20 flex items-center justify-between text-warning text-xs animate-in fade-in slide-in-from-top-2 duration-300">
+    <div class="px-4 py-2 bg-warning/10 border-b border-warning/20 flex items-center justify-between text-warning text-xs animate-in fade-in slide-in-from-top-2 duration-300">
       <div class="flex items-center gap-2">
         <IconAlertTriangle size={16} class="min-w-4" />
         <span class="font-medium">{store.pasteWarning}</span>
@@ -58,12 +59,12 @@
   <div
     class="p-4 border-t border-surface/8 bg-surface/5 flex justify-end gap-3 items-center"
   >
-    <button
+    <Button
       onclick={onsave}
-      class="px-6 py-2.5 rounded-xl bg-accent text-white font-bold hover:bg-accent-light hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20 active:translate-y-0 transition-all flex items-center gap-2"
+      class="px-4 gap-2 font-bold"
     >
       <IconLock size={20} />
       {$_("board.generate_encrypt")}
-    </button>
+    </Button>
   </div>
 </div>

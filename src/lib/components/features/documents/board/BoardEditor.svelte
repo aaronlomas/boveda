@@ -5,7 +5,7 @@
   import Toolbar from "./ui/Toolbar.svelte";
   import Canvas from "./ui/Canvas.svelte";
   import Sidebar from "./ui/Sidebar.svelte";
-  import Button from "../../core/primitives/Button.svelte";
+  import Button from "../../../core/primitives/Button.svelte";
 
   let { 
     content = $bindable(""), 

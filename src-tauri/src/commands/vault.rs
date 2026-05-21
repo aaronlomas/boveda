@@ -98,3 +98,44 @@ pub async fn get_pins(state: State<'_, AppState>) -> Result<Vec<boveda_core::Pin
 pub async fn delete_pin(id: String, state: State<'_, AppState>) -> Result<(), String> {
     state.cmd_delete_pin(&id).await
 }
+
+// ─── Document commands ────────────────────────────────────────────────────────
+
+#[tauri::command]
+pub async fn add_document(
+    title: SecretString,
+    description: Option<SecretString>,
+    content: SecretString,
+    state: State<'_, AppState>,
+) -> Result<String, String> {
+    state.cmd_add_document(title, description, content).await
+}
+
+#[tauri::command]
+pub async fn get_documents(state: State<'_, AppState>) -> Result<Vec<boveda_core::Document>, String> {
+    state.cmd_get_documents().await
+}
+
+#[tauri::command]
+pub async fn update_document(
+    id: String,
+    title: SecretString,
+    description: Option<SecretString>,
+    content: SecretString,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
+    state.cmd_update_document(&id, title, description, content).await
+}
+
+#[tauri::command]
+pub async fn delete_document(id: String, state: State<'_, AppState>) -> Result<(), String> {
+    state.cmd_delete_document(&id).await
+}
+
+#[tauri::command]
+pub async fn decrypt_document_content(
+    encrypted_content: String,
+    state: State<'_, AppState>,
+) -> Result<String, String> {
+    state.cmd_decrypt_document_content(&encrypted_content).await
+}

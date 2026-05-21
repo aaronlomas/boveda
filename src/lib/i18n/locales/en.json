@@ -128,16 +128,29 @@
     "title": "Documents",
     "desc": "Secure storage.",
     "create_note": "Create note",
-    "create_note_desc": "Start writing a new secure note from scratch."
+    "create_note_desc": "Start writing a new secure note from scratch.",
+    "my_notes": "My notes",
+    "my_notes_desc": "Access and edit your saved encrypted notes."
   },
   "documents": {
     "save_existing_desc": "Import and securely encrypt an existing file from your computer.",
     "save_existing_card": "Save document",
     "save_note_title": "Save note",
+    "note_title_label": "Title",
     "note_desc_label": "Description (optional)",
     "note_title_placeholder": "Example. Secret project",
     "note_desc_placeholder": "Details about this note...",
-    "error_title_required": "Title required"
+    "error_title_required": "Title required",
+    "load_error": "Failed to load documents.",
+    "save_success": "Note saved and encrypted.",
+    "save_error": "Failed to save the note.",
+    "decrypt_error": "Failed to decrypt the document.",
+    "delete_confirm_title": "Delete note",
+    "delete_confirm_message": "Are you sure? This action cannot be undone.",
+    "delete_success": "Note deleted.",
+    "delete_error": "Failed to delete the note.",
+    "empty_title": "No notes yet",
+    "empty_desc": "Create your first encrypted note using the editor."
   },
   "board": {
     "bold": "Bold",

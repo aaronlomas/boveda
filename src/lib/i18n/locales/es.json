@@ -128,16 +128,29 @@
     "title": "Documentos",
     "desc": "Almacenamiento seguro.",
     "create_note": "Crear nota",
-    "create_note_desc": "Comienza a escribir una nueva nota segura desde cero."
+    "create_note_desc": "Comienza a escribir una nueva nota segura desde cero.",
+    "my_notes": "Mis notas",
+    "my_notes_desc": "Accede y edita tus notas cifradas guardadas."
   },
   "documents": {
     "save_existing_desc": "Importa y cifra de forma segura un archivo existente de tu equipo.",
     "save_existing_card": "Guardar Documento",
     "save_note_title": "Guardar nota",
+    "note_title_label": "Título",
     "note_desc_label": "Descripción (opcional)",
     "note_title_placeholder": "ej. Proyecto secreto Alfa",
     "note_desc_placeholder": "Detalles sobre esta nota...",
-    "error_title_required": "El título es obligatorio."
+    "error_title_required": "El título es obligatorio.",
+    "load_error": "Error al cargar los documentos.",
+    "save_success": "Nota guardada y cifrada.",
+    "save_error": "Error al guardar la nota.",
+    "decrypt_error": "Error al descifrar el documento.",
+    "delete_confirm_title": "Eliminar nota",
+    "delete_confirm_message": "¿Estás seguro? Esta acción no se puede deshacer.",
+    "delete_success": "Nota eliminada.",
+    "delete_error": "Error al eliminar la nota.",
+    "empty_title": "Ninguna nota guardada",
+    "empty_desc": "Crea tu primera nota cifrada usando el editor."
   },
   "board": {
     "bold": "Negrita",

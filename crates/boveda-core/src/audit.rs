@@ -22,6 +22,9 @@ pub enum AuditAction {
     FailedLoginAttempt,
     PinCreate,
     PinDelete,
+    DocumentCreate,
+    DocumentUpdate,
+    DocumentDelete,
 }
 
 impl AuditAction {
@@ -41,6 +44,9 @@ impl AuditAction {
             Self::FailedLoginAttempt => "failed_login_attempt",
             Self::PinCreate => "pin_create",
             Self::PinDelete => "pin_delete",
+            Self::DocumentCreate => "document_create",
+            Self::DocumentUpdate => "document_update",
+            Self::DocumentDelete => "document_delete",
         }
     }
 }

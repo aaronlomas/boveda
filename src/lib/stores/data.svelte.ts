@@ -20,9 +20,19 @@ export interface Pin {
   updated_at: string;
 }
 
+export interface Document {
+  id: string;
+  title: string;
+  encrypted_description: string | null;
+  encrypted_content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export class DataState {
   accounts = $state<Account[]>([]);
   pins = $state<Pin[]>([]);
+  documents = $state<Document[]>([]);
   /** Persisted list of group names. */
   groups = $state<string[]>([]);
 }

@@ -13,7 +13,7 @@ mod tests;
 
 pub use vault::BovedaEngine;
 pub use vault::MasterKey;
-pub use storage::models::{Account, Pin};
+pub use storage::models::{Account, Pin, Document};
 pub use crypto::secret::{SecretKey, SecretString};
 pub use error::{BovedaError, BovedaResult};
 pub use commands::AppState;

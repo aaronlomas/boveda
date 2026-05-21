@@ -32,6 +32,16 @@ pub struct PinRow {
     pub updated_at: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
+pub struct DocumentRow {
+    pub id: String,
+    pub title: String,
+    pub encrypted_description: Option<String>,
+    pub encrypted_content: String,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 🏗️  Schema Management
 // ─────────────────────────────────────────────────────────────────────────────
@@ -71,6 +81,14 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
             encrypted_notes TEXT,
             created_at      TEXT NOT NULL,
             updated_at      TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS documents (
+            id                      TEXT PRIMARY KEY,
+            title                   TEXT NOT NULL,
+            encrypted_description   TEXT,
+            encrypted_content       TEXT NOT NULL,
+            created_at              TEXT NOT NULL,
+            updated_at              TEXT NOT NULL
         );
         ",
     )
@@ -239,6 +257,88 @@ pub async fn get_pins(pool: &SqlitePool) -> BovedaResult<Vec<PinRow>> {
 
 pub async fn delete_pin(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
     sqlx::query("DELETE FROM pins WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 📄 Document Persistence
+// ─────────────────────────────────────────────────────────────────────────────
+
+pub async fn add_document(
+    pool: &SqlitePool,
+    title: &str,
+    encrypted_description: Option<&str>,
+    encrypted_content: &str,
+) -> BovedaResult<String> {
+    let id = Uuid::new_v4().to_string();
+    let now = Utc::now().to_rfc3339();
+
+    sqlx::query(
+        r"INSERT INTO documents
+           (id, title, encrypted_description, encrypted_content, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(&id)
+    .bind(title)
+    .bind(encrypted_description)
+    .bind(encrypted_content)
+    .bind(&now)
+    .bind(&now)
+    .execute(pool)
+    .await?;
+
+    Ok(id)
+}
+
+pub async fn get_documents(pool: &SqlitePool) -> BovedaResult<Vec<DocumentRow>> {
+    let rows = sqlx::query_as::<_, DocumentRow>(
+        r"SELECT id, title, encrypted_description, encrypted_content, created_at, updated_at
+           FROM documents ORDER BY updated_at DESC",
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows)
+}
+
+pub async fn get_document_by_id(pool: &SqlitePool, id: &str) -> BovedaResult<Option<DocumentRow>> {
+    let row = sqlx::query_as::<_, DocumentRow>(
+        r"SELECT id, title, encrypted_description, encrypted_content, created_at, updated_at
+           FROM documents WHERE id = ?",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row)
+}
+
+pub async fn update_document(
+    pool: &SqlitePool,
+    id: &str,
+    title: &str,
+    encrypted_description: Option<&str>,
+    encrypted_content: &str,
+) -> BovedaResult<()> {
+    let now = Utc::now().to_rfc3339();
+    sqlx::query(
+        r"UPDATE documents
+           SET title = ?, encrypted_description = ?, encrypted_content = ?, updated_at = ?
+           WHERE id = ?",
+    )
+    .bind(title)
+    .bind(encrypted_description)
+    .bind(encrypted_content)
+    .bind(&now)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+pub async fn delete_document(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
+    sqlx::query("DELETE FROM documents WHERE id = ?")
         .bind(id)
         .execute(pool)
         .await?;

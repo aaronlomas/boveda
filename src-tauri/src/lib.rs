@@ -63,6 +63,12 @@ pub fn run() {
             commands::vault::add_pin,
             commands::vault::get_pins,
             commands::vault::delete_pin,
+            // ── Documents ─────────────────────────────────────────────────
+            commands::vault::add_document,
+            commands::vault::get_documents,
+            commands::vault::update_document,
+            commands::vault::delete_document,
+            commands::vault::decrypt_document_content,
             // ── Preferences & storage ─────────────────────────────────────
             commands::settings::get_preference,
             commands::settings::set_preference,

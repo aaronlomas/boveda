@@ -85,3 +85,38 @@ export async function renameGroup(
 export async function deleteGroup(name: string): Promise<void> {
   return invoke("delete_group", { name });
 }
+
+// ─── Documents ───────────────────────────────────────────────────────────────
+
+export async function addDocument(
+  title: string,
+  description: string | null,
+  content: string,
+): Promise<string> {
+  return invoke<string>("add_document", { title, description, content });
+}
+
+export async function getDocuments(): Promise<import("../stores/stores.svelte").Document[]> {
+  return invoke("get_documents");
+}
+
+export async function updateDocument(
+  id: string,
+  title: string,
+  description: string | null,
+  content: string,
+): Promise<void> {
+  return invoke("update_document", { id, title, description, content });
+}
+
+export async function deleteDocument(id: string): Promise<void> {
+  return invoke("delete_document", { id });
+}
+
+export async function decryptDocumentContent(encryptedContent: string): Promise<string> {
+  return invoke<string>("decrypt_document_content", { encryptedContent });
+}
+
+export async function decryptSecret(ciphertext: string): Promise<string> {
+  return invoke<string>("decrypt_secret", { ciphertext });
+}

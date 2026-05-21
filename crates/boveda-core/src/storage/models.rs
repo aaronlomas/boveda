@@ -28,3 +28,14 @@ pub struct Pin {
     pub created_at: String,
     pub updated_at: String,
 }
+
+/// A decrypted Document/Note entry as returned to the frontend.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Document {
+    pub id: String,
+    pub title: SecretString,
+    pub encrypted_description: Option<String>,
+    pub encrypted_content: String,
+    pub created_at: String,
+    pub updated_at: String,
+}

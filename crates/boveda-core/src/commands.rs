@@ -64,7 +64,7 @@ impl AppState {
             .unwrap_or_else(|| "0:0".to_string());
         
         let parts: Vec<&str> = failed_unlock_str.split(':').collect();
-        let failed_attempts = parts.get(0).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+        let failed_attempts = parts.first().and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
         let last_fail_ts = parts.get(1).and_then(|s| s.parse::<i64>().ok()).unwrap_or(0);
         
         if failed_attempts >= 10 {

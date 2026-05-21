@@ -183,7 +183,7 @@ impl BovedaEngine {
         for c in codes {
             // Use bitwise OR to accumulate result without branching
             let is_match = c.to_uppercase().as_bytes().ct_eq(normalized_input.as_bytes());
-            found = found | bool::from(is_match); // Constant-time OR operation
+            found |= bool::from(is_match); // Constant-time OR operation
         }
 
         if found {

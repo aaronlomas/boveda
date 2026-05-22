@@ -169,7 +169,8 @@
     "paste_warning": "Attention! the pasted text contains system commands. Never copy and paste this into a terminal unless you know exactly what it does.",
     "save_existing": "Save existing",
     "generate_encrypt": "Generate and encrypt",
-    "view_notes": "View notes"
+    "view_notes": "View notes",
+    "sidebar_board_desc": "Use this editor to write your notes securely. All content is encrypted locally."
   },
   "import_pack": {
     "title": "Import package",

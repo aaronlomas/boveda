@@ -26,7 +26,7 @@
   
   <div class="flex-1 p-4 flex flex-col gap-4">
     <p class="text-xs text-text-muted leading-relaxed">
-      {t("documents.board_description", "Utiliza este editor para redactar tus documentos de forma segura. Todo el contenido se cifra localmente.")}
+      {$_("board.sidebar_board_desc")}
     </p>
 
     {#if onviewnotes}

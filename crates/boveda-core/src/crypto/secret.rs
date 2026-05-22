@@ -4,6 +4,7 @@ use zeroize::Zeroize;
 use subtle::{Choice, ConstantTimeEq};
 
 /// A wrapper for sensitive byte arrays that zeroizes its contents upon drop.
+/// Envoltura para matrices de bytes sensibles que se ponen a cero al descartar.
 #[derive(Clone)]
 pub struct SecretBytes(Vec<u8>);
 
@@ -40,6 +41,7 @@ impl fmt::Debug for SecretBytes {
 }
 
 /// A wrapper for fixed-size 32-byte cryptographic keys to prevent heap reallocations.
+/// Envoltura para claves criptográficas de tamaño fijo de 32 bytes para prevenir reasignaciones.
 #[derive(Clone)]
 pub struct SecretKey([u8; 32]);
 
@@ -82,6 +84,7 @@ impl PartialEq for SecretKey {
 }
 
 /// A wrapper for sensitive strings that zeroizes its contents upon drop.
+/// Envoltura para cadenas sensibles que se ponen a cero al descartar.
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SecretString(String);
@@ -102,6 +105,7 @@ impl SecretString {
     }
 
     /// Constant-time comparison against another string.
+    /// Comparación de tiempo constante contra otra cadena.
     pub fn ct_eq_str(&self, other: &str) -> bool {
         self.0.as_bytes().ct_eq(other.as_bytes()).into()
     }

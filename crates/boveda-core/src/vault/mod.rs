@@ -554,7 +554,13 @@ impl BovedaEngine {
         }
         
         // 2. Get all preferences
-        let preferences = storage::get_all_preferences(&self.db).await?;
+        let all_preferences = storage::get_all_preferences(&self.db).await?;
+        
+        // Filter out TOTP configuration so it's not exported
+        let preferences: Vec<(String, String)> = all_preferences
+            .into_iter()
+            .filter(|(k, _)| !k.starts_with("totp_"))
+            .collect();
         
         let payload = export::ExportPayload {
             accounts: export_accounts,
@@ -646,8 +652,11 @@ impl BovedaEngine {
         }
 
         // 4. Apply preferences (Optional merge)
+        // Skip TOTP preferences to avoid overwriting security state
         for (key, value) in payload.preferences {
-            let _ = self.set_preference(&key, &value).await;
+            if !key.starts_with("totp_") {
+                let _ = self.set_preference(&key, &value).await;
+            }
         }
 
         Ok(())

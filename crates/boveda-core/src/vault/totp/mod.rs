@@ -172,7 +172,7 @@ impl BovedaEngine {
         
         let codes: Vec<String> = serde_json::from_str(recovery_json.as_str())
             .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            
+            // 
         // SEC-C1: Check if code exists using constant-time comparison (NO early exit to prevent timing attacks)
         let normalized_input = input_code.trim().to_uppercase();
         let mut found = false;

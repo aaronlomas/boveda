@@ -14,9 +14,15 @@
 
   export async function refreshPreview() {
     genLoading = true;
-    genPreview = await generatePassword(genLength, genSymbols);
-    genLoading = false;
-    genCopied = false;
+    try {
+      genPreview = await generatePassword(genLength, genSymbols);
+    } catch (e) {
+      console.error("Failed to generate password:", e);
+      genPreview = "Error generating password";
+    } finally {
+      genLoading = false;
+      genCopied = false;
+    }
   }
 
   async function copyGenerated() {

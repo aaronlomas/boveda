@@ -102,18 +102,13 @@ impl BovedaEngine {
             })
     }
 
-    /// High-level method to unlock the vault.
-    /// Handles salt detection, migration, key derivation, and database opening.
+    /// Unlocks the vault. Derives key from salt and password, then opens encrypted database.
+    /// On first use (no salt exists), generates and saves a new 32-byte salt.
     pub async fn unlock(db_path: &Path, password: &SecretString) -> BovedaResult<Self> {
         let salt_path = db_path.with_file_name("vault.salt");
-        let mut is_legacy_migration = false;
 
         let salt = if salt_path.exists() {
             std::fs::read(&salt_path).map_err(|e| BovedaError::IoError(format!("Error al leer salt: {}", e)))?
-        } else if db_path.exists() {
-            // Unencrypted database exists, need migration
-            is_legacy_migration = true;
-            vec![] // placeholder
         } else {
             // First time initialization: generate new salt
             use rand::RngCore;
@@ -128,11 +123,7 @@ impl BovedaEngine {
             new_salt
         };
 
-        if is_legacy_migration {
-            return Self::unlock_legacy_migration(db_path, password).await;
-        }
-
-        // Normal path: Derive key from salt and password
+        // Derive key from salt and password
         let key = crypto::derive_key(password, &salt)?;
 
         let engine = Self::open_encrypted(db_path, &key).await
@@ -154,55 +145,8 @@ impl BovedaEngine {
         Ok(engine)
     }
 
-    /// Internal helper to handle legacy migration flow.
-    async fn unlock_legacy_migration(db_path: &Path, password: &SecretString) -> BovedaResult<Self> {
-        let unencrypted_engine = Self::open_unencrypted(db_path).await?;
-        let meta = storage::get_vault_meta(&unencrypted_engine.db).await?
-            .ok_or_else(|| BovedaError::MigrationError("Legacy vault has no metadata".to_string()))?;
-        
-        let (legacy_salt, challenge_opt) = meta;
-        let key = crypto::derive_key(password, &legacy_salt)?;
-        
-        // Verification logic
-        let mut verified = false;
-        if let Some(challenge) = challenge_opt {
-            if let Ok(dec) = crypto::decrypt(&challenge, &key) {
-                if dec == "boveda_auth" { verified = true; }
-            }
-        } else {
-            // Fallback: try to decrypt first account
-            let accounts = storage::get_accounts(&unencrypted_engine.db).await.unwrap_or_default();
-            if let Some(acc) = accounts.first() {
-                if crypto::decrypt(&acc.encrypted_password, &key).is_err() {
-                    return Err(BovedaError::InvalidPassword);
-                }
-                verified = true;
-            } else {
-                // No accounts and no challenge? Assume verified for migration
-                verified = true;
-            }
-        }
-
-        if !verified {
-            return Err(BovedaError::InvalidPassword);
-        }
-
-        // Perform migration
-        storage::migrate_to_sqlcipher(&unencrypted_engine.db, &key, db_path).await?;
-
-        // Open newly encrypted database
-        let engine = Self::open_encrypted(db_path, &key).await?;
-        {
-            let mut key_lock = engine.master_key.lock()
-                .map_err(|_| BovedaError::Other("Vault lock poisoned".to_string()))?;
-            *key_lock = Some(MasterKey::new(key));
-        }
-
-        Ok(engine)
-    }
-
-    /// Locks the engine and connects to the specified database.
-    /// If the database doesn't exist, it will be created on the first write.
+    /// Opens an **unencrypted** SQLite database. **FOR TESTING ONLY**.
+    /// Should not be used in production. Exists to support unit tests with in-memory databases.
     pub async fn open_unencrypted(db_path: &Path) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let pool = SqlitePoolOptions::new()
@@ -239,6 +183,8 @@ impl BovedaEngine {
         // Send the PRAGMA key right upon connecting
         let pragma_key = Self::generate_pragma_key(key);
         
+        // SEC-C4: `pragma_key` only contains safe hexadecimal characters inside `x'...'`.
+        // This is safe from SQL injection, even though sqlx concatenates PRAGMA values.
         options = options
             .pragma("key", pragma_key.as_str().to_string())
             .pragma("cipher_use_hmac", "ON")

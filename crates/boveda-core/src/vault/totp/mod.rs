@@ -28,6 +28,8 @@ impl BovedaEngine {
                     .execute(&mut *tx).await?;
                 sqlx::query("DELETE FROM preferences WHERE key = 'totp_recovery_cipher'")
                     .execute(&mut *tx).await?;
+                sqlx::query("DELETE FROM totp_recovery_codes")
+                    .execute(&mut *tx).await?;
                 tx.commit().await?;
             }
         }
@@ -45,18 +47,31 @@ impl BovedaEngine {
         // 4. Generate recovery codes
         let recovery_codes = TotpManager::generate_recovery_codes();
         
-        // 5. Encrypt recovery codes
-        let recovery_json = serde_json::to_string(&recovery_codes)
-            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            
-        let encrypted_recovery = self.with_key(|key| {
-            crypto::encrypt(&SecretString::from(recovery_json), key)
-                .map_err(|e| BovedaError::CryptoError(e.to_string()))
-        })??;
+        // 5. Encrypt recovery codes and persist them individually in a separate table
+        let mut tx = self.db.begin().await?;
         
-        // 6. Persist encrypted data
-        self.set_preference("totp_secret_cipher", &encrypted_seed).await?;
-        self.set_preference("totp_recovery_cipher", &encrypted_recovery).await?;
+        sqlx::query("DELETE FROM totp_recovery_codes").execute(&mut *tx).await?;
+        for code in &recovery_codes {
+            let enc_code = self.with_key(|key| {
+                crypto::encrypt(&SecretString::from(code.clone()), key)
+                    .map_err(|e| BovedaError::CryptoError(e.to_string()))
+            })??;
+            sqlx::query("INSERT INTO totp_recovery_codes (code_cipher) VALUES (?)")
+                .bind(enc_code)
+                .execute(&mut *tx).await?;
+        }
+        
+        // 6. Persist encrypted seed
+        sqlx::query("INSERT INTO preferences (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
+            .bind("totp_secret_cipher")
+            .bind(&encrypted_seed)
+            .execute(&mut *tx).await?;
+        
+        // Ensure legacy format is removed
+        sqlx::query("DELETE FROM preferences WHERE key = 'totp_recovery_cipher'")
+            .execute(&mut *tx).await?;
+            
+        tx.commit().await?;
         
         // 7. Return the QR, URL and the actual codes that were encrypted
         // SEC-C3: Codes will be zeroized when TotpSetupPayload is dropped by the caller
@@ -151,6 +166,9 @@ impl BovedaEngine {
         sqlx::query("DELETE FROM preferences WHERE key = 'totp_recovery_cipher'")
             .execute(&mut *tx)
             .await?;
+        sqlx::query("DELETE FROM totp_recovery_codes")
+            .execute(&mut *tx)
+            .await?;
 
         tx.commit().await?;
         self.log_audit(crate::audit::AuditAction::TotpDisabled, None).await?;
@@ -161,18 +179,33 @@ impl BovedaEngine {
     pub async fn verify_totp_recovery(&self, input_code: &str) -> BovedaResult<bool> {
         self.check_unlocked()?;
         
-        let cipher = self.get_preference("totp_recovery_cipher").await?
-            .ok_or_else(|| BovedaError::Other("Códigos de recuperación no configurados".to_string()))?;
+        // Retrieve codes from the new dedicated table
+        let rows = sqlx::query("SELECT id, code_cipher FROM totp_recovery_codes")
+            .fetch_all(&self.db)
+            .await?;
             
-        // Decrypt the recovery list
-        let recovery_json = self.with_key(|key| {
-            crypto::decrypt(&cipher, key)
-                .map_err(|e| BovedaError::CryptoError(e.to_string()))
-        })??;
+        let mut codes: Vec<String> = Vec::with_capacity(rows.len());
+        for row in rows {
+            use sqlx::Row;
+            let cipher: String = row.get("code_cipher");
+            let dec = self.with_key(|key| crypto::decrypt(&cipher, key))??;
+            codes.push(dec.as_str().to_string());
+        }
         
-        let codes: Vec<String> = serde_json::from_str(recovery_json.as_str())
-            .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            // 
+        // Check for legacy codes if none found in new table
+        if codes.is_empty() {
+            if let Some(cipher) = self.get_preference("totp_recovery_cipher").await? {
+                let recovery_json = self.with_key(|key| {
+                    crypto::decrypt(&cipher, key)
+                        .map_err(|e| BovedaError::CryptoError(e.to_string()))
+                })??;
+                codes = serde_json::from_str(recovery_json.as_str())
+                    .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
+            } else {
+                return Err(BovedaError::Other("Códigos de recuperación no configurados".to_string()));
+            }
+        }
+            
         // SEC-C1: Check if code exists using constant-time comparison (NO early exit to prevent timing attacks)
         let normalized_input = input_code.trim().to_uppercase();
         let mut found = false;
@@ -193,6 +226,9 @@ impl BovedaEngine {
                 .execute(&mut *tx)
                 .await?;
             sqlx::query("DELETE FROM preferences WHERE key = 'totp_recovery_cipher'")
+                .execute(&mut *tx)
+                .await?;
+            sqlx::query("DELETE FROM totp_recovery_codes")
                 .execute(&mut *tx)
                 .await?;
 

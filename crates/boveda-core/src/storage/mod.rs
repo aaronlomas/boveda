@@ -2,9 +2,8 @@ pub mod models;
 
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use sqlx::{SqlitePool, SqliteConnection, Executor};
+use sqlx::{SqlitePool, SqliteConnection};
 use uuid::Uuid;
-use base64::Engine;
 use crate::error::BovedaResult;
 
 /// A row from the `accounts` table as returned to the frontend.
@@ -117,6 +116,16 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     .execute(pool)
     .await?;
 
+    // TOTP Recovery Codes table (Security segregation)
+    sqlx::query(
+        r"CREATE TABLE IF NOT EXISTS totp_recovery_codes (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            code_cipher TEXT NOT NULL
+        );",
+    )
+    .execute(pool)
+    .await?;
+
     // Handle legacy schema updates gracefully
     let _ = sqlx::query("ALTER TABLE vault_meta ADD COLUMN challenge_text TEXT").execute(pool).await;
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT").execute(pool).await;
@@ -127,21 +136,6 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     Ok(())
 }
 
-/// Retrieve the persisted Argon2id salt and challenge text.
-pub async fn get_vault_meta(pool: &SqlitePool) -> BovedaResult<Option<(Vec<u8>, Option<String>)>> {
-    let row: Option<(String, Option<String>)> =
-        sqlx::query_as("SELECT salt, challenge_text FROM vault_meta WHERE id = 1")
-            .fetch_optional(pool)
-            .await?;
-
-    if let Some((encoded, challenge)) = row {
-        let bytes = base64::engine::general_purpose::STANDARD
-            .decode(&encoded)?;
-        Ok(Some((bytes, challenge)))
-    } else {
-        Ok(None)
-    }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 📁 Account Persistence
@@ -491,70 +485,6 @@ pub async fn get_audit_logs(pool: &SqlitePool, limit: i64) -> BovedaResult<Vec<(
     Ok(rows)
 }
 
-// ─── TEMPORAL MIGRATION LOGIC ──────────────────────────────────────────────────
-
-pub async fn migrate_to_sqlcipher(
-    unencrypted_pool: &SqlitePool,
-    key: &crate::crypto::secret::SecretKey,
-    db_path: &std::path::Path,
-) -> BovedaResult<()> {
-    use base64::Engine;
-    
-    let salt_row: Option<(String,)> = sqlx::query_as("SELECT salt FROM vault_meta WHERE id = 1")
-        .fetch_optional(unencrypted_pool)
-        .await?;
-        
-    let salt_bytes = if let Some((encoded,)) = salt_row {
-        base64::engine::general_purpose::STANDARD.decode(&encoded)?
-    } else {
-        return Err(crate::error::BovedaError::NotFound("No salt found in vault_meta".to_string()));
-    };
-
-    let encrypted_path = db_path.with_file_name("vault_encrypted.bvda");
-    if encrypted_path.exists() {
-        std::fs::remove_file(&encrypted_path)?;
-    }
-
-    const HEX_CHARS: &[u8] = b"0123456789abcdef";
-    let path_str = encrypted_path.to_string_lossy();
-    let mut attach_query = Vec::with_capacity(128 + path_str.len());
-    attach_query.extend_from_slice(b"ATTACH DATABASE '");
-    attach_query.extend_from_slice(path_str.as_bytes());
-    attach_query.extend_from_slice(b"' AS encrypted KEY \"x'");
-    for &byte in key.as_bytes() {
-        attach_query.push(HEX_CHARS[(byte >> 4) as usize]);
-        attach_query.push(HEX_CHARS[(byte & 0x0f) as usize]);
-    }
-    attach_query.extend_from_slice(b"'\"");
-    let attach_query_str = String::from_utf8(attach_query).map_err(|e| crate::error::BovedaError::DecodeError(e.to_string()))?;
-    let attach_query_zero = zeroize::Zeroizing::new(attach_query_str);
-    
-    let mut conn = unencrypted_pool.acquire().await?;
-    
-    conn.execute(attach_query_zero.as_str()).await?;
-    conn.execute("SELECT sqlcipher_export('encrypted')").await?;
-    conn.execute("DETACH DATABASE encrypted").await?;
-    
-    drop(conn);
-    unencrypted_pool.close().await;
-
-    std::fs::rename(&encrypted_path, db_path)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let _ = std::fs::set_permissions(db_path, std::fs::Permissions::from_mode(0o600));
-    }
-
-    let salt_path = db_path.with_file_name("vault.salt");
-    std::fs::write(&salt_path, &salt_bytes)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let _ = std::fs::set_permissions(&salt_path, std::fs::Permissions::from_mode(0o600));
-    }
-    
-    Ok(())
-}
 
 #[cfg(test)]
 mod tests {

@@ -124,7 +124,7 @@ pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaRe
 /// Generates a random secure password of `length` characters.
 /// Includes symbols and numbers.
 #[must_use]
-pub fn generate_password(length: usize, include_symbols: bool) -> SecretString {
+pub fn generate_password(length: usize, include_symbols: bool) -> BovedaResult<SecretString> {
     let mut rng = OsRng;
 
     let lowercase = b"abcdefghijklmnopqrstuvwxyz";
@@ -170,21 +170,7 @@ pub fn generate_password(length: usize, include_symbols: bool) -> SecretString {
     });
 
     // SEC-H2: Return error instead of predecible fallback. Let caller handle the error.
-    match result {
-        Ok(s) => SecretString::new(s),
-        Err(e) => {
-            eprintln!("[ERROR] Password generation failed: {:?}. Using fallback with random suffix.", e);
-            // Generate a random suffix to ensure uniqueness even in failure case
-            let mut rng = OsRng;
-            let random_suffix: String = (0..8)
-                .map(|_| {
-                    let chars = b"abcdefghijklmnopqrstuvwxyz0123456789";
-                    chars[rng.gen_range(0..chars.len())] as char
-                })
-                .collect();
-            SecretString::new(format!("ERR_GEN_{}", random_suffix))
-        }
-    }
+    result.map(SecretString::new)
 }
 
 #[cfg(test)]
@@ -289,7 +275,7 @@ mod tests {
     fn test_generate_password_complexity() {
         // Test that it contains at least one of each required category
         for _ in 0..100 {
-            let pw = generate_password(16, true);
+            let pw = generate_password(16, true).unwrap();
             let s = pw.as_str();
             assert!(s.chars().any(|c| c.is_ascii_lowercase()));
             assert!(s.chars().any(|c| c.is_ascii_uppercase()));
@@ -301,7 +287,7 @@ mod tests {
     #[test]
     fn test_generate_password_no_symbols() {
         for _ in 0..100 {
-            let pw = generate_password(16, false);
+            let pw = generate_password(16, false).unwrap();
             let s = pw.as_str();
             assert!(s.chars().any(|c| c.is_ascii_lowercase()));
             assert!(s.chars().any(|c| c.is_ascii_uppercase()));

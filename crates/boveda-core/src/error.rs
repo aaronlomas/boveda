@@ -32,9 +32,6 @@ pub enum BovedaError {
     #[error("Error de serialización: {0}")]
     SerializationError(String),
 
-    #[error("Error de migración: {0}")]
-    MigrationError(String),
-
     #[error("No se encontró el recurso: {0}")]
     NotFound(String),
 

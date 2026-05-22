@@ -42,7 +42,7 @@ pub async fn delete_account(id: String, state: State<'_, AppState>) -> Result<()
 
 /// Genera una contraseña aleatoria (nunca se almacena, puramente en memoria).
 #[tauri::command]
-pub fn generate_password(length: usize, use_symbols: bool) -> String {
+pub fn generate_password(length: usize, use_symbols: bool) -> Result<String, String> {
     AppState::cmd_generate_password(length, use_symbols)
 }
 

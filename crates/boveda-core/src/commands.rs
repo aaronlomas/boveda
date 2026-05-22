@@ -195,9 +195,11 @@ impl AppState {
     }
 
     /// Genera una contraseña aleatoria (nunca se almacena).
-    pub fn cmd_generate_password(length: usize, use_symbols: bool) -> String {
+    pub fn cmd_generate_password(length: usize, use_symbols: bool) -> Result<String, String> {
         let len = length.clamp(8, 128);
-        crypto::generate_password(len, use_symbols).as_str().to_string()
+        crypto::generate_password(len, use_symbols)
+            .map(|s| s.as_str().to_string())
+            .map_err(|e| e.to_string())
     }
 
     /// Descifra un campo secreto individual bajo demanda.

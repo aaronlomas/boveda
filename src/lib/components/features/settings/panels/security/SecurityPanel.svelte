@@ -14,6 +14,7 @@
   import TotpStatusView from "./TotpStatusView.svelte";
   import TotpSetupView from "./TotpSetupView.svelte";
   import TotpRecoveryCodesView from "./TotpRecoveryCodesView.svelte";
+  import ExportPasswordModal from "../../../../modals/forms/ExportPasswordModal.svelte";
 
   // =========================================================================
   // ESTADOS DEL COMPONENTE
@@ -30,6 +31,7 @@
   let error = $state("");
   let processing = $state(false);
   let showDisableConfirm = $state(false);
+  let showExportForDisable = $state(false);
 
   // =========================================================================
   // CICLO DE VIDA Y CARGA DE ESTADO
@@ -111,11 +113,15 @@
     showDisableConfirm = true;
   }
 
+  function handleDisableTotpConfirm() {
+    showDisableConfirm = false;
+    showExportForDisable = true;
+  }
+
   /**
    * Envía la solicitud de desactivación total al backend de Rust.
    */
   async function disableTotp() {
-    showDisableConfirm = false;
     processing = true;
     try {
       await invoke("totp_disable");
@@ -139,6 +145,8 @@
   onkeydown={(e) => {
     if (showDisableConfirm && e.key === "Escape" && !processing)
       showDisableConfirm = false;
+    if (showExportForDisable && e.key === "Escape")
+      showExportForDisable = false;
   }}
 />
 
@@ -212,8 +220,21 @@
 <!-- Modal de Advertencia de Desactivación -->
 {#if showDisableConfirm}
   <DisableTotpModal
-    onconfirm={disableTotp}
+    onconfirm={handleDisableTotpConfirm}
     oncancel={() => (showDisableConfirm = false)}
     {processing}
+  />
+{/if}
+
+<!-- Modal de Exportación Requerida para Desactivar 2FA -->
+{#if showExportForDisable}
+  <ExportPasswordModal
+    customTitle={$_("settings.security.totp_export_title")}
+    customWarning={$_("settings.security.totp_export_warning")}
+    onconfirm={async () => {
+       showExportForDisable = false;
+       await disableTotp();
+    }}
+    oncancel={() => (showExportForDisable = false)}
   />
 {/if}

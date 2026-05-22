@@ -212,6 +212,8 @@
       "totp_disable_title": "Disable two-factor authentication",
       "totp_disable_subtitle": "WARNING: After this action, you will need to remove the vault account from your mobile app and reconfigure 2FA if you decide to use it again, for the synchronization to be valid.",
       "totp_disable_confirm_btn": "yes, disable 2FA",
+      "totp_export_warning": "MANDATORY WARNING: To disable two-factor authentication you must export your data. This export DOES NOT contain 2FA configuration, making it safer to use to recover your passwords in case you lose your future 2FA recovery codes.",
+      "totp_export_title": "Export Required",
       "totp_warning": "2FA using apps like Microsoft Authenticator can sync your seed to external servers (Microsoft cloud). This is your personal decision. Bóveda only stores the seed locally and encrypted. You are solely responsible for this choice. The seed itself is an open standard (RFC 6238) and never leaves your device. Only the app you choose can introduce cloud dependencies.",
       "totp_scan_desc": "Scan this QR code with your preferred authentication app.",
       "totp_verify_label": "Introduce the verification code:",

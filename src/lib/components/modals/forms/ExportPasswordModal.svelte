@@ -10,9 +10,11 @@
   import { toast } from "$lib/stores/toast.svelte";
   import { get } from "svelte/store";
 
-  let { onconfirm, oncancel } = $props<{
+  let { onconfirm, oncancel, customWarning, customTitle } = $props<{
     onconfirm: (password: string) => void;
     oncancel: () => void;
+    customWarning?: string;
+    customTitle?: string;
   }>();
 
   let password = $state("");
@@ -63,12 +65,12 @@
 <Modal 
   show={true} 
   onclose={oncancel} 
-  title={$_("export_pack.title")}
+  title={customTitle || $_("export_pack.title")}
 >
   <div class="space-y-6">
     <div class="bg-accent/5 border border-accent/10 rounded-xl p-4">
       <p class="text-xs text-text-secondary leading-relaxed">
-        {$_("export_pack.warning")}
+        {customWarning || $_("export_pack.warning")}
       </p>
     </div>
 

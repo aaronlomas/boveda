@@ -50,13 +50,9 @@
   async function copyToClipboard(text: string): Promise<void> {
     try {
       await writeText(text);
-    } catch {
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch (e) {
-        console.warn("Clipboard write failed:", e);
-        return;
-      }
+    } catch (e) {
+      console.warn("Tauri clipboard write failed:", e);
+      return;
     }
     startCountdown();
   }
@@ -102,9 +98,7 @@
       if (copyTimer === null || copyTimer <= 1) {
         clearInterval(interval);
         copyTimer = null;
-        writeText("").catch(() =>
-          navigator.clipboard.writeText("").catch(() => {}),
-        );
+        writeText("").catch(() => {});
       } else {
         copyTimer--;
       }

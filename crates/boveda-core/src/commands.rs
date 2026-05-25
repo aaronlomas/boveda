@@ -27,6 +27,7 @@ use uuid::Uuid;
 #[derive(Clone)]
 pub struct AppState {
     pub engine: Arc<Mutex<Option<BovedaEngine>>>,
+    pub session_verified: Arc<Mutex<bool>>,
     pub db_path: PathBuf,
 }
 
@@ -34,13 +35,25 @@ impl AppState {
     pub fn new(db_path: PathBuf) -> Self {
         Self {
             engine: Arc::new(Mutex::new(None)),
+            session_verified: Arc::new(Mutex::new(false)),
             db_path,
         }
     }
 
-    /// Obtiene el engine o devuelve error si el baúl está bloqueado.
+    /// Obtiene el engine o devuelve error si el baúl está bloqueado o la sesión no está verificada.
     /// SEC-H4: Safely handle mutex poisoning instead of panicking.
     fn get_engine(&self) -> Result<BovedaEngine, String> {
+        let session_ok = *self.session_verified.lock().unwrap_or_else(|e| e.into_inner());
+        if !session_ok {
+            return Err("Sesión no verificada. Se requiere autenticación TOTP.".to_string());
+        }
+        let lock = self.engine.lock()
+            .map_err(|e| format!("Vault lock poisoned: {}. Por favor, reinicia la aplicación.", e))?;
+        lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
+    }
+
+    /// Obtiene el engine sin requerir verificación de sesión (solo para procesos de auth TOTP)
+    fn get_engine_unverified(&self) -> Result<BovedaEngine, String> {
         let lock = self.engine.lock()
             .map_err(|e| format!("Vault lock poisoned: {}. Por favor, reinicia la aplicación.", e))?;
         lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
@@ -109,6 +122,8 @@ impl AppState {
             .map_err(|e| format!("Vault lock poisoned: {}", e))?;
         *engine_lock = Some(engine);
 
+        *self.session_verified.lock().unwrap() = !is_totp;
+
         if is_totp {
             Ok("totp_required".to_string())
         } else {
@@ -124,6 +139,9 @@ impl AppState {
             *lock = None;
         } else {
             eprintln!("[WARNING] Failed to acquire lock when locking vault. The engine may be in an inconsistent state.");
+        }
+        if let Ok(mut session) = self.session_verified.lock() {
+            *session = false;
         }
     }
 
@@ -487,16 +505,17 @@ impl AppState {
     }
 
     pub async fn cmd_totp_check(&self, code: &str) -> Result<bool, String> {
-        let engine = self.get_engine()?;
+        let engine = self.get_engine_unverified()?;
         let valid = engine.verify_totp(code).await.map_err(|e| e.to_string())?;
         if !valid {
             return Err("Código TOTP inválido".to_string());
         }
+        *self.session_verified.lock().unwrap() = true;
         Ok(true)
     }
 
     pub async fn cmd_totp_recovery_check(&self, code: &str) -> Result<bool, String> {
-        let engine = self.get_engine()?;
+        let engine = self.get_engine_unverified()?;
         let valid = engine
             .verify_totp_recovery(code)
             .await
@@ -504,6 +523,7 @@ impl AppState {
         if !valid {
             return Err("Código de recuperación inválido o ya utilizado".to_string());
         }
+        *self.session_verified.lock().unwrap() = true;
         Ok(true)
     }
 

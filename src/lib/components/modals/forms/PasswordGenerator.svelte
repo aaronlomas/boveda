@@ -32,31 +32,9 @@
       await writeText(genPreview);
       genCopied = true;
       setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
-      return;
     } catch (e) {
       console.warn("Tauri clipboard error:", e);
     }
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(genPreview);
-        genCopied = true;
-        setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
-        return;
-      }
-    } catch (err) {}
-    try {
-      const textArea = document.createElement("textarea");
-      textArea.value = genPreview;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      genCopied = true;
-      setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
-    } catch (err2) {}
   }
 
   // Generate initial password when mounted

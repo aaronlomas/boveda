@@ -127,7 +127,7 @@ pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaRe
 
 /// Generates a random secure password of `length` characters.
 /// Includes symbols and numbers.
-#[must_use]
+#[must_use = "la contraseña generada debe usarse o almacenarse de forma segura"]
 pub fn generate_password(length: usize, include_symbols: bool) -> BovedaResult<SecretString> {
     let mut rng = OsRng;
 

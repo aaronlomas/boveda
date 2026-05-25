@@ -11,12 +11,31 @@
     IconList,
     IconListNumbers,
     IconChevronDown,
-    IconEraser
+    IconEraser,
+    IconPaperclip
   } from "@tabler/icons-svelte";
   import type { BoardStore } from "../store.svelte";
 
   let { store }: { store: BoardStore } = $props();
   let showSizeDropdown = $state(false);
+  let fileInput: HTMLInputElement | undefined = $state();
+
+  async function handleFileSelected(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+    const file = target.files[0];
+    try {
+      const text = await file.text();
+      if (store.editorRef) {
+        store.editorRef.focus();
+        document.execCommand("insertText", false, text);
+        store.syncContent();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    target.value = "";
+  }
 </script>
 
 <div class="h-12 flex items-center gap-2 p-3 border-b border-surface/8 bg-surface/2">
@@ -152,4 +171,21 @@
   >
     <IconEraser size={18} stroke={2.5} />
   </button>
+
+  <div class="w-px h-6 bg-surface/20 mx-1"></div>
+
+  <button
+    class="p-2 rounded-md text-text-secondary hover:text-accent-light transition-colors"
+    onclick={() => fileInput?.click()}
+    title={$_("board.attach_file") || "Adjuntar archivo"}
+  >
+    <IconPaperclip size={18} stroke={2.5} />
+  </button>
+  <input 
+    type="file" 
+    bind:this={fileInput} 
+    onchange={handleFileSelected} 
+    class="hidden" 
+    accept=".txt,.md,.json,.csv,.log,.html,.xml,.yml,.yaml,.toml" 
+  />
 </div>

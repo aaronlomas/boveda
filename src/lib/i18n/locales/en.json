@@ -42,7 +42,7 @@
     "logout": "Logout",
     "collapse": "Collapse",
     "my_credentials": "My Credentials",
-    "documents": "Documents",
+    "documents": "Notes",
     "about": "About"
   },
   "general_view": {
@@ -125,7 +125,7 @@
     "deleted_error": "Error deleting pin"
   },
   "documents_mode": {
-    "title": "Documents",
+    "title": "Notes",
     "desc": "Secure storage.",
     "create_note": "Create note",
     "create_note_desc": "Start writing a new note.",
@@ -134,9 +134,9 @@
   },
   "documents": {
     "save_existing_desc": "Import and securely encrypt an existing file from your computer.",
-    "import_document": "Import document",
-    "import_document_desc": "Allowed file list: .doc, .pdf, .xlsx, .txt, .md.",
-    "save_existing_card": "Save document",
+    "import_document": "Import Note",
+    "import_document_desc": "Allowed file list: .docx, .pdf, .xlsx, .txt, .md.",
+    "save_existing_card": "Save Note",
     "save_note_title": "Save note",
     "note_title_label": "Title",
     "note_desc_label": "Description (optional)",
@@ -170,7 +170,8 @@
     "save_existing": "Save existing",
     "generate_encrypt": "Generate and encrypt",
     "view_notes": "View notes",
-    "sidebar_board_desc": "Use this editor to write your notes securely. All content is encrypted locally."
+    "sidebar_board_desc": "Use this editor to write your notes securely. All content is encrypted locally.",
+    "attach_file": "Attach file"
   },
   "import_pack": {
     "title": "Import package",

@@ -42,7 +42,7 @@
     "logout": "Cerrar Sesión",
     "collapse": "Ocultar",
     "my_credentials": "MIS CREDENCIALES",
-    "documents": "Documentos",
+    "documents": "Notas",
     "about": "Sobre Bóveda"
   },
   "general_view": {
@@ -125,7 +125,7 @@
     "deleted_error": "Error al eliminar el PIN"
   },
   "documents_mode": {
-    "title": "Documentos",
+    "title": "Notas",
     "desc": "Almacenamiento seguro.",
     "create_note": "Crear nota",
     "create_note_desc": "Comienza a escribir una nueva nota.",
@@ -134,9 +134,9 @@
   },
   "documents": {
     "save_existing_desc": "Importa y cifra de forma segura un archivo existente de tu equipo.",
-    "import_document": "Importar documento",
-    "import_document_desc": "Lista de archivos permitidos: .doc, .pdf, .xlsx, .txt, .md.",
-    "save_existing_card": "Guardar Documento",
+    "import_document": "Importar Nota",
+    "import_document_desc": "Lista de archivos permitidos: .docx, .pdf, .xlsx, .txt, .md.",
+    "save_existing_card": "Guardar Nota",
     "save_note_title": "Guardar nota",
     "note_title_label": "Título",
     "note_desc_label": "Descripción (opcional)",
@@ -170,7 +170,8 @@
     "save_existing": "Guardar existente",
     "generate_encrypt": "Generar y cifrar",
     "view_notes": "Ver notas",
-    "sidebar_board_desc": "Utiliza este editor para redactar tus notas de forma segura. Todo el contenido se cifra localmente."
+    "sidebar_board_desc": "Utiliza este editor para redactar tus notas de forma segura. Todo el contenido se cifra localmente.",
+    "attach_file": "Adjuntar archivo"
   },
   "import_pack": {
     "title": "Importar Paquete",

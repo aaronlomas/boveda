@@ -1,6 +1,6 @@
 <script lang="ts">
   import { uiState } from "$lib/stores/stores.svelte";
-  import { IconKey, IconLock } from "@tabler/icons-svelte";
+  import { IconKey, IconLock, IconFileDescription } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
 </script>
 
@@ -21,7 +21,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     <!-- Card Cuentas -->
     <button
-      class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group cursor-pointer"
+      class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group"
       onclick={() => (uiState.activeView = "accounts")}
     >
       <div
@@ -41,7 +41,7 @@
 
     <!-- Card Save PIN -->
     <button
-      class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group cursor-pointer"
+      class="flex flex-col items-start text-left p-6 gap-4 bg-surface/4 backdrop-blur-2xl rounded-2xl border border-surface/8 shadow-xl hover:border-accent/30 hover:bg-surface/7 transition-all group"
       onclick={() => (uiState.activeView = "pin")}
     >
       <div

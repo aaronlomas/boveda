@@ -41,6 +41,12 @@ export function useDocuments() {
     currentView = "import";
   }
 
+  function startImported(text: string) {
+    content = text;
+    editingDocumentId = null;
+    currentView = "editor";
+  }
+
   function startList() {
     refresh();
     currentView = "list";
@@ -148,6 +154,7 @@ export function useDocuments() {
     get documents() { return dataState.documents; },
     startNew,
     startExisting,
+    startImported,
     startList,
     startSave,
     handleSave,

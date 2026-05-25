@@ -128,7 +128,7 @@
     "title": "Documents",
     "desc": "Secure storage.",
     "create_note": "Create note",
-    "create_note_desc": "Start writing a new secure note from scratch.",
+    "create_note_desc": "Start writing a new note.",
     "my_notes": "My notes",
     "my_notes_desc": "Access and edit your saved encrypted notes."
   },

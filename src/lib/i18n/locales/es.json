@@ -128,7 +128,7 @@
     "title": "Documentos",
     "desc": "Almacenamiento seguro.",
     "create_note": "Crear nota",
-    "create_note_desc": "Comienza a escribir una nueva nota segura desde cero.",
+    "create_note_desc": "Comienza a escribir una nueva nota.",
     "my_notes": "Mis notas",
     "my_notes_desc": "Accede y edita tus notas cifradas guardadas."
   },

@@ -34,20 +34,21 @@
 <!-- ========================================================================= -->
 <!-- CONTENEDOR DEL CAMPO -->
 <!-- ========================================================================= -->
-<div class="flex flex-col gap-1.5 mt-1">
+<div class="grid gap-2">
   <!-- Etiqueta del Campo -->
   <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
     {label}
   </span>
   
-  <!-- Contenedor del Valor y Botones de Control -->
+  <!--Contenedor de usuario y contraseña + Botones de Control -->
   <div
     class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
   >
     <!-- Texto o Máscara -->
     <code
-      class="flex-1 font-mono text-sm text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
-      class:text-white={isSecret && revealed}
+      class="flex-1 font-mono text-sm whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
+      class:text-text-primary={isSecret && revealed}
+      class:text-text-secondary={!(isSecret && revealed)}
     >
       {#if isSecret}
         {revealed && value ? value : placeholder}
@@ -62,7 +63,7 @@
       <!-- Botón Revelar (Opcional, para campos secretos) -->
       {#if isSecret && showRevealButton}
         <button
-          class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
+          class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
           onclick={ontogglereveal}
           aria-label={revealed ? $_("actions.hide") : $_("actions.show")}
           data-tooltip={revealed ? $_("actions.hide") : $_("actions.show")}
@@ -77,7 +78,7 @@
 
       <!-- Botón Copiar al Portapapeles -->
       <button
-        class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
+        class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
                {countdown !== null ? 'text-accent-light' : ''}"
         onclick={oncopy}
         aria-label={$_("actions.copy")}

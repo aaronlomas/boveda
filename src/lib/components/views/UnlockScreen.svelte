@@ -13,10 +13,9 @@
     IconCircleCheck,
   } from "@tabler/icons-svelte";
   import { invoke } from "@tauri-apps/api/core";
-  import { open } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
   import { focus } from "$lib/utils/actions";
-  import logoMinimal from "../../../assets/logo-minimal.svg";
+  import Logo from "$lib/components/ui/Logo.svelte";
 
   const version = import.meta.env.APP_VERSION;
   const status = import.meta.env.APP_STATUS;
@@ -189,7 +188,7 @@
       {:else if pendingTotp}
         <IconShieldCheck size={72} class="text-accent" />
       {:else}
-        <img src={logoMinimal} alt="logo">
+        <Logo size={120} class="text-accent drop-shadow-lg" />
       {/if}
     </div>
     <p

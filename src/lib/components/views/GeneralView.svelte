@@ -1,6 +1,6 @@
 <script lang="ts">
   import { uiState } from "$lib/stores/stores.svelte";
-  import { IconKey, IconLock, IconFileDescription } from "@tabler/icons-svelte";
+  import { IconKey, IconLock } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
 </script>
 

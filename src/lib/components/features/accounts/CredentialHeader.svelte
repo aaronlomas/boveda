@@ -99,7 +99,7 @@
         onerror={(e) => {
           (e.target as HTMLImageElement).style.display = "none";
         }}
-        class="absolute inset-0 w-full h-full object-contain p-1.5 rounded-inherit"
+        class="absolute inset-0 w-full h-full object-contain p-2 rounded-inherit"
       />
     {/if}
     <span class="initial">{getSiteInitial(account.site)}</span>
@@ -115,7 +115,7 @@
   </div>
 
   <!-- Fila de Acciones Adicionales -->
-  <div class="flex items-center gap-0.5 shrink-0">
+  <div class="flex items-center shrink-0">
     
     <!-- Botón Menú Contextual (Tres Puntos) -->
     <div class="relative">
@@ -137,7 +137,7 @@
         >
           <!-- Asignar/Cambiar Grupo -->
           <button
-            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
+            class="w-full flex items-center gap-2 p-2 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
             onclick={openAssignGroup}
             role="menuitem"
           >
@@ -150,7 +150,7 @@
           <!-- Quitar de Grupo -->
           {#if account.group_name}
             <button
-              class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
+              class="w-full flex items-center gap-2 p-2 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
               onclick={removeFromGroup}
               role="menuitem"
             >
@@ -164,7 +164,7 @@
 
           <!-- Eliminar Credencial -->
           <button
-            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
+            class="w-full flex items-center gap-2 p-2 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
             onclick={() => { menuOpen = false; ondelete(); }}
             role="menuitem"
           >

@@ -181,7 +181,7 @@
       ? 'animate-shake'
       : ''}"
   >
-    <div class="flex mb-4">
+    <div class="flex">
       {#if recoverySuccess}
         <IconCircleCheck size={72} class="text-accent" />
       {:else if isRecovery}
@@ -189,7 +189,7 @@
       {:else if pendingTotp}
         <IconShieldCheck size={72} class="text-accent" />
       {:else}
-        <IconShieldHalfFilled size={72} />
+        <img src="../../src/assets/logo-minimal.svg" alt="logo">
       {/if}
     </div>
     <p

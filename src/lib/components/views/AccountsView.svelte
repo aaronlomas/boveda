@@ -7,7 +7,7 @@
    */
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { IconPlus, IconShieldLock } from "@tabler/icons-svelte";
+  import { IconPlus, IconShieldLock, IconArrowLeft } from "@tabler/icons-svelte";
   import { uiState } from "$lib/stores/stores.svelte";
   import { modal } from "$lib/stores/modal.svelte";
   import { performanceStore } from "$lib/stores/performance.svelte";
@@ -66,7 +66,7 @@
         onclick={() => (uiState.activeView = "general")}
         aria-label="Back"
       >
-        ←
+        <IconArrowLeft size={20} />
       </button>
       <div>
         <h1

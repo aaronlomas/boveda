@@ -10,7 +10,7 @@
   import type { Component } from "svelte";
   import AccountsView from "./AccountsView.svelte";
   import GeneralView from "./GeneralView.svelte";
-  import DocumentsView from "./NotesView.svelte";
+  import DocumentsView from "./DocumentsView.svelte";
   import AboutView from "./AboutView.svelte";
   import PinView from "./PinView.svelte";
   import SettingsView from "../features/settings/SettingsView.svelte";

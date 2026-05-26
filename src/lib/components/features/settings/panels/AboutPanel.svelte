@@ -43,7 +43,7 @@
 
     <div class="p-4 bg-surface/5 border border-surface/10 rounded-xl">
       <p class="text-xs text-text-muted leading-relaxed">
-        Bóveda es un gestor de contraseñas de código abierto enfocado en la seguridad y la privacidad total del usuario. Todos los datos se cifran localmente antes de ser guardados.
+        Bóveda es un gestor de credenciales con filosofía "Seguridad por Aislamiento". Nunca usamos la nube, ni ningun servicio externo para guardar tus datos.
       </p>
     </div>
   </div>

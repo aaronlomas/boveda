@@ -109,7 +109,7 @@
         <IconDialpad size={80} stroke={1.5} />
       </div>
       <h3 class="text-lg text-text-primary font-semibold">
-        {search ? $_("dashboard.no_credentials") : $_("pin_security.no_pins")}
+        {search ? $_("pin_security.no_coincidences") : $_("pin_security.no_pins")}
       </h3>
       <p class="text-text-muted">
         {search ? "" : $_("pin_security.no_pins_desc")}

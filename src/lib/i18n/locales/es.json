@@ -107,6 +107,7 @@
   "pin_security": {
     "new_pin": "Nuevo PIN",
     "no_pins": "No hay PINs guardados",
+    "no_coincidences": "No hay coincidencias",
     "no_pins_desc": "Agrega tu primer PIN para empezar.",
     "search_placeholder": "Buscar PIN...",
     "name_label": "Nombre",
@@ -251,7 +252,7 @@
       "mode_system": "Sistema",
       "presets_title": "Temas Recomendados",
       "presets": {
-        "midnight_violet": "Violeta Medianoche",
+        "midnight_violet": "Violeta",
         "ocean_light": "Océano Claro",
         "matrix_dark": "Matrix",
         "crimson_light": "Carmín Claro",

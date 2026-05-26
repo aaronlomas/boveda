@@ -58,7 +58,7 @@
 </script>
 
 <div
-  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10 h-full grid grid-rows-[auto_auto_1fr] gap-4"
+  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10 h-full grid grid-rows-[auto_auto_1fr] gap-2"
 >
   <!-- HEADER -->
   <header class="flex items-center justify-between gap-4 shrink-0">

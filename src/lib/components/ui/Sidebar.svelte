@@ -80,12 +80,12 @@
 >
   <!-- Brand -->
   <div
-    class="flex items-center gap-3 px-1 pb-5 border-b border-surface/8 mb-3 overflow-hidden whitespace-nowrap"
+    class="flex items-center gap-2 px-1 pb-5 border-b border-surface/8 mb-3 overflow-hidden whitespace-nowrap"
   >
     <div
-      class="text-2xl shrink-0 w-10 h-10 flex items-center justify-center bg-transparent rounded-sm border-none"
+      class="text-2xl shrink-0 w-10 h-10 flex items-center justify-center bg-transparent rounded-sm"
     >
-      <IconShieldHalfFilled size={40} />
+      <img src="../src/assets/logo-minimal.svg" alt="logo">
     </div>
     {#if !uiState.sidebarCollapsed}
       <div class="flex flex-col">

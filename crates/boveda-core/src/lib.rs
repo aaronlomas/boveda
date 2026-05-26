@@ -31,7 +31,7 @@ pub fn harden_process() {
     unsafe {
         // SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
         // Prevents the system from displaying critical-error-handler and Windows Error Reporting dialogs.
-        use windows_sys::Win32::System::Diagnostics::{SetErrorMode, SEM_FAILCRITICALERRORS, SEM_NOGPFAULTERRORBOX};
+        use windows_sys::Win32::System::Diagnostics::Debug::{SetErrorMode, SEM_FAILCRITICALERRORS, SEM_NOGPFAULTERRORBOX};
         SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     }
 }

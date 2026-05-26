@@ -63,7 +63,7 @@
         ciphertext: pinEntry.encrypted_pin,
       });
       await copyToClipboard(plain);
-      toast.success($_("add_credential.copied_button"));
+      toast.success($_("actions.copied"));
     } catch (e) {
       console.error("Failed to decrypt for copy", e);
     }
@@ -119,11 +119,11 @@
 />
 
 <div
-  class="p-5 flex flex-col gap-3.5 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-[-2px] relative"
+  class="p-5 flex flex-col gap-2 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-[-2px] relative"
   data-pin-id={pinEntry.id}
 >
   <!-- Header -->
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-4">
     <div
       class="w-11 h-11 rounded-sm bg-accent/5 border border-accent/10 grid place-items-center shrink-0 text-accent-light"
     >
@@ -141,10 +141,10 @@
     </div>
 
     <!-- Actions row -->
-    <div class="flex items-center gap-0.5 shrink-0">
+    <div class="flex items-center shrink-0">
       <div class="relative">
         <button
-          class="text-text-muted rounded-md transition-colors cursor-pointer p-1 hover:bg-surface/10 hover:text-text-primary"
+          class="text-text-muted rounded-full transition-colors cursor-pointer p-1 hover:bg-surface/10 hover:text-text-primary"
           onclick={() => (menuOpen = !menuOpen)}
           aria-label="Menu"
         >
@@ -172,7 +172,7 @@
   </div>
 
   <!-- PIN Field -->
-  <div class="flex flex-col gap-1.5 mt-1">
+  <div class="grid gap-2 mt-4">
     <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
       {$_("pin_security.pin_label")}
     </span>
@@ -186,9 +186,9 @@
         {revealed && decryptedPin ? decryptedPin : "••••"}
       </code>
 
-      <div class="flex items-center gap-0.5">
+      <div class="flex items-center">
         <button
-          class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
+          class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
           onclick={toggleReveal}
           aria-label={revealed ? "Hide" : "Show"}
         >
@@ -207,7 +207,7 @@
           onclick={copyPin}
           aria-label="Copy PIN"
         >
-          <div class="w-[18px] h-[18px] flex items-center justify-center">
+          <div class="w-4 h-4 flex items-center justify-center">
             {#if copyTimer !== null}
               <span class="text-xs font-bold leading-none">{copyTimer}</span>
             {:else}

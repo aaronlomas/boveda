@@ -6,7 +6,6 @@
     IconEye,
     IconEyeOff,
     IconLock,
-    IconShieldHalfFilled,
     IconSignRight,
     IconArrowLeft,
     IconShieldCheck,
@@ -17,6 +16,7 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { _ } from "svelte-i18n";
   import { focus } from "$lib/utils/actions";
+  import logoMinimal from "../../../assets/logo-minimal.svg";
 
   const version = import.meta.env.APP_VERSION;
   const status = import.meta.env.APP_STATUS;
@@ -189,7 +189,7 @@
       {:else if pendingTotp}
         <IconShieldCheck size={72} class="text-accent" />
       {:else}
-        <img src="../../src/assets/logo-minimal.svg" alt="logo">
+        <img src={logoMinimal} alt="logo">
       {/if}
     </div>
     <p

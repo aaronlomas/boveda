@@ -3,6 +3,7 @@
   import { lockVault } from "$lib/utils/tauri";
   import { modal } from "$lib/stores/modal.svelte";
   import { _ } from "svelte-i18n";
+  import logoMinimal from "../../../assets/logo-minimal.svg";
   import {
     IconShieldHalfFilled,
     IconLayoutGrid,
@@ -85,7 +86,7 @@
     <div
       class="text-2xl shrink-0 w-10 h-10 flex items-center justify-center bg-transparent rounded-sm"
     >
-      <img src="../src/assets/logo-minimal.svg" alt="logo">
+      <img src={logoMinimal} alt="logo">
     </div>
     {#if !uiState.sidebarCollapsed}
       <div class="flex flex-col">

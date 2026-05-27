@@ -200,6 +200,8 @@ impl AppState {
 
     pub async fn cmd_get_pins(&self) -> Result<Vec<crate::storage::models::Pin>, String> {
         let engine = self.get_engine()?;
+        // SEC: Log access to decrypted pin values
+        let _ = engine.log_audit(crate::audit::AuditAction::SecretAccess, Some("pin_values")).await;
         engine.get_pins().await.map_err(|e| e.to_string())
     }
 
@@ -594,6 +596,10 @@ impl AppState {
     }
 
     pub async fn cmd_delete_document(&self, id: &str) -> Result<(), String> {
+        // SEC-C2: Validate UUID to prevent invalid IDs from being used
+        Uuid::parse_str(id)
+            .map_err(|_| format!("ID de documento inválido: '{}'. Debe ser un UUID válido.", id))?;
+
         let engine = self.get_engine()?;
         engine.delete_document(id).await.map_err(|e| e.to_string())
     }
@@ -603,6 +609,8 @@ impl AppState {
         encrypted_content: &str,
     ) -> Result<String, String> {
         let engine = self.get_engine()?;
+        // SEC: Log access to decrypted document content
+        let _ = engine.log_audit(crate::audit::AuditAction::SecretAccess, Some("document_content")).await;
         engine
             .decrypt_document_content(encrypted_content)
             .map_err(|e| e.to_string())

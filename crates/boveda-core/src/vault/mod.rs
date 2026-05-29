@@ -544,11 +544,11 @@ impl BovedaEngine {
                 .transpose()?;
                 
             export_accounts.push(export::ExportAccount {
-                site: acc.site,
-                username: acc.username,
-                password,
-                recovery_code,
-                notes,
+                site: acc.site.as_str().to_string(),
+                username: acc.username.as_str().to_string(),
+                password: password.as_str().to_string(),
+                recovery_code: recovery_code.map(|s| s.as_str().to_string()),
+                notes: notes.map(|s| s.as_str().to_string()),
                 group_name: acc.group_name,
             });
         }
@@ -563,9 +563,9 @@ impl BovedaEngine {
                 .transpose()?;
                 
             export_pins.push(export::ExportPin {
-                name: p.name,
-                pin: self.decrypt_secret(&p.encrypted_pin)?,
-                notes,
+                name: p.name.as_str().to_string(),
+                pin: self.decrypt_secret(&p.encrypted_pin)?.as_str().to_string(),
+                notes: notes.map(|s| s.as_str().to_string()),
             });
         }
         
@@ -642,7 +642,13 @@ impl BovedaEngine {
                 }
             }
 
-            let id = self.add_account(acc.site, acc.username, acc.password, acc.recovery_code, acc.notes).await?;
+            let id = self.add_account(
+                acc.site.into(),
+                acc.username.into(),
+                acc.password.into(),
+                acc.recovery_code.map(Into::into),
+                acc.notes.map(Into::into)
+            ).await?;
             if let Some(group) = acc.group_name {
                 let _ = self.update_account_group(&id, Some(&group)).await;
             }
@@ -664,7 +670,7 @@ impl BovedaEngine {
                     continue; // Skip existing entry
                 }
             }
-            self.add_pin(p.name, p.pin, p.notes).await?;
+            self.add_pin(p.name.into(), p.pin.into(), p.notes.map(Into::into)).await?;
         }
 
         // 4. Apply preferences (Optional merge)

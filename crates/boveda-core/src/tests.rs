@@ -227,9 +227,9 @@ async fn test_deduplication() {
     let payload = ExportPayload {
         accounts: vec![
             ExportAccount {
-                site: site.clone(),
-                username: user.clone(),
-                password: pass.clone(),
+                site: site.as_str().to_string(),
+                username: user.as_str().to_string(),
+                password: pass.as_str().to_string(),
                 recovery_code: None,
                 notes: None,
                 group_name: None,

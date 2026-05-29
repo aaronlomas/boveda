@@ -13,19 +13,19 @@ pub struct ExportPackage {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ExportAccount {
-    pub site: SecretString,
-    pub username: SecretString,
-    pub password: SecretString,
-    pub recovery_code: Option<SecretString>,
-    pub notes: Option<SecretString>,
+    pub site: String,
+    pub username: String,
+    pub password: String,
+    pub recovery_code: Option<String>,
+    pub notes: Option<String>,
     pub group_name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ExportPin {
-    pub name: SecretString,
-    pub pin: SecretString,
-    pub notes: Option<SecretString>,
+    pub name: String,
+    pub pin: String,
+    pub notes: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -98,10 +98,10 @@ mod tests {
         let payload = ExportPayload {
             accounts: vec![
                 ExportAccount {
-                    site: SecretString::from("site.com"),
-                    username: SecretString::from("user"),
-                    password: SecretString::from("pass"),
-                    recovery_code: Some(SecretString::from("rec-123")),
+                    site: "site.com".to_string(),
+                    username: "user".to_string(),
+                    password: "pass".to_string(),
+                    recovery_code: Some("rec-123".to_string()),
                     notes: None,
                     group_name: Some("Work".to_string()),
                 }

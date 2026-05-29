@@ -75,6 +75,7 @@ pub fn run() {
             commands::settings::import_background_image,
             commands::settings::get_background_data_url,
             commands::settings::get_data_dir,
+            commands::settings::read_external_file,
             commands::settings::get_app_info,
             commands::settings::export_db,
             commands::settings::import_db,

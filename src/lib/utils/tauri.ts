@@ -23,6 +23,10 @@ export async function addAccount(
   return invoke<string>("add_account", { site, username, password, recoveryCode, notes });
 }
 
+export async function readExternalFile(path: string): Promise<string> {
+  return invoke<string>("read_external_file", { path });
+}
+
 export async function getAccounts(): Promise<Account[]> {
   return invoke<Account[]>("get_accounts");
 }

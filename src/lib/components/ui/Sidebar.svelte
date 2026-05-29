@@ -36,9 +36,9 @@
     },
     {
       icon: IconDatabaseImport,
-      label: $_("sidebar.import_db"),
+      label: $_("actions.import"),
       id: "import",
-      action: () => modal.openImportPackage(),
+      action: () => (uiState.activeView = "import"),
     },
     {
       icon: IconInfoCircle,

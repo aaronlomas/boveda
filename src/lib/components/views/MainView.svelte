@@ -14,6 +14,7 @@
   import AboutView from "./AboutView.svelte";
   import PinView from "./PinView.svelte";
   import SettingsView from "../features/settings/SettingsView.svelte";
+  import ImportView from "./ImportView.svelte";
 
   const viewMap: Partial<Record<ViewId, Component>> = {
     general: GeneralView,
@@ -22,6 +23,7 @@
     about: AboutView,
     pin: PinView,
     settings: SettingsView,
+    import: ImportView,
   };
 
   const ActiveView = $derived(viewMap[uiState.activeView]);

@@ -6,7 +6,8 @@ export type ViewId =
   | "about"
   | "pin"
   | "tokens"
-  | "settings";
+  | "settings"
+  | "import";
 
 export class UIState {
   sidebarCollapsed = $state(false);

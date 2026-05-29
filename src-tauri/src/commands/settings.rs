@@ -38,6 +38,11 @@ pub fn get_data_dir() -> String {
 }
 
 #[tauri::command]
+pub async fn read_external_file(path: String) -> Result<String, String> {
+    std::fs::read_to_string(path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 pub async fn export_db(dest_path: String) -> Result<(), String> {
     AppState::cmd_export_db(&dest_path).await
 }

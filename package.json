@@ -15,7 +15,8 @@
     "audit:js": "pnpm audit",
     "security": "pnpm run audit:js && pnpm run audit:rust",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "preinstall": "node -e \"if (process.env.npm_execpath && !process.env.npm_execpath.includes('pnpm')) { console.error('\\x1b[31m[ERROR] Bóveda requiere usar pnpm. Ejecutar npm install está deshabilitado por seguridad.\\x1b[0m\\n'); process.exit(1); }\""
   },
   "license": "AGPL-3.0",
   "dependencies": {

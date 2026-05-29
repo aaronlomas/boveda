@@ -185,10 +185,22 @@ impl BovedaEngine {
         
         // SEC-C4: `pragma_key` only contains safe hexadecimal characters inside `x'...'`.
         // This is safe from SQL injection, even though sqlx concatenates PRAGMA values.
+        //
+        // SEC-C5: All KDF/cipher parameters are pinned explicitly to avoid relying on
+        // SQLCipher compiled-in defaults, which may vary across versions and platforms.
+        // Values follow SQLCipher 4.x best-practice recommendations:
+        //   - cipher_kdf_algorithm  : PBKDF2-HMAC-SHA512 (stronger than default SHA1)
+        //   - cipher_hmac_algorithm : HMAC-SHA512 (integrity of each page)
+        //   - cipher_page_size      : 4096 bytes  (performance + security balance)
+        //   - kdf_iter              : 256 000     (OWASP minimum for PBKDF2-SHA512)
         options = options
             .pragma("key", pragma_key.as_str().to_string())
             .pragma("cipher_use_hmac", "ON")
             .pragma("cipher_plaintext_header_size", "0")
+            .pragma("cipher_kdf_algorithm", "PBKDF2_HMAC_SHA512")
+            .pragma("cipher_hmac_algorithm", "HMAC_SHA512")
+            .pragma("cipher_page_size", "4096")
+            .pragma("kdf_iter", "256000")
             .pragma("secure_delete", "ON")
             .pragma("journal_mode", "WAL");
 
@@ -266,10 +278,13 @@ impl BovedaEngine {
         let mut accounts = Vec::with_capacity(rows.len());
         for row in rows {
             let (dec_site, dec_username) = self.with_key(|key| {
-                let s = crypto::decrypt(&row.site, key).unwrap_or_else(|_| SecretString::from(row.site.clone()));
-                let u = crypto::decrypt(&row.username, key).unwrap_or_else(|_| SecretString::from(row.username.clone()));
-                (s, u)
-            })?;
+                // SEC-D1: Propagate decryption errors instead of silently falling back to
+                // the raw ciphertext. Returning encrypted blobs as plaintext would leak
+                // confusing data and mask corruption / wrong-key conditions.
+                let s = crypto::decrypt(&row.site, key)?;
+                let u = crypto::decrypt(&row.username, key)?;
+                Ok::<_, BovedaError>((s, u))
+            })??;
             
             accounts.push(crate::storage::models::Account {
                 id: row.id,
@@ -358,8 +373,9 @@ impl BovedaEngine {
         let mut pins = Vec::with_capacity(rows.len());
         for row in rows {
             let dec_name = self.with_key(|key| {
-                crypto::decrypt(&row.name, key).unwrap_or_else(|_| SecretString::from(row.name.clone()))
-            })?;
+                // SEC-D1: Propagate decryption errors — do not return the ciphertext blob.
+                crypto::decrypt(&row.name, key)
+            })??;
             
             pins.push(crate::storage::models::Pin {
                 id: row.id,
@@ -681,9 +697,9 @@ impl BovedaEngine {
         let mut docs = Vec::with_capacity(rows.len());
         for row in rows {
             let dec_title = self.with_key(|key| {
+                // SEC-D1: Propagate decryption errors — do not return the ciphertext blob.
                 crypto::decrypt(&row.title, key)
-                    .unwrap_or_else(|_| SecretString::from(row.title.clone()))
-            })?;
+            })??;
             docs.push(crate::storage::models::Document {
                 id: row.id,
                 title: dec_title,

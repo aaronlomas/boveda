@@ -36,7 +36,7 @@
     },
     {
       icon: IconDatabaseImport,
-      label: $_("actions.import"),
+      label: $_("sidebar.import_db"),
       id: "import",
       action: () => (uiState.activeView = "import"),
     },

@@ -25,7 +25,7 @@
       const { credentials, skipped, detectedFormat } = parseCsv(content);
 
       if (credentials.length === 0) {
-        toast.error("No se encontraron contraseñas válidas en el archivo.");
+        toast.error($_("import_view.error_no_passwords"));
         return;
       }
 
@@ -35,13 +35,13 @@
 
       dataState.accounts = await getAccounts();
 
-      const skippedMsg = skipped > 0 ? ` (${skipped} filas sin contraseña ignoradas)` : "";
-      toast.success(
-        `Se importaron ${credentials.length} cuentas desde ${detectedFormat}.${skippedMsg}`
-      );
+      const msg = skipped > 0
+        ? $_("import_view.success_skipped", { values: { count: credentials.length, format: detectedFormat, skipped } })
+        : $_("import_view.success", { values: { count: credentials.length, format: detectedFormat } });
+      toast.success(msg);
       uiState.activeView = "accounts";
     } catch (e: any) {
-      toast.error(`Error en importación: ${e.message || e}`);
+      toast.error($_("import_view.error_generic", { values: { message: e.message || e } }));
     } finally {
       isImporting = false;
     }
@@ -57,8 +57,8 @@
     >
       {$_("actions.import")}
     </h1>
-    <p class="text-text-muted text-sm mt-1">
-      Selecciona el tipo de importación.
+    <p class="text-text-muted text-sm">
+      {$_("import_view.subtitle")}
     </p>
   </div>
 
@@ -75,10 +75,10 @@
       </div>
       <div>
         <h3 class="text-lg font-semibold text-text-primary mb-1">
-          Importar DB Bóveda
+          {$_("import_view.boveda_db_title")}
         </h3>
         <p class="text-sm text-text-muted">
-          Restaura una copia de seguridad previamente exportada.
+          {$_("import_view.boveda_db_desc")}
         </p>
       </div>
     </button>
@@ -100,10 +100,10 @@
       </div>
       <div>
         <h3 class="text-lg font-semibold text-text-primary mb-1">
-          Importación Externa
+          {$_("import_view.external_title")}
         </h3>
         <p class="text-sm text-text-muted">
-          Importa contraseñas desde un archivo CSV (ej. Google Chrome).
+          {$_("import_view.external_desc")}
         </p>
       </div>
     </button>

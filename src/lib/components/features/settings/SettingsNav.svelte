@@ -2,7 +2,7 @@
   /**
    * @component SettingsNav
    * @description Navegación lateral para la vista de configuración.
-   * 
+   *
    * @param {Object} props
    * @param {Section[]} props.sections - Lista de secciones disponibles.
    * @param {string} props.activeSection - (bindable) El ID de la sección actualmente seleccionada.
@@ -15,11 +15,11 @@
     icon: any;
   }
 
-  let { 
-    sections, 
-    activeSection = $bindable() 
-  }: { 
-    sections: Section[]; 
+  let {
+    sections,
+    activeSection = $bindable(),
+  }: {
+    sections: Section[];
     activeSection: string;
   } = $props();
 </script>
@@ -40,7 +40,9 @@
       />
       <span>{section.label}</span>
       {#if activeSection === section.id}
-        <div class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse ml-1"></div>
+        <div
+          class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse ml-1"
+        ></div>
       {/if}
     </button>
   {/each}

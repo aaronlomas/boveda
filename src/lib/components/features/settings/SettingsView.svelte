@@ -15,7 +15,6 @@
     IconShieldCheck,
     IconArrowLeft,
     IconRefresh,
-    IconDatabaseExport,
     IconInfoCircle
   } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
@@ -43,7 +42,7 @@
     { id: "language", label: $_("settings.tabs.language"), icon: IconLanguage },
     { id: "security", label: $_("settings.tabs.security"), icon: IconShieldCheck },
     { id: "performance", label: $_("settings.tabs.performance"), icon: IconRocket },
-    { id: "about", label: t("settings.tabs.about", "Acerca de"), icon: IconInfoCircle },
+    { id: "about", label: t("settings.tabs.system"), icon: IconInfoCircle },
   ]);
 
   const panelMap: any = {

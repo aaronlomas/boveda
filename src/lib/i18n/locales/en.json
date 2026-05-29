@@ -184,6 +184,17 @@
     "success_replace": "Vault replaced successfully",
     "success_merge": "Vault imported and merged successfully"
   },
+  "import_view": {
+    "subtitle": "Select the type of import.",
+    "boveda_db_title": "Import Bóveda DB",
+    "boveda_db_desc": "Only supports .bvda.pack files from Bóveda.",
+    "external_title": "External Import",
+    "external_desc": "Import passwords from a CSV file (e.g. Google Chrome).",
+    "error_no_passwords": "No valid passwords found in the file.",
+    "error_generic": "Import error: {message}",
+    "success": "Imported {count} accounts from {format}.",
+    "success_skipped": "Imported {count} accounts from {format} ({skipped} rows without password were skipped)."
+  },
   "export_pack": {
     "title": "Export package",
     "password_label": "Package password",
@@ -200,7 +211,8 @@
       "theme": "Theme",
       "language": "Language",
       "security": "Security",
-      "performance": "Performance"
+      "performance": "Performance",
+      "system": "System"
     },
     "security": {
       "title": "Extend vault unlock",
@@ -287,6 +299,13 @@
       "massive_list_active_badge": "Active with {count} credentials",
       "massive_list_enabled": "Enabled",
       "massive_list_disabled": "Disabled"
+    },
+    "about": {
+      "title": "About Bóveda",
+      "desc": "Information about the application and licenses.",
+      "version_label": "Version",
+      "core_label": "Core Engine",
+      "philosophy": "Bóveda is a credential manager with a \"Security by Isolation\" philosophy. We never use the cloud or any external service to store your data."
     }
   },
   "unlock_screen": {

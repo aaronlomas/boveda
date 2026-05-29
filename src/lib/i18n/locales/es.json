@@ -184,6 +184,17 @@
     "success_replace": "Baúl reemplazado con éxito.",
     "success_merge": "Baúl importado y fusionado con éxito."
   },
+  "import_view": {
+    "subtitle": "Selecciona el tipo de importación.",
+    "boveda_db_title": "Importar DB Bóveda",
+    "boveda_db_desc": "Solo soporta el archivo (.bvda.pack) de Bóveda.",
+    "external_title": "Importación Externa",
+    "external_desc": "Importa contraseñas desde un archivo CSV (ej. Google Chrome).",
+    "error_no_passwords": "No se encontraron contraseñas válidas en el archivo.",
+    "error_generic": "Error en importación: {message}",
+    "success": "Se importaron {count} cuentas desde {format}.",
+    "success_skipped": "Se importaron {count} cuentas desde {format} ({skipped} filas sin contraseña ignoradas)."
+  },
   "export_pack": {
     "title": "Exportar Paquete",
     "password_label": "Contraseña del Paquete",
@@ -200,7 +211,8 @@
       "theme": "Tema",
       "language": "Idioma",
       "security": "Seguridad",
-      "performance": "Rendimiento"
+      "performance": "Rendimiento",
+      "system": "Sistema"
     },
     "security": {
       "title": "Extender Desbloqueo de Bóveda",
@@ -287,6 +299,13 @@
       "massive_list_active_badge": "Activo con {count} credenciales",
       "massive_list_enabled": "Activado",
       "massive_list_disabled": "Desactivado"
+    },
+    "about": {
+      "title": "Acerca de Bóveda",
+      "desc": "Información sobre la aplicación y licencias.",
+      "version_label": "Versión",
+      "core_label": "Motor Core",
+      "philosophy": "Bóveda es un gestor de credenciales con filosofía \"Seguridad por Aislamiento\". Nunca usamos la nube, ni ningún servicio externo para guardar tus datos."
     }
   },
   "unlock_screen": {

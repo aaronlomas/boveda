@@ -49,12 +49,8 @@ pub struct DocumentRow {
 pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     sqlx::query(
         r"
-        CREATE TABLE IF NOT EXISTS vault_meta (
-            id          INTEGER PRIMARY KEY,
-            salt        TEXT NOT NULL,
-            challenge_text TEXT,
-            created_at  TEXT NOT NULL
-        );
+        -- vault_meta was removed: the KDF salt is stored as `vault.salt` on the filesystem
+        -- (see vault/mod.rs BovedaEngine::unlock). There is no salt in the DB.
         CREATE TABLE IF NOT EXISTS accounts (
             id                  TEXT PRIMARY KEY,
             site                TEXT NOT NULL,
@@ -127,7 +123,7 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     .await?;
 
     // Handle legacy schema updates gracefully
-    let _ = sqlx::query("ALTER TABLE vault_meta ADD COLUMN challenge_text TEXT").execute(pool).await;
+    // Note: vault_meta is intentionally absent — the KDF salt lives in `vault.salt` on disk.
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT").execute(pool).await;
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN encrypted_recovery_code TEXT").execute(pool).await;
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN favicon_url TEXT").execute(pool).await;
@@ -509,7 +505,7 @@ mod tests {
             .await
             .unwrap();
         let table_names: Vec<String> = tables.into_iter().map(|(n,)| n).collect();
-        assert!(table_names.contains(&"vault_meta".to_string()));
+        assert!(!table_names.contains(&"vault_meta".to_string()), "vault_meta must not exist: salt lives in vault.salt on disk");
         assert!(table_names.contains(&"accounts".to_string()));
         assert!(table_names.contains(&"preferences".to_string()));
     }

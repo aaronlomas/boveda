@@ -1,5 +1,5 @@
 use std::fmt;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 use zeroize::Zeroize;
 use subtle::{Choice, ConstantTimeEq};
 
@@ -85,9 +85,26 @@ impl PartialEq for SecretKey {
 
 /// A wrapper for sensitive strings that zeroizes its contents upon drop.
 /// Envoltura para cadenas sensibles que se ponen a cero al descartar.
-#[derive(Clone, Serialize, Deserialize)]
+///
+/// # Serde behaviour
+///
+/// `SecretString` intentionally does **not** derive `Serialize`. Instead it provides a
+/// hand-written impl that always emits the literal string `"[REDACTED]"`, so that a
+/// `SecretString` field can never accidentally leak plaintext into JSON responses, logs,
+/// or error messages — even if the containing struct derives `Serialize`.
+///
+/// `Deserialize` is kept so that values can be received over the Tauri IPC layer.
+#[derive(Clone, Deserialize)]
 #[serde(transparent)]
 pub struct SecretString(String);
+
+impl Serialize for SecretString {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        // SEC-S1: Never serialize the actual value. Any struct that accidentally
+        // includes a SecretString will emit "[REDACTED]" rather than plaintext.
+        serializer.serialize_str("[REDACTED]")
+    }
+}
 
 impl SecretString {
     pub fn new(s: String) -> Self {

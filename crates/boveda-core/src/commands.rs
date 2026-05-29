@@ -70,8 +70,11 @@ impl AppState {
     /// Desbloquea el baúl. Devuelve `"totp_required"` o `"unlocked"`.
     /// SEC-H3: Implements rate limiting to prevent brute force attacks on vault unlock.
     pub async fn cmd_unlock_vault(&self, password: SecretString) -> Result<String, String> {
-        // SEC-H3: Rate limiting - prevent brute force unlock attempts
-        let failed_unlock_str = std::fs::read_to_string(".vault_unlock_lock")
+        // SEC-H3: Rate limiting - prevent brute force unlock attempts.
+        // SEC-H5: Use app_data_dir() instead of a relative path so the lock file is always
+        // in a deterministic, OS-appropriate location regardless of the process CWD.
+        let lock_file = Self::app_data_dir().join(".vault_unlock_lock");
+        let failed_unlock_str = std::fs::read_to_string(&lock_file)
             .ok()
             .and_then(|content| content.lines().next().map(|s| s.to_string()))
             .unwrap_or_else(|| "0:0".to_string());
@@ -97,7 +100,7 @@ impl AppState {
         let engine = match BovedaEngine::unlock(&self.db_path, &password).await {
             Ok(e) => {
                 // Reset failed attempts on successful unlock
-                let _ = std::fs::remove_file(".vault_unlock_lock");
+                let _ = std::fs::remove_file(&lock_file);
                 e
             }
             Err(e) => {
@@ -107,7 +110,7 @@ impl AppState {
                     .unwrap_or_default()
                     .as_secs() as i64;
                 let new_attempts = (failed_attempts + 1).to_string();
-                let _ = std::fs::write(".vault_unlock_lock", format!("{}:{}", new_attempts, now));
+                let _ = std::fs::write(&lock_file, format!("{}:{}", new_attempts, now));
                 
                 // Log failed attempt
                 eprintln!("[SECURITY] Intento fallido de desbloqueo del baúl: {}", e);

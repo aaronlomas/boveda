@@ -176,10 +176,18 @@ impl BovedaEngine {
     }
 
     /// Verifies a recovery code and, if valid, completely disables 2FA to allow for a fresh re-linking.
+    ///
+    /// # Recovery code storage format
+    ///
+    /// Since the `totp_recovery_codes` dedicated table was introduced, each code is stored as an
+    /// **individually encrypted** row (`code_cipher`). The older `totp_recovery_cipher` preference
+    /// key (a single JSON-blob of all codes) is no longer written by `setup_totp()` and is cleaned
+    /// up by both `setup_totp()` and `disable_totp()`. Vaults that still carry the legacy key are
+    /// treated as misconfigured — callers must re-link 2FA via `setup_totp()`.
     pub async fn verify_totp_recovery(&self, input_code: &str) -> BovedaResult<bool> {
         self.check_unlocked()?;
         
-        // Retrieve codes from the new dedicated table
+        // Retrieve codes from the dedicated table (current format).
         let rows = sqlx::query("SELECT id, code_cipher FROM totp_recovery_codes")
             .fetch_all(&self.db)
             .await?;
@@ -192,31 +200,39 @@ impl BovedaEngine {
             codes.push(dec.as_str().to_string());
         }
         
-        // Check for legacy codes if none found in new table
+        // SEC-TOTP-1: If no codes exist in the new table, refuse with a clear error.
+        // Do NOT fall back to the legacy `totp_recovery_cipher` preference — that format
+        // is no longer written and its presence signals a corrupted/pre-migration vault.
+        // Users in this state must re-link 2FA via setup_totp().
         if codes.is_empty() {
-            if let Some(cipher) = self.get_preference("totp_recovery_cipher").await? {
-                let recovery_json = self.with_key(|key| {
-                    crypto::decrypt(&cipher, key)
-                        .map_err(|e| BovedaError::CryptoError(e.to_string()))
-                })??;
-                codes = serde_json::from_str(recovery_json.as_str())
-                    .map_err(|e| BovedaError::SerializationError(e.to_string()))?;
-            } else {
-                return Err(BovedaError::Other("Códigos de recuperación no configurados".to_string()));
-            }
+            return Err(BovedaError::Other(
+                "Códigos de recuperación no configurados. Por favor, re-vincula el autenticador.".to_string()
+            ));
         }
             
-        // SEC-C1: Check if code exists using constant-time comparison (NO early exit to prevent timing attacks)
+        // SEC-C1: Constant-time comparison to prevent timing-based side-channel attacks.
+        // Both sides are normalized to uppercase before comparing so the check is
+        // case-insensitive without branching inside the loop.
+        //
+        // Note: `ct_eq` requires slices of equal length — it returns `false` immediately on
+        // a length mismatch, which is still safe but semantically different from a full scan.
+        // The explicit length guard below makes this invariant visible and ensures the loop
+        // always runs for all codes with no early exit.
         let normalized_input = input_code.trim().to_uppercase();
+        let input_bytes = normalized_input.as_bytes();
         let mut found = false;
-        for c in codes {
-            // Use bitwise OR to accumulate result without branching
-            let is_match = c.to_uppercase().as_bytes().ct_eq(normalized_input.as_bytes());
-            found |= bool::from(is_match); // Constant-time OR operation
+        for c in &codes {
+            let stored = c.to_uppercase();
+            let stored_bytes = stored.as_bytes();
+            // Only invoke ct_eq when lengths match; otherwise keep `found` unchanged.
+            // The loop continues for every stored code regardless.
+            if stored_bytes.len() == input_bytes.len() {
+                found |= bool::from(stored_bytes.ct_eq(input_bytes));
+            }
         }
 
         if found {
-            // Valid recovery code! Reset 2FA entirely.
+            // Valid recovery code — reset 2FA entirely so the user can re-link.
             let mut tx = self.db.begin().await?;
             
             sqlx::query("DELETE FROM preferences WHERE key = 'totp_secret_cipher'")

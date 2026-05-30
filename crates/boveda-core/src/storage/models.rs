@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::crypto::secret::SecretString;
 
 /// A decrypted account entry as returned to the frontend.
 /// Passwords and notes are decrypted in memory before serialization —
@@ -8,8 +7,8 @@ use crate::crypto::secret::SecretString;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Account {
     pub id: String,
-    pub site: SecretString,
-    pub username: SecretString,
+    pub site: String,
+    pub username: String,
     pub password_cipher: String,
     pub recovery_code_cipher: Option<String>,
     pub notes_cipher: Option<String>,
@@ -22,7 +21,7 @@ pub struct Account {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Pin {
     pub id: String,
-    pub name: SecretString,
+    pub name: String,
     pub encrypted_pin: String,
     pub encrypted_notes: Option<String>,
     pub created_at: String,
@@ -33,7 +32,7 @@ pub struct Pin {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Document {
     pub id: String,
-    pub title: SecretString,
+    pub title: String,
     pub encrypted_description: Option<String>,
     pub encrypted_content: String,
     pub created_at: String,

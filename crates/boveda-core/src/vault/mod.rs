@@ -288,8 +288,8 @@ impl BovedaEngine {
             
             accounts.push(crate::storage::models::Account {
                 id: row.id,
-                site: dec_site,
-                username: dec_username,
+                site: dec_site.as_str().to_string(),
+                username: dec_username.as_str().to_string(),
                 password_cipher: row.encrypted_password,
                 recovery_code_cipher: row.encrypted_recovery_code,
                 notes_cipher: row.encrypted_notes,
@@ -301,7 +301,7 @@ impl BovedaEngine {
         }
         
         // Sort by site (Note: Storage already sorts by encrypted site, but decrypted sort is better)
-        accounts.sort_by_key(|a| a.site.as_str().to_lowercase());
+        accounts.sort_by_key(|a| a.site.to_lowercase());
         Ok(accounts)
     }
 
@@ -379,14 +379,14 @@ impl BovedaEngine {
             
             pins.push(crate::storage::models::Pin {
                 id: row.id,
-                name: dec_name,
+                name: dec_name.as_str().to_string(),
                 encrypted_pin: row.encrypted_pin,
                 encrypted_notes: row.encrypted_notes,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
             });
         }
-        pins.sort_by_key(|p| p.name.as_str().to_lowercase());
+        pins.sort_by_key(|p| p.name.to_lowercase());
         Ok(pins)
     }
 
@@ -544,8 +544,8 @@ impl BovedaEngine {
                 .transpose()?;
                 
             export_accounts.push(export::ExportAccount {
-                site: acc.site.as_str().to_string(),
-                username: acc.username.as_str().to_string(),
+                site: acc.site.clone(),
+                username: acc.username.clone(),
                 password: password.as_str().to_string(),
                 recovery_code: recovery_code.map(|s| s.as_str().to_string()),
                 notes: notes.map(|s| s.as_str().to_string()),
@@ -563,7 +563,7 @@ impl BovedaEngine {
                 .transpose()?;
                 
             export_pins.push(export::ExportPin {
-                name: p.name.as_str().to_string(),
+                name: p.name.clone(),
                 pin: self.decrypt_secret(&p.encrypted_pin)?.as_str().to_string(),
                 notes: notes.map(|s| s.as_str().to_string()),
             });
@@ -708,7 +708,7 @@ impl BovedaEngine {
             })??;
             docs.push(crate::storage::models::Document {
                 id: row.id,
-                title: dec_title,
+                title: dec_title.as_str().to_string(),
                 encrypted_description: row.encrypted_description,
                 encrypted_content: row.encrypted_content,
                 created_at: row.created_at,

@@ -1,15 +1,14 @@
 <script lang="ts">
   /**
    * @component CredentialCard
-   * @description Contenedor principal de la tarjeta de credenciales.
-   * Orquesta los componentes desacoplados de cabecera y campos de información, gestionando los estados seguros.
+   * @description Main credential card container.
+   * Contenedor principal de la tarjeta de credenciales.
    */
   import { _ } from "svelte-i18n";
   import { writeText } from "@tauri-apps/plugin-clipboard-manager";
   import type { Account } from "$lib/stores/stores.svelte";
   import { invoke } from "@tauri-apps/api/core";
   
-  // Componentes Desacoplados
   import CredentialHeader from "./CredentialHeader.svelte";
   import CredentialField from "./CredentialField.svelte";
 
@@ -27,6 +26,7 @@
   } = $props();
 
   // =========================================================================
+  // REACTIVE STATES
   // ESTADOS REACTIVOS
   // =========================================================================
   let revealed = $state(false);
@@ -38,9 +38,11 @@
   let userCopyTimer: number | null = $state(null);
 
   // =========================================================================
+  // ASSISTANTS AND FORMATORS
   // AUXILIARES Y FORMATEADORES
   // =========================================================================
   /**
+   * Format the credential addition date according to the selected language
    * Formatea la fecha de adición de la credencial según el idioma seleccionado.
    */
   function formatDate(iso: string): string {
@@ -59,9 +61,11 @@
   }
 
   // =========================================================================
+  // COPY AND CLIPBOARD (SECURITY)
   // COPILACIÓN Y PORTAPAPELES (SEGURIDAD)
   // =========================================================================
   /**
+   * Writes the text safely to the platform's native clipboard
    * Escribe el texto de manera segura en el portapapeles nativo de la plataforma.
    */
   async function copyToClipboard(
@@ -78,6 +82,7 @@
   }
 
   /**
+   * Decrypts the password in the Rust backend and copies it securely
    * Descifra la contraseña en el backend de Rust y la copia de forma segura.
    */
   async function copyPassword() {
@@ -92,6 +97,7 @@
   }
 
   /**
+   * Decrypts the recovery code in the Rust backend and copies it securely
    * Descifra el código de recuperación en el backend de Rust y lo copia de forma segura.
    */
   async function copyRecoveryCode() {
@@ -107,6 +113,7 @@
   }
 
   /**
+   * Toggles the on-screen display of encrypted fields (password, codes, notes)
    * Alterna la revelación en pantalla de los campos cifrados (contraseña, códigos, notas).
    */
   async function toggleReveal() {
@@ -138,6 +145,7 @@
   }
 
   /**
+   * Starts the 30-second security countdown after copying a sensitive field
    * Inicia el temporizador de seguridad de 30 segundos tras copiar un dato sensible.
    */
   function startCountdown(timerId: "pass" | "user" | "recovery"): void {
@@ -180,12 +188,14 @@
 </script>
 
 <!-- ========================================================================= -->
+<!-- RENDERING OF THE CREDENTIAL CARD -->
 <!-- RENDERING DE LA TARJETA DE CREDENCIAL -->
 <!-- ========================================================================= -->
 <div
   class="p-4 flex flex-col gap-4 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-[-2px] relative"
   data-card-id={account.id}
 >
+  <!-- Decoupled Modular Header -->
   <!-- Cabecera Modular Desacoplada -->
   <CredentialHeader
     {account}
@@ -193,6 +203,7 @@
     {onrefresh}
   />
 
+  <!-- Password Field -->
   <!-- Campo Modular: Contraseña -->
   <CredentialField
     label={$_("accounts.password_label")}
@@ -204,6 +215,7 @@
     ontogglereveal={toggleReveal}
   />
 
+  <!-- Recovery Code Field (Optional) -->
   <!-- Campo Modular: Código de Recuperación (Opcional) -->
   {#if account.recovery_code_cipher}
     <CredentialField
@@ -218,6 +230,7 @@
     />
   {/if}
 
+  <!-- Username / Email Field -->
   <!-- Campo Modular: Nombre de Usuario / Email -->
   <CredentialField
     label={$_("accounts.username_label")}
@@ -225,21 +238,23 @@
     oncopy={() => copyToClipboard(account.username, "user")}
   />
 
+  <!-- Additional Notes (Optional) -->
   <!-- Notas Adicionales (Opcional) -->
   {#if account.notes_cipher}
     {#if decryptedNotes}
       <div
-        class="text-xs text-text-muted p-2 px-2.5 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-15 overflow-auto"
+        class="text-xs text-text-muted p-2 px-2 bg-panel/15 rounded-sm border-l-2 border-accent-dim whitespace-pre-wrap max-h-15 overflow-auto"
       >
         {decryptedNotes}
       </div>
     {:else}
-      <div class="text-xs text-text-muted/40 italic p-1 px-2.5">
-        [Notas bloqueadas]
+      <div class="text-xs text-text-muted/40 italic px-2">
+        {$_("documents.notes_locked")}
       </div>
     {/if}
   {/if}
 
+  <!-- Creation Date -->
   <!-- Fecha de Creación -->
   <div class="text-xs text-text-muted text-right">
     {$_("accounts.added_at", {

@@ -153,7 +153,8 @@
     "delete_success": "Nota eliminada.",
     "delete_error": "Error al eliminar la nota.",
     "empty_title": "Ninguna nota guardada",
-    "empty_desc": "Crea tu primera nota cifrada usando el editor."
+    "empty_desc": "Crea tu primera nota cifrada usando el editor.",
+    "notes_locked": "Notas bloqueadas"
   },
   "board": {
     "bold": "Negrita",

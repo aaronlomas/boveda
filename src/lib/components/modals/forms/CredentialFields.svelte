@@ -48,7 +48,7 @@
   />
 
   <!-- Password -->
-  <div class="flex flex-col gap-1.5">
+  <div class="flex flex-col gap-2">
     <div class="flex items-center justify-between">
       <label for="add-pw" class="text-sm font-medium text-text-secondary">
         {$_("add_credential.password_label")}
@@ -72,7 +72,7 @@
       />
       <button
         type="button"
-        class="absolute right-2.5 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-text-muted hover:text-text-primary opacity-60 hover:opacity-100 transition-all flex items-center"
+        class="absolute right-2 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-text-muted hover:text-text-primary opacity-60 hover:opacity-100 transition-all flex items-center"
         onclick={() => (showPw = !showPw)}
       >
         {#if showPw}
@@ -106,7 +106,7 @@
   />
 
   <!-- Notes -->
-  <div class="flex flex-col gap-1.5">
+  <div class="flex flex-col gap-2">
     <label for="add-notes" class="text-sm font-medium text-text-secondary">
       {$_("add_credential.notes_label")}
     </label>

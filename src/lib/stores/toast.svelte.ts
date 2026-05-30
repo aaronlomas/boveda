@@ -13,7 +13,7 @@ export interface Toast {
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 
 const DEFAULT_DURATION: Record<ToastKind, number> = {
-  success: 5000,
+  success: 3500,
   info: 3000,
   warning: 4500,
   error: 5000,

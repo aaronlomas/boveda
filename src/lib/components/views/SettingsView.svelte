@@ -20,14 +20,14 @@
   import { _ } from "svelte-i18n";
   import { changeLanguage, t } from "$lib/i18n";
   
-  import SettingsNav from "./SettingsNav.svelte";
+  import SettingsNav from "../features/settings/SettingsNav.svelte";
   
   // Panels
-  import ThemePanel from "./panels/ThemePanel.svelte";
-  import LanguagePanel from "./panels/LanguagePanel.svelte";
-  import PerformancePanel from "./panels/PerformancePanel.svelte";
-  import SecurityPanel from "./panels/security/SecurityPanel.svelte";
-  import AboutPanel from "./panels/AboutPanel.svelte";
+  import ThemePanel from "../features/settings/panels/ThemePanel.svelte";
+  import LanguagePanel from "../features/settings/panels/LanguagePanel.svelte";
+  import PerformancePanel from "../features/settings/panels/PerformancePanel.svelte";
+  import SecurityPanel from "../features/settings/panels/security/SecurityPanel.svelte";
+  import AboutPanel from "../features/settings/panels/AboutPanel.svelte";
 
   let activeSection = $state("theme");
 
@@ -57,10 +57,10 @@
 </script>
 
 <div
-  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10 h-full grid grid-rows-[auto_auto_1fr] gap-2"
+  class=" h-full grid grid-rows-[auto_auto_1fr]"
 >
   <!-- HEADER -->
-  <header class="flex items-center justify-between gap-4 shrink-0">
+  <header class="flex items-center justify-between gap-4 shrink-0 mb-4">
     <div class="flex gap-x-4 items-center">
       <button
         class="p-2 bg-surface/5 hover:bg-surface/10 rounded-full text-text-muted hover:text-text-primary transition-colors cursor-pointer"
@@ -75,7 +75,7 @@
         >
           {$_("settings.title")}
         </h1>
-        <p class="text-text-muted text-sm mt-1 pointer-events-none">
+        <p class="text-text-muted text-sm pointer-events-none">
           {t("settings.subtitle", "Personaliza tu experiencia en Bóveda")}
         </p>
       </div>
@@ -91,7 +91,7 @@
   </header>
 
   <!-- OPTIONS -->
-  <div class="flex overflow-hidden border border-surface/8">
+  <div class="flex border border-surface/8 min-w-0 overflow-y-auto">
     <!-- Sidebar Navigation -->
     <SettingsNav {sections} bind:activeSection />
   </div>

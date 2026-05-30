@@ -3,19 +3,19 @@
   import { unlockVault, isVaultInitialized } from "$lib/utils/tauri";
   import { onMount } from "svelte";
   import {
-    IconEye,
-    IconEyeOff,
     IconLock,
     IconSignRight,
-    IconArrowLeft,
     IconShieldCheck,
     IconLifebuoy,
     IconCircleCheck,
   } from "@tabler/icons-svelte";
   import { invoke } from "@tauri-apps/api/core";
   import { _ } from "svelte-i18n";
-  import { focus } from "$lib/utils/actions";
   import Logo from "$lib/components/ui/Logo.svelte";
+  
+  import MasterPasswordForm from "./unlock/MasterPasswordForm.svelte";
+  import TotpForm from "./unlock/TotpForm.svelte";
+  import RecoveryForm from "./unlock/RecoveryForm.svelte";
 
   const version = import.meta.env.APP_VERSION;
   const status = import.meta.env.APP_STATUS;
@@ -27,8 +27,6 @@
   let loading = $state(false);
   let isNew = $state(false);
   let confirmPassword = $state("");
-  let showPassword = $state(false);
-  let showConfirmPassword = $state(false);
   let cooldown = $state(0);
 
   let recoveryCode = $state("");
@@ -160,7 +158,7 @@
   }
 </script>
 
-<div class="h-full grid grid-rows-[auto_1fr_auto]">
+<div class="h-full min-h-0 overflow-y-auto grid grid-rows-[auto_1fr_auto]">
   <header
     class=" bg-panel/30 px-6 py-4 flex items-center justify-between m-2 rounded-sm"
   >
@@ -188,7 +186,7 @@
       {:else if pendingTotp}
         <IconShieldCheck size={72} class="text-accent" />
       {:else}
-        <Logo size={120} class="text-accent drop-shadow-lg" />
+        <Logo sizeY={90} sizeX={120} class="text-accent drop-shadow-lg" />
       {/if}
     </div>
     <p
@@ -217,147 +215,14 @@
       class="w-full flex flex-col gap-4"
     >
       {#if !pendingTotp}
-        <div class="flex flex-col gap-1.5">
-          <label for="master-pw" class="text-xs text-text-primary"
-            >{$_("unlock_screen.master_password_label")}</label
-          >
-
-          <div
-            class="flex border border-surface/10 rounded-lg px-4 py-2 gap-x-2 bg-transparent {cooldown >
-            0
-              ? 'opacity-50 grayscale'
-              : ''}"
-          >
-            <input
-              id="master-pw"
-              use:focus
-              class="w-full border-0 text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:bg-transparent tracking-widest disabled:cursor-not-allowed"
-              type={showPassword ? "text" : "password"}
-              bind:value={password}
-              placeholder={$_("unlock_screen.placeholder")}
-              autocomplete="current-password"
-              disabled={cooldown > 0}
-            />
-            <button
-              type="button"
-              class="bg-none border-none cursor-pointer text-text-muted hover:text-text-primary transition-all flex items-center disabled:opacity-50"
-              onclick={() => (showPassword = !showPassword)}
-              disabled={cooldown > 0}
-              aria-label={showPassword
-                ? $_("dashboard.hide_tooltip")
-                : $_("dashboard.show_tooltip")}
-            >
-              {#if showPassword}
-                <IconEyeOff size={18} />
-              {:else}
-                <IconEye size={18} />
-              {/if}
-            </button>
-          </div>
-        </div>
-
-        {#if isNew}
-          <div class="flex flex-col gap-1.5">
-            <label for="confirm-pw" class="text-xs text-text-primary"
-              >{$_("unlock_screen.confirm_password_label")}</label
-            >
-
-            <div
-              class="flex border border-surface/10 rounded-lg px-4 py-2 gap-x-2 bg-transparent"
-            >
-              <input
-                id="confirm-pw"
-                class="w-full border-0 text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:bg-transparent tracking-widest"
-                type={showConfirmPassword ? "text" : "password"}
-                bind:value={confirmPassword}
-                placeholder={$_("unlock_screen.placeholder")}
-              />
-              <button
-                type="button"
-                class="bg-none border-none cursor-pointer text-text-muted hover:text-text-primary transition-all flex items-center"
-                onclick={() => (showConfirmPassword = !showConfirmPassword)}
-                aria-label={showConfirmPassword
-                  ? $_("dashboard.hide_tooltip")
-                  : $_("dashboard.show_tooltip")}
-              >
-                {#if showConfirmPassword}
-                  <IconEyeOff size={18} />
-                {:else}
-                  <IconEye size={18} />
-                {/if}
-              </button>
-            </div>
-          </div>
-        {/if}
+        <MasterPasswordForm bind:password bind:confirmPassword {isNew} {cooldown} />
       {:else if isRecovery}
-        <div
-          class="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-4"
-        >
-          {#if !recoverySuccess}
-            <label for="recovery-unlock" class="text-xs text-text-primary"
-              >{$_("settings.security.totp_recovery_title")}</label
-            >
-            <div
-              class="flex border border-surface/10 rounded-lg px-4 py-2 bg-transparent"
-            >
-              <input
-                id="recovery-unlock"
-                use:focus
-                class="w-full border-0 text-text-primary text-center text-lg font-mono tracking-tight focus:outline-none focus:bg-transparent"
-                type="text"
-                maxlength="24"
-                bind:value={recoveryCode}
-                placeholder={$_("settings.security.totp_recovery_placeholder")}
-                disabled={recoverySuccess}
-              />
-            </div>
-            <button
-              type="button"
-              class="text-xs text-text-muted hover:text-accent-light transition-all flex items-center gap-1 mt-2 self-start cursor-pointer"
-              onclick={() => {
-                isRecovery = false;
-                error = "";
-              }}
-            >
-              <IconArrowLeft size={14} />
-              {$_("settings.security.totp_back_to_password")}
-            </button>
-          {/if}
-        </div>
+        <RecoveryForm bind:recoveryCode {recoverySuccess} oncancel={() => {
+          isRecovery = false;
+          error = "";
+        }} />
       {:else}
-        <div
-          class="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-4"
-        >
-          <label for="totp-unlock" class="text-xs text-text-primary"
-            >{$_("settings.security.totp_verify_label")}</label
-          >
-          <div
-            class="flex border border-surface/10 rounded-lg px-4 py-2 bg-transparent"
-          >
-            <input
-              id="totp-unlock"
-              use:focus
-              class="w-full border-0 text-text-primary text-center text-lg font-mono tracking-[0.5em] focus:outline-none focus:bg-transparent"
-              type="text"
-              maxlength="6"
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              bind:value={totpCode}
-              placeholder="000000"
-            />
-          </div>
-
-          <div class="flex items-center mt-2">
-            <button
-              type="button"
-              class="text-xs text-text-muted hover:text-accent-light transition-all flex items-center gap-1 cursor-pointer"
-              onclick={resetUnlock}
-            >
-              <IconArrowLeft size={14} />
-              {$_("settings.security.totp_back_to_password")}
-            </button>
-          </div>
-        </div>
+        <TotpForm bind:totpCode onreset={resetUnlock} />
       {/if}
 
       {#if error}

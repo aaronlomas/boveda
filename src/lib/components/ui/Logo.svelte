@@ -1,12 +1,14 @@
 <script lang="ts">
   export let size = 40;
+  export let sizeY: number | undefined = undefined;
+  export let sizeX: number | undefined = undefined;
   let className = "";
   export { className as class };
 </script>
 
 <svg
-  width={size}
-  height={size}
+  width={sizeX ?? size}
+  height={sizeY ?? size}
   viewBox="0 0 270.93333 190.50101"
   class={className}
   xmlns="http://www.w3.org/2000/svg"

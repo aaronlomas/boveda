@@ -23,22 +23,20 @@
 
   const ActiveSubView = $derived(
     docState.currentView !== "editor"
-      ? subViewMap[docState.currentView as keyof typeof subViewMap] ?? null
-      : null
+      ? (subViewMap[docState.currentView as keyof typeof subViewMap] ?? null)
+      : null,
   );
 </script>
 
-<div
-  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10"
->
-  <div class="mb-8 flex items-center justify-between">
+<div class="grid gap-6">
+  <div class="flex items-center justify-between">
     <div>
       <h1
         class="text-xl font-bold bg-linear-to-br from-text-primary to-accent-light bg-clip-text text-transparent"
       >
         {$_("documents_mode.title")}
       </h1>
-      <p class="text-text-muted text-sm mt-1">
+      <p class="text-text-muted text-sm">
         {$_("documents_mode.desc")}
       </p>
     </div>
@@ -68,3 +66,5 @@
     onsave={docState.handleSave}
   />
 {/if}
+
+<!-- Cards in features/documents/SelectionView.svelte -->

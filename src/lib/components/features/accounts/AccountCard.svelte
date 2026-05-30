@@ -183,7 +183,7 @@
 <!-- RENDERING DE LA TARJETA DE CREDENCIAL -->
 <!-- ========================================================================= -->
 <div
-  class="p-5 flex flex-col gap-3.5 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-[-2px] relative"
+  class="p-4 flex flex-col gap-4 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-[-2px] relative"
   data-card-id={account.id}
 >
   <!-- Cabecera Modular Desacoplada -->

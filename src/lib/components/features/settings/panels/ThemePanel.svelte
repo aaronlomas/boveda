@@ -84,7 +84,6 @@
   <!-- ─ Presets Section ─ -->
   <div class="space-y-4">
     <h1 class="text-text-primary text-xl font-bold flex items-center gap-2">
-      <IconPalette size={18} class="text-accent" />
       {$_("settings.theme.presets_title")}
     </h1>
     <div class="flex overflow-x-auto gap-3 pb-2">
@@ -122,7 +121,6 @@
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h1 class="text-text-primary text-xl font-bold flex items-center gap-2">
-        <IconDeviceDesktop size={20} class="text-accent" />
         {$_("settings.theme.appearance")}
       </h1>
     </div>
@@ -171,7 +169,6 @@
   <!-- ─ Accent Color Section ─ -->
   <div class="space-y-4">
     <h1 class="text-text-primary text-xl font-bold flex items-center gap-2">
-      <IconPalette size={20} class="text-accent" />
       {$_("settings.theme.title_options")}
     </h1>
 

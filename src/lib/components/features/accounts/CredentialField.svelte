@@ -39,14 +39,14 @@
   <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
     {label}
   </span>
-  
+
   <!--Contenedor de usuario y contraseña + Botones de Control -->
   <div
-    class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
+    class="flex min-w-0 items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
   >
     <!-- Texto o Máscara -->
     <code
-      class="flex-1 font-mono text-sm whitespace-nowrap overflow-hidden text-ellipsis tracking-wider"
+      class="flex-1 font-mono text-sm whitespace-nowrap overflow-hidden text-ellipsis tracking-wider will-change-scroll transform-gpu backface-hidden"
       class:text-text-primary={isSecret && revealed}
       class:text-text-secondary={!(isSecret && revealed)}
     >
@@ -59,7 +59,6 @@
 
     <!-- Botones de Interacción -->
     <div class="flex items-center gap-0.5 shrink-0">
-      
       <!-- Botón Revelar (Opcional, para campos secretos) -->
       {#if isSecret && showRevealButton}
         <button

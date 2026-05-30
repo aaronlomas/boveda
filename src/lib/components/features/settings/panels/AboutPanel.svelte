@@ -55,11 +55,11 @@
 
 <div class="space-y-6">
   <div>
-    <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+    <h2 class="text-xl font-bold text-text-primary flex items-center gap-2">
       <IconInfoCircle class="text-accent" />
       {$_("settings.about.title")}
     </h2>
-    <p class="text-text-muted text-sm mt-1">
+    <p class="text-text-muted text-xs mt-1">
       {$_("settings.about.desc")}
     </p>
   </div>
@@ -79,8 +79,8 @@
         <span class="text-sm text-text-secondary"
           >{$_("settings.about.core_label")}</span
         >
-        <span class="text-sm font-mono text-text-primary"
-          >boveda-core v{appInfo.core_version}</span
+        <span class="text-sm font-mono text-accent"
+          >{appInfo.core_version}</span
         >
       </div>
     </div>

@@ -24,11 +24,11 @@
   } = $props();
 </script>
 
-<aside class="shrink-0 flex">
+<aside class="flex">
   {#each sections as section}
     {@const Icon = section.icon}
     <button
-      class="flex items-center gap-3 px-4 py-2 text-sm font-medium transition-all text-left border
+      class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all text-left border
         {activeSection === section.id
         ? 'bg-accent/10 border-accent/20 text-accent-light shadow-sm'
         : 'bg-transparent border-transparent text-text-muted hover:bg-surface/5 hover:text-text-secondary'}"
@@ -40,9 +40,7 @@
       />
       <span>{section.label}</span>
       {#if activeSection === section.id}
-        <div
-          class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse ml-1"
-        ></div>
+        <div class="w-2 h-2 rounded-full bg-accent animate-pulse ml-1"></div>
       {/if}
     </button>
   {/each}

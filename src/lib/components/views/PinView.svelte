@@ -42,7 +42,6 @@
 </script>
 
 <div
-  class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10"
 >
   <!-- Header -->
   <header class="flex items-center justify-between mb-7 gap-4">

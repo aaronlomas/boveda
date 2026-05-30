@@ -226,7 +226,7 @@
       "totp_disable_title": "Desactivar Autenticación de Dos Factores",
       "totp_disable_subtitle": "ADVERTENCIA: Después de ésta acción tendrás que eliminar la cuenta de Bóveda en tu app móvil y volver a configurar el 2FA si decides volver a utilizarlo, para que la sincronización sea válida.",
       "totp_disable_confirm_btn": "Sí, Desactivar 2FA",
-      "totp_export_warning": "ADVERTENCIA OBLIGATORIA: Para desactivar la autenticación de dos factores debes exportar tus datos. Esta exportación NO contiene configuración 2FA, por lo que es más seguro usarla para recuperar tus contraseñas en caso de que pierdas tus códigos de recuperación de 2FA futuros.",
+      "totp_export_warning": "Esta acción es obligatoria para desactivar la autenticación de dos factores, asegúrese de importar este paquete la próxima vez cuando lo necesite.",
       "totp_export_title": "Exportación Requerida",
       "totp_warning": "El 2FA mediante apps como Microsoft Authenticator puede sincronizar tu semilla en servidores externos (nube de Microsoft). Esto es una decisión personal tuya. Bóveda solo almacena la semilla de forma local y cifrada. Eres el único responsable de esta elección. La semilla en sí es un estándar abierto (RFC 6238) y nunca abandona tu dispositivo. Solo la app que elijas puede introducir dependencias de nube.",
       "totp_scan_desc": "Escanea este código QR con tu aplicación de autenticación preferida.",

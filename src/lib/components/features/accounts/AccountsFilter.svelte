@@ -1,7 +1,8 @@
 <script lang="ts">
   /**
    * @component AccountsFilter
-   * @description Input de búsqueda para filtrar credenciales.
+   * @description Search input to filter credentials.
+   * Input de búsqueda para filtrar credenciales.
    */
   import { _ } from "svelte-i18n";
   import { IconSearch } from "@tabler/icons-svelte";

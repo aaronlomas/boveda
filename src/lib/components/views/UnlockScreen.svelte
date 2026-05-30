@@ -421,7 +421,7 @@
   <footer class="mb-4 text-center text-text-muted text-xs tracking-wide">
     <p>
       {$_("unlock_screen.footer_rights")} -
-      <span class="font-semibold text-accent-light">v{version}</span> |
+      <span class="font-semibold text-accent-light">v{version}</span>
       {status}
     </p>
   </footer>

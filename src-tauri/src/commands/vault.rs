@@ -19,6 +19,11 @@ pub fn lock_vault(state: State<'_, AppState>) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub async fn delete_vault(password: SecretString, state: State<'_, AppState>) -> Result<(), String> {
+    state.cmd_delete_vault(password).await
+}
+
+#[tauri::command]
 pub async fn add_account(
     site: SecretString,
     username: SecretString,

@@ -2,7 +2,7 @@
   "name": "boveda",
   "version": "1.0.0",
   "description": "Password Manager.",
-  "status": "Beta",
+  "status": "",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

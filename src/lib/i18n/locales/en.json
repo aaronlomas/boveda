@@ -193,7 +193,7 @@
     "error_no_passwords": "No valid passwords found in the file.",
     "error_generic": "Import error: {message}",
     "success": "Imported {count} accounts from {format}.",
-    "success_skipped": "Imported {count} accounts from {format} ({skipped} rows without password were skipped)."
+    "success_skipped": "{count} accounts were imported (estimated source: {format}). {skipped} rows were ignored due to missing password."
   },
   "export_pack": {
     "title": "Export package",
@@ -305,7 +305,12 @@
       "desc": "Information about the application and licenses.",
       "version_label": "Version",
       "core_label": "Core Engine",
-      "philosophy": "Bóveda is a credential manager with a \"Security by Isolation\" philosophy. We never use the cloud or any external service to store your data."
+      "philosophy": "Bóveda is a credential manager with a \"Security by Isolation\" philosophy. We never use the cloud or any external service to store your data.",
+      "delete_account": "Delete Account",
+      "delete_account_desc": "Use this option to permanently reset your Vault",
+      "delete_confirm": "This action will delete your saved data, are you sure you want to delete your account?",
+      "delete_success": "Account deleted successfully.",
+      "delete_error": "Failed to delete account."
     }
   },
   "unlock_screen": {

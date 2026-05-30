@@ -50,6 +50,7 @@ pub fn run() {
             commands::vault::is_vault_initialized,
             commands::vault::unlock_vault,
             commands::vault::lock_vault,
+            commands::vault::delete_vault,
             commands::vault::add_account,
             commands::vault::get_accounts,
             commands::vault::delete_account,

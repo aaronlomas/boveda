@@ -193,7 +193,7 @@
     "error_no_passwords": "No se encontraron contraseñas válidas en el archivo.",
     "error_generic": "Error en importación: {message}",
     "success": "Se importaron {count} cuentas desde {format}.",
-    "success_skipped": "Se importaron {count} cuentas desde {format} ({skipped} filas sin contraseña ignoradas)."
+    "success_skipped": "Se importaron {count} cuentas (origen estimado: {format}). Se ignoraron {skipped} filas por falta de contraseña."
   },
   "export_pack": {
     "title": "Exportar Paquete",
@@ -305,7 +305,12 @@
       "desc": "Información sobre la aplicación y licencias.",
       "version_label": "Versión",
       "core_label": "Motor Core",
-      "philosophy": "Bóveda es un gestor de credenciales con filosofía \"Seguridad por Aislamiento\". Nunca usamos la nube, ni ningún servicio externo para guardar tus datos."
+      "philosophy": "Bóveda es un gestor de credenciales con filosofía \"Seguridad por Aislamiento\". Nunca usamos la nube, ni ningún servicio externo para guardar tus datos.",
+      "delete_account": "Eliminar Cuenta",
+      "delete_account_desc": "Use esta opción para restablecer definitivamente su Bóveda",
+      "delete_confirm": "Esta acción eliminará sus datos guardados, ¿seguro que quiere eliminar su cuenta?",
+      "delete_success": "Cuenta eliminada exitosamente.",
+      "delete_error": "Error al eliminar la cuenta."
     }
   },
   "unlock_screen": {

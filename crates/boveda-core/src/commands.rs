@@ -148,6 +148,25 @@ impl AppState {
         }
     }
 
+    /// Elimina completamente el baúl (archivos .bvda y .salt) si la contraseña es correcta.
+    pub async fn cmd_delete_vault(&self, password: SecretString) -> Result<(), String> {
+        // 1. Verify password by attempting unlock (this handles rate limiting automatically)
+        let engine = BovedaEngine::unlock(&self.db_path, &password).await.map_err(|e| e.to_string())?;
+        
+        // 2. Explicitly close the connection
+        engine.close().await;
+
+        // 3. Clear the global lock to release any handles
+        self.cmd_lock_vault();
+
+        // 4. Delete files
+        let salt_path = self.db_path.with_file_name("vault.salt");
+        let _ = std::fs::remove_file(&self.db_path);
+        let _ = std::fs::remove_file(&salt_path);
+
+        Ok(())
+    }
+
     // =========================================================================
     // 📁 ACCOUNT MANAGEMENT
     // =========================================================================

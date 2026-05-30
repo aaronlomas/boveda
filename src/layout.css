@@ -148,6 +148,15 @@
   }
 }
 
+/* ─── Custom Caps Lock Indicator ─────────────────────────────────────────── */
+input::-webkit-caps-lock-indicator {
+  content: none !important;
+  display: none !important;
+}
+input::-ms-clear, input::-ms-reveal {
+  display: none !important;
+}
+/* ─── Application Layout ─────────────────────────────────────────────── */
 @layer components {
   .app-layout {
     display: flex;

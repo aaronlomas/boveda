@@ -9,7 +9,7 @@ Bóveda es **Seguridad por Aislamiento**. Priorizamos la seguridad aislada de la
 
 ---
 
-## 🏛️ Resumen Arquitectónico
+## Resumen de Arquitectura
 
 1.  **Aislamiento de Procesos:** La interfaz de usuario siempre esta aislada del motor (boveda-core) y toda operación sensible ocurre en el motor a través de un puente IPC (Inter-Process Communication) tipado y auditado.
 2.  **Soberanía Digital:** No hay "nube por defecto". Tus datos te pertenecen, residen exclusivamente en tu sistema y eres el único responsable de ellos.
@@ -17,7 +17,7 @@ Bóveda es **Seguridad por Aislamiento**. Priorizamos la seguridad aislada de la
 
 ---
 
-## 🛡️ Bóveda-Core
+## Bóveda-Core
 
 El motor `boveda-core` es una pieza independiente encargada de proteger los datos sensibles:
 
@@ -26,14 +26,14 @@ El motor `boveda-core` es una pieza independiente encargada de proteger los dato
 -   **Secretos:** Cada entrada individual se cifra adicionalmente con **ChaCha20-Poly1305**, proporcionando Cifrado Autenticado con Datos Asociados (AEAD).
 -   **Protección contra Fuerza Bruta:** Implementamos **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos), el estándar de Password Hashing Competition, configurado para ser costoso en hardware especializado (ASIC/GPU).
 
-### 🧠 Gestión de Memoria
+### Gestión de Memoria
 -   **Zeroización:** Se sobrescribe físicamente la memoria RAM con ceros en cuanto un secreto deja de ser necesario, mitigando ataques de reutilización de memoria.
 -   **RAM Inamovible:** Implementamos `mlock` / `VirtualLock` para evitar que las claves maestras terminen en el archivo de intercambio (swap) del disco duro.
 -   **Hardening del Proceso:** Desactivamos los `core dumps` y protegemos contra la inspección de procesos mediante políticas de seguridad a nivel de sistema operativo.
 
 ---
 
-## 🏗️ Arquitectura de Capas
+## Arquitectura de Capas
 
 ```mermaid
 flowchart TD
@@ -45,7 +45,7 @@ flowchart TD
 
 -   **`crates/boveda-core`**: El núcleo de Bóveda, sin dependencias de UI, enfocado 100% en seguridad.
 -   **`src-tauri`**: Gestiona los permisos y la comunicación entre la webview y el sistema.
--   **`src`**: Nuestra interfáz de usuario, rápida y minimalista que hace que la seguridad extrema se sienta natural.
+-   **`src`**: Nuestra interfáz de usuario, rápida y minimalista que hace que la seguridad se sienta natural.
 ---
 
 ## 🛠️ Configuración de Desarrollo

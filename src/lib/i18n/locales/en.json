@@ -186,7 +186,7 @@
   },
   "import_view": {
     "subtitle": "Select the type of import.",
-    "boveda_db_title": "Import Bóveda DB",
+    "boveda_db_title": "Native Import",
     "boveda_db_desc": "Only supports .bvda.pack files from Bóveda.",
     "external_title": "External Import",
     "external_desc": "Import passwords from a CSV file (e.g. Google Chrome).",

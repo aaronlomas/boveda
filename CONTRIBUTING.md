@@ -4,10 +4,10 @@
 
 ---
 
-## 🏗️ Nuestra Filosofía: "Security by Isolation"
+## Nuestra Filosofía: "Security by Isolation"
 
 Antes de proponer cambios, es vital entender nuestra arquitectura:
-- **Aislamiento Total:** La lógica de negocio y criptografía vive en `crates/boveda-core`. La UI (Svelte) y el puente (Tauri) son solo consumidores de la fachada de comandos.
+- **Aislamiento:** La lógica de negocio y criptografía vive en `crates/boveda-core`. La UI (Svelte) y el puente (Tauri) son solo consumidores de la fachada de comandos.
 - **Cero Conocimiento:** El diseño debe garantizar que ni los desarrolladores ni terceros puedan acceder a los datos de los usuarios.
 - **Endurecimiento de Memoria:** Cada secreto debe ser borrado físicamente (`Zeroize`) y protegido contra volcados (`mlock`).
 
@@ -36,10 +36,10 @@ Mantenemos una política de **"Cero Advertencias"**. Tu código debe pasar:
 - **Lints:** `cargo clippy --workspace --all-targets -- -D warnings`
 - **Seguridad:** `cargo audit` (para nuevas dependencias).
 
-**Reglas de Oro:**
-- Usa `SecretString` o `SecretBytes` para cualquier dato sensible.
+**Reglas:**
+- Secretos en memoria: Usa `SecretString` o `SecretBytes` para cualquier dato sensible en memoria; estas envolturas aplican `Zeroize` y protecciones de memoria.
+- No serializar wrappers secretos: no derives Serialize/Deserialize en SecretString/SecretBytes. Si el tipo necesita serialización, implementa una serialización que redacte el valor (por ejemplo devuelve "[REDACTED]") para evitar fugas accidentales.
 - Nunca imprimas secretos en logs o errores (usa `{:?}` con wrappers redactados).
-- Implementa `Zeroize` y `Drop` con protección de memoria para structs que manejen llaves.
 
 ### Frontend (Svelte 5)
 - Usamos **Svelte 5 (Runes)**. Evita patrones antiguos de Svelte 4.

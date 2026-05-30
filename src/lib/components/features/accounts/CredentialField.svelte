@@ -1,6 +1,8 @@
 <script lang="ts">
   /**
    * @component CredentialField
+   * @description Reusable field for displaying credentials (Username, Password, Accounts, etc.).
+   * Supports secure mode (encrypted/hidden), copying to clipboard, and cleanup timers.
    * @description Campo reutilizable para visualizar información de credenciales (Usuario, Contraseña, Cuentas, etc.).
    * Soporta modo seguro (cifrado/ocultable), copiado al portapapeles y temporizadores de limpieza.
    */
@@ -31,19 +33,19 @@
   }>();
 </script>
 
-<!-- ========================================================================= -->
-<!-- CONTENEDOR DEL CAMPO -->
-<!-- ========================================================================= -->
 <div class="grid gap-2">
   <!-- Etiqueta del Campo -->
+  <!-- Field Label -->
   <span class="text-xs text-text-muted uppercase tracking-wider font-bold">
     {label}
   </span>
 
-  <!--Contenedor de usuario y contraseña + Botones de Control -->
+  <!-- Container for user and password + control buttons -->
+  <!-- Contenedor de usuario y contraseña + Botones de Control -->
   <div
     class="flex min-w-0 items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
   >
+    <!-- Text or Mask -->
     <!-- Texto o Máscara -->
     <code
       class="flex-1 font-mono text-sm whitespace-nowrap overflow-hidden text-ellipsis tracking-wider will-change-scroll transform-gpu backface-hidden"
@@ -57,8 +59,10 @@
       {/if}
     </code>
 
+    <!-- Interaction Buttons -->
     <!-- Botones de Interacción -->
     <div class="flex items-center gap-0.5 shrink-0">
+      <!-- Reveal Button (Optional, for secret fields) -->
       <!-- Botón Revelar (Opcional, para campos secretos) -->
       {#if isSecret && showRevealButton}
         <button
@@ -75,6 +79,7 @@
         </button>
       {/if}
 
+      <!-- Copy to Clipboard Button -->
       <!-- Botón Copiar al Portapapeles -->
       <button
         class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
@@ -87,6 +92,7 @@
       >
         <div class="w-4 h-4 flex items-center justify-center">
           {#if countdown !== null}
+            <!-- Visual Numeric Countdown -->
             <!-- Contador Numérico Visual -->
             <span class="text-[10px] font-bold leading-none">{countdown}</span>
           {:else}

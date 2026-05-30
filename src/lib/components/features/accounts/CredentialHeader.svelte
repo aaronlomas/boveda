@@ -1,6 +1,8 @@
 <script lang="ts">
   /**
    * @component CredentialHeader
+   * @description Credential card header.
+   * Renders the site favicon/initial, the assigned group, and manages the contextual actions menu.
    * @description Cabecera de la tarjeta de credencial.
    * Renderiza el favicon/inicial del sitio, el grupo asignado y gestiona el menú contextual de acciones.
    */
@@ -23,13 +25,16 @@
     onrefresh?: () => void;
   }>();
 
+  // Local state for controlling the opening of the context menu
   // Estado local para control de apertura del menú contextual
   let menuOpen = $state(false);
 
   // =========================================================================
+  // RENDER HELPERS
   // AUXILIARES DE RENDERIZADO
   // =========================================================================
   /**
+   * Gets the initial letter of the website cleaning common protocols and subdomains.
    * Obtiene la letra inicial del sitio web limpiando protocolos y subdominios comunes.
    */
   function getSiteInitial(site: string): string {
@@ -41,9 +46,11 @@
   }
 
   // =========================================================================
+  // ACTION FLOWS AND CONTEXT MENU
   // FLUJOS DE ACCIÓN Y MENÚ CONTEXTUAL
   // =========================================================================
   /**
+   * Opens the asynchronous modal to assign or change the account group.
    * Abre el modal asíncrono para asignar o cambiar el grupo de la cuenta.
    */
   async function openAssignGroup(): Promise<void> {
@@ -56,6 +63,7 @@
   }
 
   /**
+   * Removes the account from its current group safely in the local database.
    * Remueve la cuenta de su grupo actual de forma segura en la base de datos local.
    */
   async function removeFromGroup(): Promise<void> {
@@ -72,6 +80,7 @@
 </script>
 
 <!-- ========================================================================= -->
+<!-- GLOBAL WINDOW EVENTS -->
 <!-- EVENTOS DE VENTANA GLOBAL -->
 <!-- ========================================================================= -->
 <svelte:window
@@ -83,9 +92,7 @@
   }}
 />
 
-<!-- ========================================================================= -->
-<!-- MAQUETACIÓN E INTERFAZ DE CABECERA -->
-<!-- ========================================================================= -->
+
 <div class="flex items-center gap-2">
   
   <!-- Favicon / Letra Inicial -->
@@ -105,6 +112,7 @@
     <span class="initial">{getSiteInitial(account.site)}</span>
   </div>
 
+  <!-- Site and Group Information -->
   <!-- Información de Sitio y Grupo -->
   <div class="flex-1 min-w-0">
     <span
@@ -114,9 +122,11 @@
     <span class="text-text-muted text-xs">{account.group_name || $_("groups.none")}</span>
   </div>
 
+  <!-- More Actions Button -->
   <!-- Fila de Acciones Adicionales -->
   <div class="flex items-center shrink-0">
     
+    <!-- More Actions Button -->
     <!-- Botón Menú Contextual (Tres Puntos) -->
     <div class="relative">
       <button
@@ -129,12 +139,14 @@
         <IconDotsVertical size={16} />
       </button>
 
+      <!-- Dropdown Menu -->
       <!-- Dropdown Desplegable -->
       {#if menuOpen}
         <div
           class="absolute right-0 top-full mt-1 z-20 min-w-44 border border-surface/20 rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150 bg-panel/50 backdrop-blur-2xl"
           role="menu"
         >
+          <!-- Assign/Change Group -->
           <!-- Asignar/Cambiar Grupo -->
           <button
             class="w-full flex items-center gap-2 p-2 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
@@ -147,6 +159,7 @@
               : $_("groups.add_to_group")}
           </button>
 
+          <!-- Remove from Group -->
           <!-- Quitar de Grupo -->
           {#if account.group_name}
             <button
@@ -159,9 +172,11 @@
             </button>
           {/if}
 
-          <!-- Separador Estilizado -->
+          <!-- Separator -->
+          <!-- Separador -->
           <div class="h-px bg-surface/8 mx-2"></div>
 
+          <!-- Delete Credential -->
           <!-- Eliminar Credencial -->
           <button
             class="w-full flex items-center gap-2 p-2 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"

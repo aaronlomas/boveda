@@ -1,78 +1,80 @@
-# Guía de Contribución 🤝
+# Contributing Guide 🤝
 
-¡Gracias por tu interés en mejorar **Bóveda**! Este es un proyecto impulsado por la comunidad para proporcionar soberanía digital y seguridad sin compromisos. Al ser un gestor de contraseñas, mantenemos estándares de calidad y seguridad extremadamente altos.
-
----
-
-## Nuestra Filosofía: "Security by Isolation"
-
-Antes de proponer cambios, es vital entender nuestra arquitectura:
-- **Aislamiento:** La lógica de negocio y criptografía vive en `crates/boveda-core`. La UI (Svelte) y el puente (Tauri) son solo consumidores de la fachada de comandos.
-- **Cero Conocimiento:** El diseño debe garantizar que ni los desarrolladores ni terceros puedan acceder a los datos de los usuarios.
-- **Endurecimiento de Memoria:** Cada secreto debe ser borrado físicamente (`Zeroize`) y protegido contra volcados (`mlock`).
+Thank you for your interest in improving **Bóveda**! This is a community-driven project dedicated to providing digital sovereignty and uncompromised security. As a credential manager, we maintain exceptionally high quality and security standards.
 
 ---
 
-## 🚀 Cómo Empezar
+## Our Philosophy: "Security by Isolation"
 
-### Requisitos Previos
-- **Rust:** (Última versión estable).
-- **Node.js & pnpm:** Usamos `pnpm` para la gestión de dependencias de frontend.
-- **Librerías del sistema:** Consulta el [README.md](./README.md) para las dependencias de Tauri según tu OS.
-
-### Configuración del Entorno
-1. Fork del repositorio.
-2. Clona tu fork: `git clone https://github.com/aaronlomas/boveda.git`
-3. Instala dependencias: `pnpm install`
-4. Ejecuta en modo desarrollo: `pnpm tauri dev`
+Before proposing any changes, it is vital to understand our architecture:
+- **Isolation:** Core business logic and cryptography reside in `crates/boveda-core`. The UI (Svelte) and the bridge (Tauri) are strictly consumers of the command facade.
+- **Zero-Knowledge:** The design must guarantee that neither developers nor third parties can ever access user data.
+- **Memory Hardening:** Every secret must be physically overwritten (`Zeroize`) and protected against system memory dumps (`mlock`).
 
 ---
 
-## 🛠️ Estándares de Código
+## 🚀 Getting Started
+
+### Prerequisites
+- **Rust:** (Latest stable version).
+- **Node.js & pnpm:** We use `pnpm` for frontend dependency management.
+- **System Libraries:** Please check the [README.md](./README.md) for Tauri system dependencies required by your OS.
+
+### Environment Setup
+1. Fork the repository.
+2. Clone your fork: `git clone https://github.com`
+3. Install dependencies: `pnpm install`
+4. Run in development mode: `pnpm tauri dev`
+
+---
+
+## 🛠️ Code Standards
 
 ### Backend (Rust)
-Mantenemos una política de **"Cero Advertencias"**. Tu código debe pasar:
-- **Formateo:** `cargo fmt --all`
+We maintain a **"Zero Warnings"** policy. Your code must pass:
+- **Formatting:** `cargo fmt --all`
 - **Lints:** `cargo clippy --workspace --all-targets -- -D warnings`
-- **Seguridad:** `cargo audit` (para nuevas dependencias).
+- **Security:** `cargo audit` (whenever new dependencies are added).
 
-**Reglas:**
-- Secretos en memoria: Usa `SecretString` o `SecretBytes` para cualquier dato sensible en memoria; estas envolturas aplican `Zeroize` y protecciones de memoria.
-- No serializar wrappers secretos: no derives Serialize/Deserialize en SecretString/SecretBytes. Si el tipo necesita serialización, implementa una serialización que redacte el valor (por ejemplo devuelve "[REDACTED]") para evitar fugas accidentales.
-- Nunca imprimas secretos en logs o errores (usa `{:?}` con wrappers redactados).
+**Rules:**
+- **Secrets in memory:** Always use `SecretString` or `SecretBytes` wrappers for any sensitive data in memory; these wrappers enforce `Zeroize` and memory protection routines.
+- **No serialization of secret wrappers:** Do not derive `Serialize`/`Deserialize` on `SecretString` or `SecretBytes`. If a type requires serialization, implement a custom routine that redacts the value (e.g., outputs `"[REDACTED]"`) to prevent accidental leaks.
+- Never print secrets in logs or error messages (use `{:?}` with redacted wrappers).
 
 ### Frontend (Svelte 5)
-- Usamos **Svelte 5 (Runes)**. Evita patrones antiguos de Svelte 4.
-- Ejecuta `pnpm check` para validar tipos y consistencia de componentes.
-- Mantén el diseño premium: usa el sistema de diseño basado en variables CSS en `src/app.css`.
+- We use **Svelte 5 (Runes)**. Avoid legacy Svelte 4 patterns.
+- Run `pnpm check` to validate types and component consistency.
+- Maintain the premium look: rely on the design system driven by the CSS variables in `src/app.css`.
 
 ---
 
-## 🧪 Pruebas (Testing)
+## 🧪 Testing
 
-No aceptamos PRs que reduzcan la cobertura de pruebas o rompan el CI.
-- **Pruebas unitarias:** `cargo test --package boveda-core`
-- **Integración:** Asegúrate de que el flujo de desbloqueo y gestión de cuentas funcione correctamente en modo `dev`.
-
----
-
-## 📝 Compromisos (Commits)
-
-Sugerimos seguir la convención de [Conventional Commits](https://www.conventionalcommits.org/):
-- `feat:` Nueva característica.
-- `ui:` Cambios visuales o de experiencia de usuario.
-- `fix:` Corrección de error.
-- `refactor:` Mejora de código sin cambio funcional.
-- `sec/security:` Cambios específicos de seguridad o endurecimiento.
-- `chore:` configuración y dependencias.
-- `docs:` Documentación.
-- `ci:` Sistema de integración continua.
----
-
-## 🔒 Reportar Vulnerabilidades
-
-Si encuentras un fallo de seguridad, por favor **NO abras un Issue público**. Consulta nuestra [Política de Seguridad](./SECURITY.md) para saber cómo reportarlo de manera responsable.
+We do not accept PRs that lower test coverage or break the CI pipeline.
+- **Unit tests:** `cargo test --package boveda-core`
+- **Integration:** Verify that the unlocking and account management flows function flawlessly in `dev` mode.
 
 ---
 
-Al contribuir, aceptas que tus aportaciones estarán bajo la licencia **AGPL-3.0**.
+## 📝 Commits
+
+We suggest following the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+- `feat:` New feature.
+- `ui:` Visual or user experience changes.
+- `fix:` Bug fix.
+- `refactor:` Code improvements without functional changes.
+- `sec/security:` Specific security hardening or cryptographic changes.
+- `chore:` Maintenance, tool, or dependency updates.
+- `docs:` Documentation.
+- `ci:` Continuous integration pipeline adjustments.
+
+---
+
+## 🔒 Reporting Vulnerabilities
+
+If you discover a security flaw, please **DO NOT open a public Issue**. Refer to our [Security Policy](./SECURITY.md) to report it responsibly.
+
+---
+
+By contributing, you agree that your contributions will be licensed under the **AGPL-3.0** license.
+

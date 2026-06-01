@@ -1,92 +1,112 @@
-# Bóveda — Gestor de credenciales 🔒
+[Leer en español 🇪🇸](./README.es.md)
 
-Bóveda es **Seguridad por Aislamiento**. Priorizamos la seguridad aislada de la red y practicamos la transparencia digital.
+# Bóveda — Credential Manager 🔒
 
-![License](https://img.shields.io/badge/license-AGPL--3.0-blue?style=for-the-badge)
+Bóveda means **Security through Isolation**. We prioritize network-isolated security and practice digital transparency.
+
+![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=for-the-badge)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=for-the-badge)
 ![Svelte](https://img.shields.io/badge/Svelte-5.0-red?style=for-the-badge)
 ![Rust](https://img.shields.io/badge/Rust-1.77+-black?style=for-the-badge)
 
 ---
 
-## Resumen de Arquitectura
+## Architecture Overview
 
-1.  **Aislamiento de Procesos:** La interfaz de usuario siempre esta aislada del motor (boveda-core) y toda operación sensible ocurre en el motor a través de un puente IPC (Inter-Process Communication) tipado y auditado.
-2.  **Soberanía Digital:** No hay "nube por defecto". Tus datos te pertenecen, residen exclusivamente en tu sistema y eres el único responsable de ellos.
-3.  **Resistencia Forense:** Se implementaron medidas para que, incluso si un atacante obtiene acceso físico a la memoria RAM o a los volcados de sistema, no encuentre rastros legibles de tu información.
+1. **Process Isolation:** The user interface is always isolated from the engine (`boveda-core`), and all sensitive operations occur within the engine via a typed, audited IPC (Inter-Process Communication) bridge.
+2. **Digital Sovereignty:** There is no "cloud by default." Your data belongs to you, resides exclusively on your system, and you are solely responsible for it.
+3. **Forensic Resistance:** Measures are implemented so that even if an attacker gains physical access to RAM or system dumps, they will find no readable traces of your information.
 
 ---
 
 ## Bóveda-Core
 
-El motor `boveda-core` es una pieza independiente encargada de proteger los datos sensibles:
+The `boveda-core` engine is an independent component responsible for protecting sensitive data:
 
-### 🔐 Criptografía
--   **Almacenamiento Ciego:** Base de datos **SQLite + SQLCipher** con cifrado **AES-256-CBC**. Protegemos no solo las entradas, sino el esquema, los índices y los metadatos.
--   **Secretos:** Cada entrada individual se cifra adicionalmente con **ChaCha20-Poly1305**, proporcionando Cifrado Autenticado con Datos Asociados (AEAD).
--   **Protección contra Fuerza Bruta:** Implementamos **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos), el estándar de Password Hashing Competition, configurado para ser costoso en hardware especializado (ASIC/GPU).
+### 🔐 Cryptography
+- **Blind Storage:** **SQLite + SQLCipher** database with **AES-256-CBC** encryption. We protect not only the entries but also the schema, indexes, and metadata.
+- **Secrets:** Each individual entry is additionally encrypted using **ChaCha20-Poly1305**, providing Authenticated Encryption with Associated Data (AEAD).
+- **Brute-Force Protection:** We implement **Argon2id** (Parameters: 64MB RAM, 3 iterations, 4 threads), the Password Hashing Competition standard, configured to be costly on specialized hardware (ASIC/GPU).
 
-### Gestión de Memoria
--   **Zeroización:** Se sobrescribe físicamente la memoria RAM con ceros en cuanto un secreto deja de ser necesario, mitigando ataques de reutilización de memoria.
--   **RAM Inamovible:** Implementamos `mlock` / `VirtualLock` para evitar que las claves maestras terminen en el archivo de intercambio (swap) del disco duro.
--   **Hardening del Proceso:** Desactivamos los `core dumps` y protegemos contra la inspección de procesos mediante políticas de seguridad a nivel de sistema operativo.
+### Memory Management
+- **Zeroization:** RAM is physically overwritten with zeros as soon as a secret is no longer needed, mitigating memory reuse attacks.
+- **Non-Swappable RAM:** We implement `mlock` / `VirtualLock` to prevent master keys from ending up in the operating system's swap file on the hard drive.
+- **Process Hardening:** Core dumps are disabled, and process inspection is blocked using OS-level security policies.
 
 ---
 
-## Arquitectura de Capas
+## Layered Architecture
 
 ```mermaid
 flowchart TD
-    UI["Interfaz Svelte 5"] -- "IPC Seguro" --> Tauri["Capa de Orquestación"]
-    Tauri -- "Comandos Rust" --> Core["Bóveda-Core (Rust)"]
-    Core -- "Cifrado" --> DB[("SQLite + SQLCipher")]
-    Core -- "Memoria" --> RAM["Zeroized RAM / mlock"]
+    UI["Svelte 5 Interface"] -- "Secure IPC" --> Tauri["Orchestration Layer"]
+    Tauri -- "Rust Commands" --> Core["Bóveda-Core (Rust)"]
+    Core -- "Encryption" --> DB[("SQLite + SQLCipher")]
+    Core -- "Memory" --> RAM["Zeroized RAM / mlock"]
 ```
 
--   **`crates/boveda-core`**: El núcleo de Bóveda, sin dependencias de UI, enfocado 100% en seguridad.
--   **`src-tauri`**: Gestiona los permisos y la comunicación entre la webview y el sistema.
--   **`src`**: Nuestra interfáz de usuario, rápida y minimalista que hace que la seguridad se sienta natural.
+- **`crates/boveda-core`**: The core of Bóveda, free of UI dependencies, 100% focused on security.
+- **`src-tauri`**: Manages permissions and communication between the webview and the system.
+- **`src`**: Our fast, minimalist user interface that makes security feel natural.
 ---
 
-## 🛠️ Configuración de Desarrollo
+## 🛠️ Development Setup
 
-**Requisitos:**
+**Prerequisites:**
 - [Node.js](https://nodejs.org/) (v20+)
 - [pnpm](https://pnpm.io/) (v9+)
 - [Rust](https://rustup.rs/) (v1.77+)
 - [Tauri Prerequisites](https://tauri.app/start/prerequisites/)
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 pnpm install
 
-# Ejecutar en modo desarrollo
+# Run in development mode
 pnpm tauri dev
 
-# Compilar binario de producción
+# Build production binary
 pnpm tauri build
 ```
 
-## 🛡️ Auditoría y Calidad
+## 🛡️ Audit and Quality
 
-Mantenemos un estándar de "Cero Advertencias". Puedes verificar la integridad del proyecto con:
+We maintain a "Zero Warnings" standard. You can verify project integrity using:
 
 ```bash
-# Auditoría completa (Rust + JS)
+# Full security audit (Rust + JS)
 pnpm security
 ```
 
-O por separado:
-- `cargo audit`: Verifica vulnerabilidades en dependencias de Rust.
-- `cargo clippy`: Linter estricto para asegurar código idiomático y seguro.
-- `pnpm audit`: Verifica el ecosistema de Node.js.
+Or individually:
+- `cargo audit`: Checks for vulnerabilities in Rust dependencies.
+- `cargo clippy`: Strict linter to ensure idiomatic and secure code.
+- `pnpm audit`: Checks the Node.js ecosystem.
 
 ---
 
-## 🤝 Contribuciones
+## 🤝 Contributing
 
-Si compartes nuestra visión de una privacidad sin compromisos, tus PRs son bienvenidos. Por favor, lee nuestra [Guía de Contribución](./CONTRIBUTING.md) y consulta el [ROADMAP.md](./crates/boveda-core/docs/ROADMAP.md) para ver en qué estamos trabajando.
+If you share our vision of uncompromised privacy, your PRs are welcome. Please read our [Contributing Guide](./CONTRIBUTING.md) and review the [ROADMAP.md](./crates/boveda-core/docs/ROADMAP.md) to see what we are working on.
 
-## 📜 Licencia
+## 📜 License
 
-Bóveda es software libre bajo la licencia **AGPL-3.0**. Tu seguridad no debería ser una caja negra.
+Bóveda is free software under the **GPL-3.0** license.
+
+## 📋 Project Documents
+
+
+| Document | Description |
+| :--- | :--- |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Guide for contributors |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | Community code of conduct |
+| [CODE_SIGNING_POLICY.md](./CODE_SIGNING_POLICY.md) | Code signing policy |
+| [SECURITY.md](./SECURITY.md) | Security policy and vulnerability reporting |
+| [PRIVACY.md](./PRIVACY.md) | Privacy policy |
+| [CHANGELOG.md](./CHANGELOG.md) | Change log |
+
+## Acknowledgements
+
+* Free code signing provided by [SignPath Foundation](https://signpath.org).
+
+

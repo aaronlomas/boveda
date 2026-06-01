@@ -1,77 +1,84 @@
-# 🛡️ Bóveda Core: Security White Paper (Libro Blanco)
+# 🛡️ Bóveda Core: Security White Paper
 
-Este documento detalla la arquitectura de seguridad, el diseño criptográfico y las medidas de endurecimiento de memoria implementadas en **Bóveda Core**. Nuestro objetivo es proporcionar transparencia total para usuarios y auditores de seguridad.
+This document details the security architecture, cryptographic design, and memory hardening measures implemented in **Bóveda Core**. Our goal is to provide full transparency for users and security auditors.
 
 ---
 
-## 1. Filosofía de Seguridad: "Security by Isolation"
-Bóveda Core está diseñado bajo el principio de aislamiento. El núcleo (engine) funciona como una caja negra que maneja secretos solo en memoria protegida, exponiendo una interfaz mínima (Facade) para reducir la superficie de ataque. El sistema es **Zero-Knowledge**: los datos nunca salen del dispositivo del usuario y el desarrollador no tiene forma de recuperar contraseñas maestras.
+## 1. Security Philosophy: "Security by Isolation"
 
-## 2. Pila Criptográfica (Cryptographic Stack)
-Bóveda utiliza algoritmos modernos, resistentes y de alto rendimiento:
+Bóveda Core is designed around the principle of strict process isolation. The core engine functions as a black box that handles secrets exclusively within protected memory, exposing a minimal interface (Facade) to radically reduce the attack surface. The system is entirely **Zero-Knowledge**: all data never leaves the user's device, and the developer has no technical means to recover master passwords.
 
-| Función | Algoritmo | Razón |
+## 2. Cryptographic Stack
+
+Bóveda utilizes modern, resilient, and high-performance cryptographic primitives:
+
+
+
+| Function | Algorithm | Rationale |
 | :--- | :--- | :--- |
-| **KDF (Derivación de Llaves)** | Argon2id | Ganador de la Password Hashing Competition; resistente a ataques de GPU/ASIC. |
-| **Cifrado Simétrico** | ChaCha20-Poly1305 | Cifrado autenticado (AEAD) extremadamente rápido y seguro, preferido sobre AES en sistemas sin aceleración por hardware dedicada. |
-| **Cifrado de Base de Datos** | SQLCipher (AES-256-GCM) | Estándar de la industria para cifrado transparente de bases de datos SQLite con verificación de integridad por página. |
-| **Generación de Entropía** | `rand::rngs::OsRng` | Utiliza el generador de números aleatorios criptográficamente seguro del sistema operativo. |
+| **KDF (Key Derivation Function)** | Argon2id | Winner of the Password Hashing Competition; highly resistant to GPU/ASIC brute-force attacks. |
+| **Symmetric Encryption** | ChaCha20-Poly1305 | Authenticated Encryption with Associated Data (AEAD); extremely fast and secure, preferred over AES on systems lacking dedicated hardware acceleration. |
+| **Database Encryption** | SQLCipher (AES-256-GCM) | Industry standard for transparent SQLite database encryption featuring page-level integrity verification. |
+| **Entropy Generation** | `rand::rngs::OsRng` | Leverages the operating system's cryptographically secure pseudorandom number generator (CSPRNG). |
 
 ---
 
-## 3. Gestión y Jerarquía de Llaves
+## 3. Key Management and Hierarchy
 
-### 3.1 Derivación de la Master Key
-La contraseña maestra nunca se almacena. Al desbloquear el baúl:
-1. Se lee el `vault.salt` (32 bytes aleatorios generados en la inicialización).
-2. Se utiliza **Argon2id** para derivar una llave de 256 bits.
-3. Los parámetros por defecto están optimizados para seguridad local:
-   - Tiempo: 3 iteraciones.
-   - Memoria: 64 MB.
-   - Paralelismo: 4 hilos.
+### 3.1 Master Key Derivation
+The master password is never stored anywhere on the system. Upon unlocking the vault:
+1. The `vault.salt` is read (32 random bytes generated during initialization).
+2. **Argon2id** is executed to derive a 256-bit key.
+3. Default parameters are optimized for local desktop security:
+   - Time: 3 iterations.
+   - Memory: 64 MB.
+   - Parallelism: 4 threads.
 
-### 3.2 Protección de la Llave en Memoria
-Una vez derivada, la **Master Key** se envuelve en un struct `MasterKey` que implementa:
-- **mlock / VirtualLock**: Bloquea la memoria física para evitar que el sistema operativo mueva la llave al archivo de intercambio (Swap/Pagefile) en el disco.
-- **Zeroize**: Sobrescribe los bytes de la llave con ceros en el momento exacto en que el struct sale de alcance (`Drop`).
+### 3.2 In-Memory Key Protection
+Once derived, the **Master Key** is wrapped inside a `MasterKey` struct that strictly enforces:
+- **mlock / VirtualLock:** Locks the underlying physical memory pages to prevent the operating system from moving the key into the swap file or pagefile on the disk.
+- **Zeroization:** Physically overwrites the key's raw bytes with zeros the exact moment the struct goes out of scope (`Drop`).
 
 ---
 
-## 4. Endurecimiento del Proceso (Process Hardening)
+## 4. Process Hardening
 
 ### 4.1 Anti-Forensics (Linux/Unix/Windows)
-Al iniciar, Bóveda ejecuta medidas preventivas:
-- **Linux:** Llama a `prctl(PR_SET_DUMPABLE, 0)` para desactivar Core Dumps e impedir que procesos no privilegiados se adjunten vía `ptrace`.
-- **Windows:** Configura `SetErrorMode` para evitar diálogos de error que puedan exponer volcados de memoria.
+Upon startup, Bóveda executes preventive security measures at the OS level:
+- **Linux:** Calls `prctl(PR_SET_DUMPABLE, 0)` to disable core dumps and prevent unprivileged processes from attaching via `ptrace`.
+- **Windows:** Configures `SetErrorMode` to prevent system error dialogs that could inadvertently write crash dumps to disk.
 
-### 4.2 Cifrado Transparente y Doble Capa
-Toda la base de datos de SQLite está cifrada por SQLCipher. Adicionalmente, Bóveda aplica una **segunda capa de cifrado** (Application-Layer Encryption): cada campo sensible (usuario, contraseña, notas, URL) se cifra con ChaCha20-Poly1305 antes de ser insertado. Incluso si se comprometiera la llave de SQLCipher, los secretos seguirían protegidos.
-
----
-
-## 5. Autenticación Multifactor (TOTP)
-Bóveda Core soporta TOTP (RFC 6238) como factor de protección adicional para el desbloqueo:
-- El secreto TOTP se almacena cifrado con la Master Key del usuario.
-- Se generan **códigos de recuperación** de un solo uso, también almacenados bajo cifrado, para evitar el bloqueo permanente en caso de pérdida del dispositivo de autenticación.
+### 4.2 Transparent and Double-Layer Encryption
+The entire SQLite database file is encrypted by SQLCipher. Additionally, Bóveda enforces a **second layer of encryption** (Application-Layer Encryption): every sensitive field (username, password, notes, URL) is individually encrypted using ChaCha20-Poly1305 before database insertion. Even in the hypothetical event of an SQLCipher key compromise, the underlying secrets remain fully protected.
 
 ---
 
-## 6. Trazabilidad y Auditoría (SOC2 Readiness)
-Cada operación sensible es registrada en un log de auditoría inmutable dentro de la base de datos cifrada:
-- Desbloqueos exitosos/fallidos.
-- Revelación de secretos (cada vez que el usuario ve una contraseña).
-- Exportaciones e importaciones de datos.
-- Cambios en la configuración de seguridad.
+## 5. Multi-Factor Authentication (TOTP)
+
+Bóveda Core supports TOTP (RFC 6238) as an optional second factor for vault decryption:
+- The TOTP secret is stored encrypted using the user's Master Key.
+- Single-use **recovery codes** are generated and stored under encryption to prevent permanent lockouts in case the authentication device is lost.
 
 ---
 
-## 7. Formato de Exportación (.bvda.pack)
-El formato de exportación es un contenedor binario cifrado que utiliza:
-- Una llave de exportación independiente (derivada con un nuevo Salt y una contraseña de exportación específica).
-- Un pipeline de datos que desencripta y vuelve a encriptar en memoria, garantizando que los secretos nunca toquen el disco en texto plano durante el proceso.
+## 6. Traceability and Audit Logs (SOC2 Readiness)
+
+Every sensitive operation is recorded in an immutable audit log stored directly within the encrypted database:
+- Successful and failed unlock attempts.
+- Secret exposure events (every time a user reveals a password).
+- Data import and export actions.
+- Changes to core security settings.
 
 ---
 
-## 8. Consideraciones de Seguridad
-- **Resistencia a Side-Channel:** Se utilizan comparaciones de tiempo constante (`subtle` crate) para verificaciones críticas de autenticación y TOTP.
-- **Validación de Datos:** Todos los inputs son saneados y validados para prevenir ataques de inyección o desbordamientos antes de ser procesados por la capa criptográfica.
+## 7. Export Format (.bvda.pack)
+
+The export format is an encrypted binary container that utilizes:
+- An independent export key derived using a fresh cryptographic salt and a specific export password.
+- An in-memory data pipeline that decrypts and re-encrypts records on the fly, guaranteeing that secrets never touch the disk layout in plaintext during the export process.
+
+---
+
+## 8. Security Considerations
+- **Side-Channel Resistance:** Constant-time comparison primitives (via the `subtle` crate) are used for critical authentication and TOTP verification flows.
+- **Data Validation:** All inputs are strictly sanitized and validated to mitigate injection attacks or buffer overflows before reaching the cryptographic sub-layer.

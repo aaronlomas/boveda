@@ -16,10 +16,6 @@ Este documento detalla la visión estratégica y los objetivos técnicos para el
 
 ## 🚀 Fase 2: Expansión del Ecosistema (Q4 2026 - Q1 2027)
 *Enfoque: Portabilidad y acceso desde múltiples interfaces.*
-
-- [ ] **Soporte WebAssembly (WASM):** Adaptar el núcleo para ser compilado a WASM, permitiendo su uso en extensiones de navegador y aplicaciones web seguras.
-- [ ] **CLI de Bóveda:** Lanzar una interfaz de línea de comandos oficial para gestión de baúles en servidores y entornos headless.
-- [ ] **SDK para Móviles:** Crear bindings oficiales para Android (Kotlin/JNI) e iOS (Swift/UniFFI) utilizando el mismo motor de Rust.
 - [x] **Contenedor de Exportación Blindado:** Implementar un formato de exportación (.bvda.pack) estrictamente cifrado con pipeline de memoria zeroized, rechazando formatos en texto plano (CSV/JSON) para garantizar la integridad forense.
 
 ## 🛡️ Fase 3: Hardening Avanzado y Funciones Pro (Q2 2027+)

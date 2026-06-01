@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # Necesario para la firma Keyless de Sigstore/Cosign
 
 jobs:
   publish-tauri:
@@ -69,3 +70,23 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+      - name: Install Cosign
+        if: matrix.platform == 'ubuntu-24.04'
+        uses: sigstore/cosign-installer@v3.5.0
+
+      - name: Sign Linux Artifacts with Sigstore (Keyless)
+        if: matrix.platform == 'ubuntu-24.04'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Tauri guarda los bundles en este directorio
+          for file in src-tauri/target/release/bundle/deb/*.deb src-tauri/target/release/bundle/appimage/*.AppImage; do
+            if [ -f "$file" ]; then
+              echo "Firmando $file con Cosign..."
+              cosign sign-blob --yes "$file" --bundle "$file.sigstore"
+              
+              # Subir la firma al release que acaba de crear/actualizar tauri-action
+              gh release upload "${{ github.ref_name }}" "$file.sigstore" --clobber
+            fi
+          done

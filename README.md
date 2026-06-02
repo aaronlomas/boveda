@@ -1,6 +1,6 @@
 [Leer en español 🇪🇸](./README.es.md)
 
-# Bóveda — Credential Manager 🔒
+# Bóveda — Credential Manager
 <img width="1100" height="720" alt="image" src="https://github.com/user-attachments/assets/60db6d3c-8aa0-4451-ae98-9ac97ffbc8ed" />
 
 Bóveda means **Security through Isolation**. We prioritize network-isolated security and practice digital transparency.
@@ -24,7 +24,7 @@ Bóveda means **Security through Isolation**. We prioritize network-isolated sec
 
 The `boveda-core` engine is an independent component responsible for protecting sensitive data:
 
-### 🔐 Cryptography
+### Cryptography
 - **Blind Storage:** **SQLite + SQLCipher** database with **AES-256-CBC** encryption. We protect not only the entries but also the schema, indexes, and metadata.
 - **Secrets:** Each individual entry is additionally encrypted using **ChaCha20-Poly1305**, providing Authenticated Encryption with Associated Data (AEAD).
 - **Brute-Force Protection:** We implement **Argon2id** (Parameters: 64MB RAM, 3 iterations, 4 threads), the Password Hashing Competition standard, configured to be costly on specialized hardware (ASIC/GPU).
@@ -51,7 +51,7 @@ flowchart TD
 - **`src`**: Our fast, minimalist user interface that makes security feel natural.
 ---
 
-## 🛠️ Development Setup
+## Development Setup
 
 **Prerequisites:**
 - [Node.js](https://nodejs.org/) (v20+)
@@ -70,7 +70,7 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
-## 🛡️ Audit and Quality
+## Audit and Quality
 
 We maintain a "Zero Warnings" standard. You can verify project integrity using:
 
@@ -90,11 +90,11 @@ Or individually:
 
 If you share our vision of uncompromised privacy, your PRs are welcome. Please read our [Contributing Guide](./CONTRIBUTING.md) and review the [ROADMAP.md](./crates/boveda-core/docs/ROADMAP.md) to see what we are working on.
 
-## 📜 License
+## License
 
 Bóveda is free software under the **GPL-3.0** license.
 
-## 📋 Project Documents
+## Project Documents
 
 
 | Document | Description |

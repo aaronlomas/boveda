@@ -2,6 +2,7 @@
 
 # Bóveda — Credential Manager 🔒
 <img width="1100" height="720" alt="image" src="https://github.com/user-attachments/assets/60db6d3c-8aa0-4451-ae98-9ac97ffbc8ed" />
+
 Bóveda means **Security through Isolation**. We prioritize network-isolated security and practice digital transparency.
 
 ![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=for-the-badge)

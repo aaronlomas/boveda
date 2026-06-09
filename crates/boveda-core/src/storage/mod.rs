@@ -133,9 +133,7 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📁 Account Persistence
-// ─────────────────────────────────────────────────────────────────────────────
+// Account Persistence------------------------------------------------------------------------------
 
 /// Insert a new account into the database.
 pub async fn add_account(
@@ -205,9 +203,7 @@ pub async fn delete_account(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
     Ok(())
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 🔒 PIN Persistence
-// ─────────────────────────────────────────────────────────────────────────────
+// PIN Persistence-----------------------------------------------------------------------
 
 pub async fn add_pin(
     pool: &SqlitePool,
@@ -253,9 +249,7 @@ pub async fn delete_pin(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
     Ok(())
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📄 Document Persistence
-// ─────────────────────────────────────────────────────────────────────────────
+// Document Persistence-------------------------------------------------------------------------
 
 pub async fn add_document(
     pool: &SqlitePool,
@@ -451,9 +445,7 @@ pub async fn delete_preference_tx(conn: &mut SqliteConnection, key: &str) -> Bov
     Ok(())
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚖️ Audit Logging
-// ─────────────────────────────────────────────────────────────────────────────
+// Audit Logging---------------------------------------------------------------
 
 /// Add a new entry to the audit log.
 pub async fn add_audit_log(

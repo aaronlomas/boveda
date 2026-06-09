@@ -1,8 +1,6 @@
 pub mod secret;
 
-// ─────────────────────────────────────────────────────────────────────────────
 // 🔑 Key Derivation (KDF) | Derivación de Clave
-// ─────────────────────────────────────────────────────────────────────────────
 
 use chacha20poly1305::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
@@ -18,10 +16,7 @@ use self::secret::{SecretKey, SecretString, SecretBytes};
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
-///
-/// Derivar una clave de 32 bytes a partir de `password` y `salt` usando Argon2id.
-/// Devuelve una SecretKey (matriz de tamaño fijo) para evitar dejar copias en stack/heap.
-/// Parámetros: t=3 iteraciones, m=65536 KiB, p=4 threads — recomendado por OWASP.
+
 pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKey> {
     let params = Params::new(
         65536, // memory (KiB)
@@ -42,9 +37,7 @@ pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKe
     Ok(key)
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 🔒 AEAD Encryption/Decryption
-// ─────────────────────────────────────────────────────────────────────────────
+//AEAD Encryption/Decryption---------------------------------------------------------------------
 
 /// Encrypt `plaintext` with ChaCha20-Poly1305 using `key`.
 /// Returns Base64(nonce || ciphertext_with_tag).

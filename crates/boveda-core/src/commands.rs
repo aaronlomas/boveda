@@ -1,9 +1,7 @@
 //! # Boveda Core — Command Facade
 //!
-//! Este módulo expone **todos** los comandos de la aplicación como métodos de
-//! [`AppState`]. Es framework-agnostico: no depende de Tauri ni de ninguna UI.
+//! [`AppState`]. framework-agnostico
 //!
-//! La capa Tauri (u otra UI) actúa como delegador delgado:
 //! ```rust,ignore
 //! #[tauri::command]
 //! pub async fn unlock_vault(password: SecretString, state: State<'_, AppState>) -> Result<String, String> {
@@ -23,7 +21,7 @@ use uuid::Uuid;
 
 // ─── AppState ─────────────────────────────────────────────────────────────────
 
-/// Estado global compartido entre todos los manejadores de comandos.
+/// shared global state among all command handlers.
 #[derive(Clone)]
 pub struct AppState {
     pub engine: Arc<Mutex<Option<BovedaEngine>>>,
@@ -40,7 +38,7 @@ impl AppState {
         }
     }
 
-    /// Obtiene el engine o devuelve error si el baúl está bloqueado o la sesión no está verificada.
+    /// Gets the (engine) or returns error if the trunk is locked or the session is not verified.
     /// SEC-H4: Safely handle mutex poisoning instead of panicking.
     fn get_engine(&self) -> Result<BovedaEngine, String> {
         let session_ok = *self.session_verified.lock().unwrap_or_else(|e| e.into_inner());
@@ -52,22 +50,20 @@ impl AppState {
         lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
     }
 
-    /// Obtiene el engine sin requerir verificación de sesión (solo para procesos de auth TOTP)
+    /// Obtains the (engine) without requiring session verification (only for TOTP auth processes).
     fn get_engine_unverified(&self) -> Result<BovedaEngine, String> {
         let lock = self.engine.lock()
             .map_err(|e| format!("Vault lock poisoned: {}. Por favor, reinicia la aplicación.", e))?;
         lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
     }
 
-    // =========================================================================
-    // 🔒 VAULT LIFECYCLE
-    // =========================================================================
+    // Bóveda LIFECYCLE---------------------------------------------------------
 
     pub fn cmd_is_vault_initialized(&self) -> bool {
         BovedaEngine::is_initialized(&self.db_path)
     }
 
-    /// Desbloquea el baúl. Devuelve `"totp_required"` o `"unlocked"`.
+    /// Unlocks Bóveda. Returns `"totp_required"` o `"unlocked"`.
     /// SEC-H3: Implements rate limiting to prevent brute force attacks on vault unlock.
     pub async fn cmd_unlock_vault(&self, password: SecretString) -> Result<String, String> {
         // SEC-H3: Rate limiting - prevent brute force unlock attempts.
@@ -148,7 +144,7 @@ impl AppState {
         }
     }
 
-    /// Elimina completamente el baúl (archivos .bvda y .salt) si la contraseña es correcta.
+    /// Completely delete the vault (files .bvda and .salt) if the password is correct.
     pub async fn cmd_delete_vault(&self, password: SecretString) -> Result<(), String> {
         // 1. Verify password by attempting unlock (this handles rate limiting automatically)
         let engine = BovedaEngine::unlock(&self.db_path, &password).await.map_err(|e| e.to_string())?;
@@ -167,9 +163,7 @@ impl AppState {
         Ok(())
     }
 
-    // =========================================================================
-    // 📁 ACCOUNT MANAGEMENT
-    // =========================================================================
+    // ACCOUNT MANAGEMENT-------------------------------------------------------------
 
     pub async fn cmd_add_account(
         &self,
@@ -202,9 +196,7 @@ impl AppState {
         engine.delete_account(id).await.map_err(|e| e.to_string())
     }
 
-    // =========================================================================
-    // 🔒 PIN MANAGEMENT
-    // =========================================================================
+    //PIN MANAGEMENT----------------------------------------------------------------------
 
     pub async fn cmd_add_pin(
         &self,
@@ -236,7 +228,7 @@ impl AppState {
         engine.delete_pin(id).await.map_err(|e| e.to_string())
     }
 
-    /// Genera una contraseña aleatoria (nunca se almacena).
+    /// Generates a random password (never stored).
     pub fn cmd_generate_password(length: usize, use_symbols: bool) -> Result<String, String> {
         let len = length.clamp(8, 128);
         crypto::generate_password(len, use_symbols)
@@ -244,11 +236,11 @@ impl AppState {
             .map_err(|e| e.to_string())
     }
 
-    /// Descifra un campo secreto individual bajo demanda.
+    /// Decrypts an individual secret field on demand.
     pub async fn cmd_decrypt_secret(&self, ciphertext: &str) -> Result<String, String> {
         let engine = self.get_engine()?;
         
-        // SOC2: Logueamos el acceso al secreto
+        // SOC2: Logs the secret access
         let _ = engine.log_audit(crate::audit::AuditAction::SecretAccess, Some(ciphertext)).await;
 
         engine
@@ -257,9 +249,7 @@ impl AppState {
             .map_err(|e: crate::BovedaError| e.to_string())
     }
 
-    // =========================================================================
-    // 👥 GROUP MANAGEMENT
-    // =========================================================================
+    //GROUP MANAGEMENT--------------------------------------------------------------------
 
     pub async fn cmd_update_account_group(
         &self,
@@ -286,9 +276,7 @@ impl AppState {
         engine.delete_group(name).await.map_err(|e| e.to_string())
     }
 
-    // =========================================================================
-    // ⚙️  PREFERENCES
-    // =========================================================================
+    // PREFERENCES-----------------------------------------------------------------------
 
     pub async fn cmd_get_preference(&self, key: &str) -> Result<Option<String>, String> {
         let engine = self.get_engine()?;
@@ -312,11 +300,9 @@ impl AppState {
         }
     }
 
-    // =========================================================================
-    // 🖼️  BACKGROUND IMAGE
-    // =========================================================================
+    // BACKGROUND IMAGE-------------------------------------------------------------
 
-    /// Copia una imagen al directorio de datos de la app como `background.<ext>`.
+    /// Copy an image to the app's data directory as `background.<ext>`.
     pub async fn cmd_import_background_image(src_path: &str) -> Result<String, String> {
         let src = std::path::Path::new(src_path);
         if !src.exists() {
@@ -347,7 +333,7 @@ impl AppState {
         Ok(dest_filename)
     }
 
-    /// Lee una imagen de fondo y la devuelve como data URL (evita exponer rutas al frontend).
+    /// Reads a background image and returns it as a data URL (avoids exposing paths to the frontend)
     pub fn cmd_get_background_data_url(filename: &str) -> Result<String, String> {
         let path = Self::app_data_dir().join(filename);
 
@@ -372,16 +358,14 @@ impl AppState {
         Ok(format!("data:{};base64,{}", mime, encoded))
     }
 
-    // =========================================================================
-    // 💾 FILESYSTEM UTILITIES
-    // =========================================================================
+    //FILESYSTEM UTILITIES------------------------------------------------------------------
 
-    /// Devuelve la ruta del directorio de datos de la app.
+    /// Returns the app data directory path.
     pub fn cmd_get_data_dir() -> String {
         Self::app_data_dir().to_string_lossy().to_string()
     }
 
-    /// Exporta la base de datos y su salt a la ruta indicada.
+    /// Export the database and its salt to the specified path.
     pub async fn cmd_export_db(dest_path: &str) -> Result<(), String> {
         let db_path = Self::vault_db_path();
         let salt_path = db_path.with_file_name("vault.salt");
@@ -409,7 +393,7 @@ impl AppState {
         Ok(())
     }
 
-    /// Exporta el baúl como paquete seguro cifrado (.bvda.pack).
+    /// Export the vaul as (.bvda.pack).
     pub async fn cmd_export_secure_package(
         &self,
         dest_path: &str,
@@ -434,7 +418,7 @@ impl AppState {
         Ok(())
     }
 
-    /// Importa un paquete seguro (.bvda.pack) al baúl actual.
+    /// Import a package as (.bvda.pack) al baúl actual.
     pub async fn cmd_import_secure_package(
         &self,
         src_path: &str,
@@ -451,8 +435,7 @@ impl AppState {
             .map_err(|e| format!("Import failed: {}", e))
     }
 
-    /// Prepara la importación de una base de datos: cierra el pool, copia archivos.
-    /// El llamador (Tauri) debe ejecutar `app.restart()` después de esta llamada.
+    /// Prepare the database import: close the pool, copy files.
     pub async fn cmd_prepare_import_db(&self, src_path: &str) -> Result<(), String> {
         let src = std::path::Path::new(src_path);
         if !src.exists() {
@@ -467,7 +450,7 @@ impl AppState {
             );
         }
 
-        // Cierra el pool para liberar el lock antes de sobrescribir
+        //Close the pool to release the lock before overwriting
         let engine = {
             let mut engine_lock = self.engine.lock().unwrap();
             engine_lock.take()
@@ -477,7 +460,7 @@ impl AppState {
         }
         tokio::time::sleep(std::time::Duration::from_millis(200)).await;
 
-        // Elimina archivos WAL/SHM para evitar corrupción
+        // Delete WAL/SHM files to prevent corruption
         let _ = std::fs::remove_file(db_path.with_extension("bvda-wal"));
         let _ = std::fs::remove_file(db_path.with_extension("bvda-shm"));
 
@@ -509,9 +492,7 @@ impl AppState {
         Ok(())
     }
 
-    // =========================================================================
-    // 🔐 TOTP / SECURITY
-    // =========================================================================
+    //TOTP / SECURITY-------------------------------------------------------------------------------
 
     pub async fn cmd_totp_is_enabled(&self) -> Result<bool, String> {
         let engine = self.get_engine()?;
@@ -556,9 +537,7 @@ impl AppState {
         engine.disable_totp().await.map_err(|e| e.to_string())
     }
 
-    // =========================================================================
-    // 📋 AUDIT LOGS
-    // =========================================================================
+    //AUDIT LOGS-----------------------------------------------------------------------------------
 
     pub async fn cmd_get_audit_logs(&self, limit: i64) -> Result<Vec<AuditLogView>, String> {
         let engine = self.get_engine()?;
@@ -579,9 +558,7 @@ impl AppState {
         Ok(view)
     }
 
-    // =========================================================================
-    // 📄 DOCUMENT MANAGEMENT
-    // =========================================================================
+    // DOCUMENT MANAGEMENT------------------------------------------------------------------------
 
     pub async fn cmd_add_document(
         &self,
@@ -638,9 +615,7 @@ impl AppState {
             .map_err(|e| e.to_string())
     }
 
-    // =========================================================================
     // 🔧 INTERNAL HELPERS
-    // =========================================================================
 
     fn app_data_dir() -> PathBuf {
         dirs_next::data_local_dir()

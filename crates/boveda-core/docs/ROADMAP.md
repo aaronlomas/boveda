@@ -1,33 +1,32 @@
-# 🗺️ Bóveda-Core Roadmap
+# Bóveda-Core Roadmap
 
-Este documento detalla la visión estratégica y los objetivos técnicos para el desarrollo de **Bóveda Core**. El objetivo es convertirnos en el estándar de código abierto para la gestión de secretos locales y multiplataforma.
-
----
-
-## 🎯 Fase 1: Estabilización y Confianza (Q3 2026)
-*Enfoque: Calidad de código, auditoría interna y robustez.*
-
-- [ ] **Automatización de Pruebas (CI/CD):**
-    - [x] Integrar `cargo test`, `cargo clippy` y `cargo audit` en GitHub Actions para bloquear código no seguro.
-    - Reportes de cobertura de código (Code Coverage) superiores al 90%.
-- [ ] **Fuzz Testing:** Implementar `cargo-fuzz` en el motor de descifrado y procesamiento de base de datos para detectar fallos de memoria raros.
-- [x] **Libro Blanco de Seguridad:** Documentar exhaustivamente el diseño criptográfico, la jerarquía de claves y las medidas de endurecimiento de memoria.
-- [x] **Refactorización de Errores:** Completar la migración a errores estructurados y localizables en todos los módulos del núcleo.
-
-## 🚀 Fase 2: Expansión del Ecosistema (Q4 2026 - Q1 2027)
-*Enfoque: Portabilidad y acceso desde múltiples interfaces.*
-- [x] **Contenedor de Exportación Blindado:** Implementar un formato de exportación (.bvda.pack) estrictamente cifrado con pipeline de memoria zeroized, rechazando formatos en texto plano (CSV/JSON) para garantizar la integridad forense.
-
-## 🛡️ Fase 3: Hardening Avanzado y Funciones Pro (Q2 2027+)
-*Enfoque: Integración con hardware y funciones de nivel empresarial.*
-
-- [ ] **Integración de Hardware Security (HSM):** Soporte nativo para llaves físicas (YubiKey) y Secure Enclave / TPM para el desbloqueo del baúl.
-- [x] **software Security (U2F):** Implementar soporte para TOTP (Google/Microsoft Authenticator) como paso adicional de desbloqueo, interfaz de configuración con generación de QR y advertencia sobre la dependencia de ecosistemas externos.
-- [ ] **Biometría Nativa:** Desbloqueo mediante Windows Hello, TouchID y FaceID integrado 
-directamente en la lógica del motor.
-- [ ] **Sincronización E2EE Opcional:** Protocolo de sincronización entre dispositivos con cifrado de extremo a extremo, donde el servidor nunca tiene acceso a los datos.
-- [ ] **Auditoría Externa:** Someter el código a una auditoría de seguridad profesional por una firma independiente.
+This document outlines the strategic vision and technical goals for the development of **Bóveda Core**. The objective is to become the open-source standard for local and cross-platform secret management.
 
 ---
 
-> **Nota:** Este roadmap es un documento vivo y puede cambiar según las necesidades de la comunidad y los avances en el campo de la ciberseguridad.
+## 🎯 Phase 1: Stabilization and Trust (Q3 2026)
+*Focus: Code quality, internal auditing, and robustness.*
+
+- [ ] **Test Automation (CI/CD):**
+    - [x] Integrate `cargo test`, `cargo clippy`, and `cargo audit` into GitHub Actions to block unsafe code.
+    - Code coverage reports exceeding 90%.
+- [ ] **Fuzz Testing:** Implement `cargo-fuzz` on the decryption engine and database processing to detect rare memory errors.
+- [x] **Security Whitepaper:** Comprehensively document the cryptographic design, key hierarchy, and memory hardening measures.
+- [x] **Error Refactoring:** Complete the migration to structured and localized errors across all core modules.
+
+## 🚀 Phase 2: Ecosystem Expansion (Q4 2026 - Q1 2027)
+*Focus: Portability and access from multiple interfaces.*
+- [x] **Armored Export Container:** Implement a strictly encrypted export format (.bvda.pack) with a zeroized memory pipeline, rejecting plaintext formats (CSV/JSON) to ensure forensic integrity.
+
+## 🛡️ Phase 3: Advanced Hardening and Pro Features (Q2 2027+)
+*Focus: Hardware integration and enterprise-level features.*
+
+- [ ] **Hardware Security Integration (HSM):** Native support for hardware keys (YubiKey) and Secure Enclave / TPM for vault unlocking.
+- [x] **Software Security (U2F):** Implement support for TOTP (Google/Microsoft Authenticator) as an additional unlocking step, featuring a setup interface with QR generation and a warning regarding dependency on external ecosystems.
+- [ ] **Native Biometrics:** Windows Hello, TouchID, and FaceID unlocking integrated directly into the engine logic.
+- [ ] **Optional E2EE Synchronization:** Cross-device synchronization protocol with end-to-end encryption, ensuring the server never has access to the data.
+- [ ] **External Audit:** Submit the codebase to a professional security audit by an independent firm.
+
+---
+
+> **Note:** This roadmap is a living document and may change based on community needs and advancements in the cybersecurity field.

@@ -498,9 +498,7 @@ impl BovedaEngine {
         Ok(())
     }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚙️  Preferences & Settings
-// ─────────────────────────────────────────────────────────────────────────────
+// Preferences & Settings--------------------------------------------------------------
 
     pub async fn get_preference(&self, key: &str) -> BovedaResult<Option<String>> {
         self.check_unlocked()?;
@@ -520,9 +518,7 @@ impl BovedaEngine {
         storage::delete_preference(&self.db, key).await
     }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📦 Export & Import
-// ─────────────────────────────────────────────────────────────────────────────
+// Export & Import-------------------------------------------------------------------------
 
     /// Exports the entire vault into a secure, encrypted package.
     pub async fn export_vault(&self, export_password: &SecretString) -> BovedaResult<String> {
@@ -691,9 +687,7 @@ impl BovedaEngine {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📄 Document Management
-// ─────────────────────────────────────────────────────────────────────────────
+// Document Management----------------------------------------------------------------
 
 impl BovedaEngine {
     /// Retrieves and decrypts all document headers (title + metadata, NOT content).

@@ -3,8 +3,7 @@ use sqlx::SqlitePool;
 use serde::Serialize;
 use crate::error::BovedaResult;
 
-/// Representa una acción auditable en el sistema.
-/// Usamos un enum para garantizar la consistencia y evitar errores tipográficos.
+
 #[derive(Debug, Serialize, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
 pub enum AuditAction {
@@ -51,7 +50,7 @@ impl AuditAction {
     }
 }
 
-/// Registra un evento de auditoría en la base de datos.
+/// logs an audit event in the database
 pub async fn log_event(
     pool: &SqlitePool,
     action: AuditAction,

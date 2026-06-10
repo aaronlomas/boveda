@@ -1,7 +1,7 @@
 /**
  * Design Token System
- * Define colores, espaciados, bordes y clases compuestas estandarizadas.
- * Úsalo en todos los componentes para mantener la consistencia visual.
+ * Defines standardized colors, spacing, borders, and composite classes.
+ * Use it across all components to maintain visual consistency.
  */
 
 export const COLORS = {

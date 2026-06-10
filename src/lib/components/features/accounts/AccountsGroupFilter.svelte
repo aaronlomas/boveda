@@ -2,7 +2,6 @@
   /**
    * @component AccountsGroupFilter
    * @description Component to filter credentials by group and manage tags/groups.
-   * Componente para filtrar credenciales por grupo y administrar etiquetas/grupos.
    */
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
@@ -18,13 +17,12 @@
   import { focus, selectOnFocus } from "$lib/utils/actions";
 
   // ── Composable and Initialization
-  // ── Composable e Inicialización ────────────────────────────────────────────
   const groupService = useGroups();
 
-  let editingGroup = $state<string | null>(null); // Grupo renombrándose | editing group
-  let editingValue = $state(""); // Valor actual del rename input | current rename input value
-  let addingGroup = $state(false); // Visibilidad del input nuevo grupo | new group input visibility
-  let newGroupName = $state(""); // Valor del input nuevo grupo | new group input value
+  let editingGroup = $state<string | null>(null); // editing group
+  let editingValue = $state(""); // current rename input value
+  let addingGroup = $state(false); // new group input visibility
+  let newGroupName = $state(""); // new group input value
 
   // ── Handlers
   // ── Manejo de grupos ───────────────────────────────────────────────────────────────
@@ -57,12 +55,10 @@
   });
 </script>
 
-<!-- Filtro de grupos -->
 <!-- Filter by group  -->
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <!-- All -->
-  <!-- Mostrar todos -->
   <button
     class="px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border
       {uiState.activeGroup === null
@@ -77,7 +73,6 @@
     <div class="relative group/chip flex items-center">
       {#if editingGroup === group}
         <!-- Rename input -->
-        <!-- Renombrar grupo / input -->
         <div
           class="flex items-center gap-1 px-2 py-2 rounded-full border border-accent/50 bg-surface/10"
         >
@@ -110,7 +105,6 @@
         </div>
       {:else}
         <!-- User-created group -->
-        <!-- Grupo creado por el usuario -->
         <button
           class="px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border
             {uiState.activeGroup === group
@@ -123,7 +117,6 @@
           {group}
         </button>
         <!-- Edit / delete group buttons -->
-        <!-- Botones de editar / eliminar grupo -->
         <div
           class="absolute -right-1 -top-1 hidden group-hover/chip:flex items-center bg-panel/90 backdrop-blur-sm border border-surface/15 rounded-full shadow-sm z-10"
         >
@@ -149,7 +142,6 @@
   {/each}
 
   <!-- Add group button / input -->
-  <!-- Botón Agregar grupo / input -->
   {#if addingGroup}
     <div
       class="flex items-center gap-1 px-2 py-2 rounded-full border border-accent/40 bg-surface/8"

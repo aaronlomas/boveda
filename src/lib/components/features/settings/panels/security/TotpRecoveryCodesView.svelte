@@ -1,8 +1,8 @@
 <script lang="ts">
   /**
    * @component TotpRecoveryCodesView
-   * @description Vista del paso 3 de configuración de TOTP.
-   * Muestra los códigos de recuperación de respaldo generados y gestiona el copiado al portapapeles.
+   * @description View of step 3 of TOTP configuration.
+   * Displays the generated backup recovery codes and manages copying to the clipboard.
    */
   import { _ } from "svelte-i18n";
   import { IconCheck, IconCopy } from "@tabler/icons-svelte";
@@ -16,10 +16,10 @@
     onDone: () => void;
   }>();
 
-  // Estado local para retroalimentación de copia
+  // Local status for copy feedback
   let copied = $state(false);
 
-  // Lógica local para copiar códigos al portapapeles
+  // Local logic for copying code to the clipboard
   async function handleCopy() {
     if (!recoveryCodes || recoveryCodes.length === 0) return;
     const text = recoveryCodes.join("\n");
@@ -32,18 +32,14 @@
     }
   }
 </script>
-
-<!-- ========================================================================= -->
-<!-- PANTALLA DE ÉXITO Y CÓDIGOS DE RECUPERACIÓN -->
-<!-- ========================================================================= -->
+<!-- SUCCESS SCREEN AND RECOVERY CODES -->
 <div class="pt-4 border-t border-surface/8 text-center space-y-3 animate-in zoom-in-95">
   
-  <!-- Icono de Éxito -->
   <div class="w-12 h-12 bg-success/20 text-success rounded-full flex items-center justify-center mx-auto">
     <IconCheck size={28} />
   </div>
   
-  <!-- Encabezado de Confirmación -->
+  <!-- Confirmation Header -->
   <h2 class="text-lg font-bold text-text-primary">
     {$_("settings.security.totp_success_title")}
   </h2>
@@ -51,11 +47,11 @@
     {$_("settings.security.totp_success_desc")}
   </p>
 
-  <!-- Bloque de Códigos de Recuperación -->
+  <!-- Recovery code block -->
   <div class="mt-6 space-y-4">
     <div class="bg-surface/5 border border-surface/10 rounded-xl p-4">
       
-      <!-- Fila de Encabezado y Acción de Copiado -->
+      <!-- Header Row and Copy Action -->
       <div class="flex items-center justify-between mb-3 px-1">
         <span class="text-xs font-bold uppercase tracking-widest text-text-muted">
           {$_("settings.security.totp_recovery_title")}
@@ -74,7 +70,7 @@
         </button>
       </div>
 
-      <!-- Cuadrícula de Códigos -->
+      <!-- Code Grid -->
       <div class="grid grid-cols-2 gap-2 text-left">
         {#each recoveryCodes as code}
           <code class="text-xs font-mono bg-surface/10 p-2 rounded-md text-text-primary border border-surface/5">
@@ -84,7 +80,7 @@
       </div>
     </div>
 
-    <!-- Advertencia de Guardado -->
+    <!-- Saving Warning -->
     <div class="p-3 bg-warning/10 border border-warning/20 rounded-lg">
       <p class="text-xs text-warning text-center leading-relaxed font-medium">
         {$_("settings.security.totp_recovery_warning_setup") || "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil."}
@@ -92,7 +88,6 @@
     </div>
   </div>
 
-  <!-- Botón de Finalización -->
   <Button
     class="mt-4 w-full py-3 rounded-xl font-bold shadow-lg shadow-accent/20"
     onclick={onDone}

@@ -2,7 +2,6 @@
   /**
    * @component CredentialCard
    * @description Main credential card container.
-   * Contenedor principal de la tarjeta de credenciales.
    */
   import { _ } from "svelte-i18n";
   import { writeText } from "@tauri-apps/plugin-clipboard-manager";
@@ -25,10 +24,7 @@
     onrefresh?: () => void;
   } = $props();
 
-  // =========================================================================
   // REACTIVE STATES
-  // ESTADOS REACTIVOS
-  // =========================================================================
   let revealed = $state(false);
   let decryptedPassword: string | null = $state(null);
   let decryptedRecoveryCode: string | null = $state(null);
@@ -37,13 +33,9 @@
   let recoveryCopyTimer: number | null = $state(null);
   let userCopyTimer: number | null = $state(null);
 
-  // =========================================================================
   // ASSISTANTS AND FORMATORS
-  // AUXILIARES Y FORMATEADORES
-  // =========================================================================
   /**
    * Format the credential addition date according to the selected language
-   * Formatea la fecha de adición de la credencial según el idioma seleccionado.
    */
   function formatDate(iso: string): string {
     try {
@@ -60,13 +52,9 @@
     }
   }
 
-  // =========================================================================
   // COPY AND CLIPBOARD (SECURITY)
-  // COPILACIÓN Y PORTAPAPELES (SEGURIDAD)
-  // =========================================================================
   /**
    * Writes the text safely to the platform's native clipboard
-   * Escribe el texto de manera segura en el portapapeles nativo de la plataforma.
    */
   async function copyToClipboard(
     text: string,
@@ -83,7 +71,6 @@
 
   /**
    * Decrypts the password in the Rust backend and copies it securely
-   * Descifra la contraseña en el backend de Rust y la copia de forma segura.
    */
   async function copyPassword() {
     try {
@@ -98,7 +85,6 @@
 
   /**
    * Decrypts the recovery code in the Rust backend and copies it securely
-   * Descifra el código de recuperación en el backend de Rust y lo copia de forma segura.
    */
   async function copyRecoveryCode() {
     if (!account.recovery_code_cipher) return;
@@ -114,7 +100,6 @@
 
   /**
    * Toggles the on-screen display of encrypted fields (password, codes, notes)
-   * Alterna la revelación en pantalla de los campos cifrados (contraseña, códigos, notas).
    */
   async function toggleReveal() {
     if (revealed) {
@@ -146,7 +131,6 @@
 
   /**
    * Starts the 30-second security countdown after copying a sensitive field
-   * Inicia el temporizador de seguridad de 30 segundos tras copiar un dato sensible.
    */
   function startCountdown(timerId: "pass" | "user" | "recovery"): void {
     const SECONDS = 30;
@@ -187,16 +171,12 @@
   }
 </script>
 
-<!-- ========================================================================= -->
 <!-- RENDERING OF THE CREDENTIAL CARD -->
-<!-- RENDERING DE LA TARJETA DE CREDENCIAL -->
-<!-- ========================================================================= -->
 <div
-  class="p-4 flex flex-col gap-4 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-[-2px] relative"
+  class="p-4 flex flex-col gap-4 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-2 relative"
   data-card-id={account.id}
 >
   <!-- Decoupled Modular Header -->
-  <!-- Cabecera Modular Desacoplada -->
   <CredentialHeader
     {account}
     ondelete={() => ondelete(account.id)}
@@ -204,7 +184,6 @@
   />
 
   <!-- Password Field -->
-  <!-- Campo Modular: Contraseña -->
   <CredentialField
     label={$_("accounts.password_label")}
     value={decryptedPassword || ""}
@@ -216,7 +195,6 @@
   />
 
   <!-- Recovery Code Field (Optional) -->
-  <!-- Campo Modular: Código de Recuperación (Opcional) -->
   {#if account.recovery_code_cipher}
     <CredentialField
       label={$_("accounts.recovery_code_label")}
@@ -231,7 +209,6 @@
   {/if}
 
   <!-- Username / Email Field -->
-  <!-- Campo Modular: Nombre de Usuario / Email -->
   <CredentialField
     label={$_("accounts.username_label")}
     value={account.username}
@@ -239,7 +216,6 @@
   />
 
   <!-- Additional Notes (Optional) -->
-  <!-- Notas Adicionales (Opcional) -->
   {#if account.notes_cipher}
     {#if decryptedNotes}
       <div
@@ -255,7 +231,6 @@
   {/if}
 
   <!-- Creation Date -->
-  <!-- Fecha de Creación -->
   <div class="text-xs text-text-muted text-right">
     {$_("accounts.added_at", {
       values: { date: formatDate(account.created_at) },

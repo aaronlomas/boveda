@@ -6,8 +6,8 @@ import { get } from "svelte/store";
 
 /**
  * @composable useGroups
- * @description Composable reactivo para la gestión de grupos.
- * Controla el filtrado, guardado, renombrado y borrado de etiquetas de grupo de credenciales.
+ * @description Composable reactive group management tool.
+ * Controls the filtering, saving, renaming, and deletion of credential group tags.
  */
 export function useGroups() {
   let loading = $state(false);
@@ -16,7 +16,7 @@ export function useGroups() {
   const t = get(_);
 
   /**
-   * Carga los grupos desde el almacenamiento persistente de Tauri y los guarda en dataState.
+   * It loads the groups from Tauri's persistent storage and saves them in dataState..
    */
   async function refresh(): Promise<void> {
     loading = true;
@@ -32,7 +32,7 @@ export function useGroups() {
   }
 
   /**
-   * Crea un nuevo grupo asegurándose de no repetir nombres existentes.
+   * Create a new group, making sure not to repeat existing names..
    */
   async function add(name: string): Promise<void> {
     const trimmed = name.trim();
@@ -48,29 +48,29 @@ export function useGroups() {
   }
 
   /**
-   * Renombra un grupo actualizando los accounts correspondientes en memoria y base de datos.
+   * Rename a group by updating the corresponding accounts in memory and database.
    */
   async function rename(oldName: string, newName: string): Promise<void> {
     const trimmed = newName.trim();
     if (!trimmed || trimmed === oldName) return;
     try {
       await renameGroup(oldName, trimmed);
-      
-      // Actualiza lista en memoria
+
+      // Update list in memory
       dataState.groups = dataState.groups.map((g) =>
         g === oldName ? trimmed : g,
       );
-      
-      // Actualiza las credenciales asignadas
+
+      // Update the assigned credentials
       dataState.accounts = dataState.accounts.map((a) =>
         a.group_name === oldName ? { ...a, group_name: trimmed } : a,
       );
-      
-      // Mantiene el filtro de grupo activo al renombrar
+
+      // Keeps the group filter active when renaming
       if (uiState.activeGroup === oldName) {
         uiState.activeGroup = trimmed;
       }
-      
+
       toast.success(t("groups.renamed_success"));
     } catch (e) {
       console.error("Rename group failed:", e);
@@ -79,17 +79,17 @@ export function useGroups() {
   }
 
   /**
-   * Borra un grupo permanentemente.
+   * Delete a group permanently.
    */
   async function remove(name: string): Promise<void> {
     try {
       await deleteGroup(name);
       dataState.groups = dataState.groups.filter((g) => g !== name);
-      
+
       if (uiState.activeGroup === name) {
         uiState.activeGroup = null;
       }
-      
+
       toast.success(t("groups.deleted_success"));
     } catch (e: any) {
       console.error("Delete group failed:", e);
@@ -98,9 +98,15 @@ export function useGroups() {
   }
 
   return {
-    get groups() { return dataState.groups; },
-    get loading() { return loading; },
-    get error() { return error; },
+    get groups() {
+      return dataState.groups;
+    },
+    get loading() {
+      return loading;
+    },
+    get error() {
+      return error;
+    },
     refresh,
     add,
     rename,

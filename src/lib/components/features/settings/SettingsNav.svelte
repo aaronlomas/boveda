@@ -1,11 +1,11 @@
 <script lang="ts">
   /**
    * @component SettingsNav
-   * @description Navegación lateral para la vista de configuración.
+   * @description Side navigation for settings view.
    *
    * @param {Object} props
-   * @param {Section[]} props.sections - Lista de secciones disponibles.
-   * @param {string} props.activeSection - (bindable) El ID de la sección actualmente seleccionada.
+   * @param {Section[]} props.sections - List of available sections.
+   * @param {string} props.activeSection - (bindable) The ID of the currently selected section.
    */
   import { _ } from "svelte-i18n";
 

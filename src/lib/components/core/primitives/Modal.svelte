@@ -4,14 +4,15 @@
    * @description Componente de diálogo modal con transiciones suaves y accesibilidad mejorada.
    * 
    * @param {Object} props
-   * @param {boolean} [props.show=false] - Controla la visibilidad del modal.
-   * @param {() => void} [props.onclose] - Callback para cerrar el modal.
-   * @param {import("svelte").Snippet} [props.children] - Contenido principal del modal.
-   * @param {string} [props.title] - Título del modal.
-   * @param {string} [props.description] - Descripción opcional para accesibilidad.
-   * @param {import("svelte").Snippet} [props.footer] - Contenido para el pie del modal (ej. botones).
-   * @param {string} [props.class=""] - Clases CSS adicionales para el contenedor.
+   * @param {boolean} [props.show=false] - Control the visibility of the modal. 
+   * @param {() => void} [props.onclose] - Callback - close modal.
+   * @param {import("svelte").Snippet} [props.children] - Main content of the modal.
+   * @param {string} [props.title] - Modal Title.
+   * @param {string} [props.description] - Optional description for accessibility.
+   * @param {import("svelte").Snippet} [props.footer] - Content for the modal footer (e.g., buttons).
+   * @param {string} [props.class=""] - Additional CSS classes for the container.
    */
+  import { _ } from "svelte-i18n"
   import type { Snippet } from "svelte";
   import { fade, scale } from "svelte/transition";
   import { backOut } from "svelte/easing";
@@ -87,7 +88,7 @@
           class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-bg-primary transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-surface/10 data-[state=open]:text-text-muted"
         >
           <IconX size={16} />
-          <span class="sr-only">Cerrar</span>
+          <span class="sr-only">{$_("actions.close")}</span>
         </button>
       {/if}
 

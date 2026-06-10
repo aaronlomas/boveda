@@ -1,12 +1,12 @@
 <script lang="ts">
   /**
    * @component Badge
-   * @description Componente de etiqueta pequeña para mostrar estados o categorías.
+   * @description Small label component to display statuses or categories.
    * 
    * @param {Object} props
-   * @param {"default" | "secondary" | "destructive" | "outline" | "accent"} [props.variant="default"] - El estilo visual del badge.
-   * @param {import("svelte").Snippet} [props.children] - Contenido del badge.
-   * @param {string} [props.class=""] - Clases CSS adicionales.
+   * @param {"default" | "secondary" | "destructive" | "outline" | "accent"} [props.variant="default"] - Visual stayle.
+   * @param {import("svelte").Snippet} [props.children] - badge content.
+   * @param {string} [props.class=""] - Additional CSS classes.
    */
   import type { Snippet } from "svelte";
 

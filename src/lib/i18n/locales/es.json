@@ -1,5 +1,6 @@
 {
   "actions": {
+    "open": "Abrir",
     "save": "Guardar",
     "delete": "Eliminar",
     "cancel": "Cancelar",
@@ -13,6 +14,7 @@
     "generate": "Generar",
     "replace": "Reemplazar",
     "decrypt": "Descifrar",
+    "encrypted": "Cifrado",
     "close": "Cerrar",
     "minimize": "Minimizar",
     "maximize": "Maximizar",

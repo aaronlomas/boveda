@@ -1,13 +1,13 @@
 <script lang="ts">
   /**
    * @component Alert
-   * @description Componente para mostrar mensajes de retroalimentación (errores, advertencias, éxitos).
+   * @description Component to display feedback messages (errors, warnings, successes).
    * 
    * @param {Object} props
    * @param {"default" | "destructive" | "success" | "warning"} [props.variant="default"] - El estilo visual del alert.
-   * @param {string} [props.title] - Título opcional para el alert.
-   * @param {import("svelte").Snippet} [props.children] - Contenido principal del alert.
-   * @param {string} [props.class=""] - Clases CSS adicionales.
+   * @param {string} [props.title] - optional title.
+   * @param {import("svelte").Snippet} [props.children] - Content.
+   * @param {string} [props.class=""] - Additional CSS classes.
    */
   import type { Snippet } from "svelte";
   import { IconAlertCircle, IconAlertTriangle, IconCheck, IconInfoCircle } from "@tabler/icons-svelte";
@@ -45,7 +45,7 @@
   const Icon = $derived(icons[variant]);
 </script>
 
-<div class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground {variants[variant]} {className}" role="alert">
+<div class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-3 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground {variants[variant]} {className}" role="alert">
   <Icon size={16} />
   {#if title}
     <h5 class="mb-1 font-medium leading-none tracking-tight">{title}</h5>

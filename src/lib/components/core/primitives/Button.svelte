@@ -1,13 +1,13 @@
 <script lang="ts">
   /**
    * @component Button
-   * @description Componente de botón reutilizable con múltiples variantes y tamaños.
-   * Extiende los atributos estándar de un botón HTML.
+   * @description Reusable button component with multiple variations and sizes.
+* Extends the standard attributes of an HTML button.
    * 
    * @param {Object} props
-   * @param {"primary" | "secondary" | "danger" | "ghost"} [props.variant="primary"] - El estilo visual del botón.
-   * @param {"sm" | "md" | "lg" | "icon"} [props.size="md"] - El tamaño del botón.
-   * @param {import("svelte").Snippet} [props.children] - Contenido del botón.
+   * @param {"primary" | "secondary" | "danger" | "ghost"} [props.variant="primary"] - Visual style.
+   * @param {"sm" | "md" | "lg" | "icon"} [props.size="md"] - button size.
+   * @param {import("svelte").Snippet} [props.children] - button content.
    */
   import type { Snippet } from "svelte";
   import type { HTMLButtonAttributes } from "svelte/elements";

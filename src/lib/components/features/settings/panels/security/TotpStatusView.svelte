@@ -1,8 +1,8 @@
 <script lang="ts">
   /**
    * @component TotpStatusView
-   * @description Muestra el estado actual de la autenticación de dos factores (TOTP).
-   * Permite activar o desactivar la funcionalidad de seguridad.
+   * @description Displays the current status of two-factor authentication (TOTP).
+   * Enables or disables the security feature.
    */
   import { _ } from "svelte-i18n";
   import { IconShieldCheck, IconTrash } from "@tabler/icons-svelte";
@@ -18,11 +18,9 @@
   }>();
 </script>
 
-<!-- ========================================================================= -->
-<!-- RENDERING DE VISTA DE ESTADO -->
-<!-- ========================================================================= -->
+<!-- VIEW RENDERING -->
 <div class="flex items-center justify-between">
-  <!-- Información del Estado -->
+  <!-- status information -->
   <div class="flex items-center gap-3">
     <div
       class="w-10 h-10 rounded-full flex items-center justify-center {isEnabled
@@ -43,7 +41,7 @@
     </div>
   </div>
 
-  <!-- Controles de Activación/Desactivación -->
+  <!-- Activation/Deactivation Controls -->
   {#if (!isEnabled) || (error && error.includes("configurado"))}
     <div class="flex items-center gap-2">
       {#if !isEnabled}

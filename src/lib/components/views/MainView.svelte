@@ -1,9 +1,8 @@
 <script lang="ts">
   /**
    * @component MainView
-   * @description El orquestador principal de vistas de la aplicación.
-   * Alterna dinámicamente entre el dashboard general, cuentas, documentos, settings y más
-   * basándose en el estado global (uiState.activeView).
+   * @description Dynamically switches between the main dashboard, accounts, documents, settings, and more
+   * based on the global state (uiState.activeView).
    */
   /* Cache bust comment */
   import { uiState, type ViewId } from "$lib/stores/stores.svelte";

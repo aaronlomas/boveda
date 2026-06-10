@@ -2,7 +2,6 @@
   /**
    * @component AccountsList
    * @description Component for rendering the credentials list, supporting virtualized scrolling.
-   * Componente para renderizar la lista de credenciales, soportando scroll virtualizado.
    */
   import { locale } from "svelte-i18n";
   import { IconRocket } from "@tabler/icons-svelte";
@@ -26,7 +25,6 @@
 
 {#if useVirtualScroll}
   <!-- Massive List active banner -->
-  <!-- Banner activo de lista masiva -->
   <div
     class="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent-light text-xs font-medium"
   >
@@ -37,7 +35,6 @@
   </div>
 
   <!-- Virtual scrolling list (single column) -->
-  <!-- Lista de desplazamiento virtual (columna única) -->
   <div class="virtual-list-wrapper">
     <VirtualList items={filtered} let:item itemHeight={220}>
       <div class="pb-4">
@@ -51,7 +48,7 @@
     </VirtualList>
   </div>
 {:else}
-  <!-- Normal grid -->
+  <!-- grid -->
   <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
     {#each filtered as account (account.id)}
       <AccountCard

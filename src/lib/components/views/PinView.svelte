@@ -1,8 +1,8 @@
 <script lang="ts">
   /**
    * @component PinView
-   * @description Vista para la administración de PINs guardados. Encapsula la lógica
-   * mediante el composable usePins, desacoplándose de la obtención de datos directa.
+   * @description View for managing saved PINs. Encapsulates the logic
+   * using the composable usePins, decoupling it from direct data retrieval.
    */
   import { onMount } from "svelte";
   import { _, locale } from "svelte-i18n";
@@ -17,7 +17,7 @@
   import { usePins } from "$lib/composables/usePins.svelte";
   import PinCard from "$lib/components/features/pins/PinCard.svelte";
 
-  // ── Composable e Inicialización ────────────────────────────────────────────
+  // ── Composable ────────────────────────────────────────────
   const pinService = usePins();
   let search = $state("");
 

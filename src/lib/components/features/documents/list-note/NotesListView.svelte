@@ -64,7 +64,7 @@
           <span
             class="text-xs text-accent font-mono uppercase tracking-widest bg-accent/5 border border-accent/10 px-2.5 py-1 rounded-full"
           >
-            Cifrado
+            {$_("actions.encrypted")}
           </span>
         </div>
         <h4
@@ -74,9 +74,9 @@
         </h4>
         <p class="text-text-muted text-sm line-clamp-2 leading-relaxed flex-1">
           {#if doc.encrypted_description}
-            <span class="italic opacity-60">descripción cifrada</span>
+            <span class="italic opacity-60">{$_("actions.encrypted")}</span>
           {:else}
-            <span class="opacity-40">Sin descripción</span>
+            <span class="opacity-40">No description</span>
           {/if}
         </p>
         <div
@@ -98,7 +98,7 @@
               class="text-accent text-sm font-bold hover:text-accent-light transition-colors flex items-center gap-1"
             >
               <IconEdit size={14} />
-              Abrir
+              {$_("actions.open")}
             </button>
           </div>
         </div>

@@ -9,7 +9,7 @@
 </script>
 
 <div class="grid grid-cols-3 gap-4">
-  <!-- Nueva nota -->
+  <!-- New Note -->
   <Card
     title={$_("documents_mode.create_note")}
     description={$_("documents_mode.create_note_desc")}
@@ -17,7 +17,7 @@
     onclick={docState.startNew}
   />
 
-  <!-- Mis notas -->
+  <!-- Notes -->
   <Card
     title={$_("documents_mode.my_notes") || "Mis notas"}
     description={$_("documents_mode.my_notes_desc") || "Accede a tus notas cifradas guardadas."}

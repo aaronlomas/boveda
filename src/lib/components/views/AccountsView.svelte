@@ -1,9 +1,9 @@
 <script lang="ts">
   /**
    * @component AccountsView
-   * @description Vista principal para la gestión de credenciales (Accounts).
-   * Orquesta los componentes especializados AccountsFilter, AccountsGroupFilter
-   * y AccountsList, y usa los composables reactivos useAccounts y uiState.
+   * @description Main view for credential management (Accounts).
+   * Orchestrates the specialized components AccountsFilter, AccountsGroupFilter
+    and AccountsList, and uses the reactive composables useAccounts and uiState.
    */
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";

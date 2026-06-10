@@ -1,8 +1,8 @@
 <script lang="ts">
   /**
    * @component TotpSetupView
-   * @description Vista del paso 2 de configuración de TOTP.
-   * Muestra el código QR para escanear y el input de verificación con los botones de acción.
+   * @description View of step 2 of TOTP configuration.
+   * Displays the QR code to scan and the verification input with action buttons.
    */
   import { _ } from "svelte-i18n";
   import { IconShieldCheck, IconLoader2, IconCheck } from "@tabler/icons-svelte";
@@ -18,10 +18,7 @@
     onVerify: () => void;
   }>();
 </script>
-
-<!-- ========================================================================= -->
-<!-- CONTENEDOR PRINCIPAL DE CONFIGURACIÓN -->
-<!-- ========================================================================= -->
+<!-- MAIN CONFIGURATION CONTAINER -->
 <div class="pt-4 border-t border-surface/8 space-y-5 animate-in fade-in slide-in-from-top-2">
   
   <!-- Advertencia de Seguridad -->
@@ -32,7 +29,7 @@
     </p>
   </div>
 
-  <!-- QR Code y Escaneo -->
+  <!-- QR Code -->
   <div class="flex flex-col items-center gap-4">
     <div class="bg-white p-3 rounded-xl shadow-xl">
       <img
@@ -46,10 +43,10 @@
     </p>
   </div>
 
-  <!-- Campo de Código de Verificación y Acciones -->
+  <!-- Verification Code and Actions Field -->
   <div class="space-y-4">
     <div class="flex flex-col gap-3">
-      <!-- Input Primitivo -->
+      <!-- Input Primitive -->
       <Input
         id="totp-verify"
         type="text"
@@ -60,7 +57,7 @@
         class="text-center text-lg font-mono tracking-[0.5em] focus-visible:ring-accent"
       />
       
-      <!-- Botones de Acción -->
+      <!-- Buttons -->
       <div class="flex gap-2 pt-2">
         <Button
           variant="secondary"

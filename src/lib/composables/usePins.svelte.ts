@@ -7,8 +7,8 @@ import { get } from "svelte/store";
 
 /**
  * @composable usePins
- * @description Composable reactivo para la gestión de PINs de seguridad.
- * Controla la carga, visualización y descarte de PINs.
+ * @description Composable reactive system for security PIN management.
+ * Controls PIN loading, display, and disposal.
  */
 export function usePins() {
   let loading = $state(false);
@@ -17,7 +17,7 @@ export function usePins() {
   const t = get(_);
 
   /**
-   * Carga los PINs desde la base de datos de Tauri y actualiza el dataState reactivo.
+   * Load the PINs from the Tauri database and update the reactive dataState.
    */
   async function refresh(): Promise<void> {
     loading = true;
@@ -33,7 +33,7 @@ export function usePins() {
   }
 
   /**
-   * Solicita confirmación y borra un PIN de forma segura.
+   * Request confirmation and securely delete a PIN.
    */
   async function remove(id: string): Promise<void> {
     const confirmed = await modal.openConfirm({
@@ -56,9 +56,15 @@ export function usePins() {
   }
 
   return {
-    get pins() { return dataState.pins; },
-    get loading() { return loading; },
-    get error() { return error; },
+    get pins() {
+      return dataState.pins;
+    },
+    get loading() {
+      return loading;
+    },
+    get error() {
+      return error;
+    },
     refresh,
     delete: remove,
   };

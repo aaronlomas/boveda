@@ -1,11 +1,11 @@
 /**
  * @module csvImporter
- * @description Responsable de convertir archivos CSV exportados por gestores
- * de contraseñas y navegadores externos al formato interno de Bóveda.
+ * @description Responsible for converting CSV files exported by external password managers and browsers to Bóveda internal format.
  *
- * ## Formatos soportados (detección automática por cabecera)
  *
- * | Navegador / Gestor     | Columnas clave reconocidas                        |
+ * ## Supported formats (automatic detection by header)
+ *
+ * | Navegador / Manager    | Columnas                                          |
  * |------------------------|---------------------------------------------------|
  * | Chrome / Edge / Brave  | name, url, username, password, note               |
  * | Firefox                | url, username, password, httpRealm               |
@@ -15,46 +15,45 @@
  * | 1Password              | Title, Website, Username, Password, Notes        |
  * | Dashlane               | url, username, password, name, note              |
  *
- * ## Contrato de salida
- * Cada entrada importada se normaliza a `ImportedCredential`.
- * El módulo nunca lanza excepciones por filas individuales vacías o inválidas;
- * las registra en `ImportResult.skipped` para que la UI pueda informarlas.
- *
- * @security El contenido del CSV se procesa íntegramente en memoria y
- * nunca se persiste en texto plano. La función devuelve estructuras en RAM
- * que el llamador debe cifrar inmediatamente mediante `addAccount()`.
+ * ## Output Contract
+ * Each imported entry is normalized to `ImportedCredential`.
+ * The module never throws exceptions for single empty or invalid rows;
+ * it logs them to `ImportResult.skipped` so the UI can report them.
+ * @security The CSV content is processed entirely in memory and
+ * is never persisted in plain text. The function returns structures in RAM
+ * which the caller must immediately encrypt using `addAccount()`.
  */
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
- * Representación normalizada de una credencial importada desde cualquier
- * fuente externa. Todos los campos son strings para facilitar el cifrado.
+ * Standardized representation of a credential imported from any
+ * external source. All fields are strings to facilitate encryption.
  */
 export interface ImportedCredential {
-  /** Nombre del sitio o app. Nunca vacío (usa fallback si la fuente lo omite). */
+  /** Site or app name. Never empty (use fallback if the source omits it). */
   site: string;
-  /** URL completa si está disponible, o cadena vacía. */
+  /** Full URL if available, or empty string. */
   url: string;
-  /** Nombre de usuario. Usa `"(sin usuario)"` si la fuente lo omite. */
+  /** Username. Use `"(sin usuario)"` if the source omits it. */
   username: string;
-  /** Contraseña en texto plano. El llamador debe cifrarla de inmediato. */
+  /** Password in plain text. The caller must encrypt it immediately. */
   password: string;
-  /** Notas adicionales. Puede incluir la URL si `site` ya la usó. */
+  /** Additional notes. May include the URL if `site` already used it. */
   notes: string;
 }
 
-/** Resultado completo de una importación de CSV. */
+/** Complete result of a CSV import. */
 export interface ImportResult {
-  /** Credenciales listas para cifrar e insertar. */
+  /** Credentials ready to be encrypted and inserted. */
   credentials: ImportedCredential[];
-  /** Número de filas ignoradas (sin contraseña, malformadas, etc.). */
+  /** Number of skipped rows (no password, malformed, etc.). */
   skipped: number;
-  /** Formato detectado automáticamente. */
+  /** Automatically detected format. */
   detectedFormat: CsvFormat;
 }
 
-/** Formatos de CSV soportados. */
+/** Supported CSV formats. */
 export type CsvFormat =
   | "chrome"
   | "firefox"
@@ -65,15 +64,15 @@ export type CsvFormat =
   | "dashlane"
   | "generic";
 
-// ─── Detección de formato ─────────────────────────────────────────────────────
+// ─── Format detection ─────────────────────────────────────────────────────
 
 /**
- * Mapeo de formato → función de extracción de índices.
- * Cada entrada define los nombres de columna que identifican ese formato.
+ * Format mapping → index extraction function.
+ * Each entry defines the column names that identify that format.
  *
- * Si la cabecera del CSV contiene todas las columnas requeridas (`required`),
- * el formato queda detectado. Las columnas opcionales (`optional`) se usarán
- * si están presentes.
+ * If the CSV header contains all required columns (`required`),
+ * the format is detected. Optional columns (`optional`) will be used
+ * if they are present.
  */
 const FORMAT_SIGNATURES: Record<
   CsvFormat,
@@ -90,8 +89,8 @@ const FORMAT_SIGNATURES: Record<
 };
 
 /**
- * Detecta el formato de un CSV a partir de su cabecera normalizada.
- * La detección es ordenada de más específico a más genérico.
+ * Detects the format of a CSV from its normalized header.
+ * Detection is ordered from most specific to most generic.
  */
 function detectFormat(header: string[]): CsvFormat {
   const order: CsvFormat[] = [
@@ -106,15 +105,15 @@ function detectFormat(header: string[]): CsvFormat {
   return "generic";
 }
 
-// ─── Parseo de CSV ────────────────────────────────────────────────────────────
+// ─── CSV Parse ────────────────────────────────────────────────────────────
 
 /**
- * Parsea una línea de CSV respetando campos entrecomillados con `"`.
- * Maneja: comillas dobles escapadas (`""`), espacios al inicio/fin, y
- * separadores dentro de campos entrecomillados.
+ * Parses a CSV line respecting fields enclosed in `"`.
+ * Handles: escaped double quotes (`""`), leading/trailing spaces, and
+ * separators within quoted fields.
  *
- * @param line Línea cruda del archivo CSV.
- * @returns Array de valores, sin comillas externas ni espacios superfluos.
+ * @param line Raw CSV line.
+ * @returns Array of values, without external quotes or superfluous spaces.
  */
 export function parseCsvLine(line: string): string[] {
   const result: string[] = [];
@@ -127,7 +126,7 @@ export function parseCsvLine(line: string): string[] {
 
     if (ch === '"') {
       if (inQuotes && next === '"') {
-        // Comilla escapada dentro de campo ("" → ")
+        // Escaped double quote within field ("" → ")
         current += '"';
         i++;
       } else {
@@ -144,11 +143,11 @@ export function parseCsvLine(line: string): string[] {
   return result;
 }
 
-// ─── Extractores por formato ──────────────────────────────────────────────────
+// ─── Format extractors ────────────────────────────────────────────────────────────
 
 /**
- * Extrae un valor de `row` usando una lista de posibles nombres de columna.
- * Devuelve la primera coincidencia encontrada, o `""` si ninguna existe.
+ * Extracts a value from `row` using a list of possible column names.
+ * Returns the first match found, or `""` if none exists.
  */
 function pick(row: string[], header: string[], ...candidates: string[]): string {
   for (const name of candidates) {
@@ -159,13 +158,13 @@ function pick(row: string[], header: string[], ...candidates: string[]): string 
 }
 
 /**
- * Convierte una fila raw en una `ImportedCredential` según el formato detectado.
- * Aplica fallbacks para campos requeridos por el backend (site, username).
+ * Converts a raw row into an `ImportedCredential` according to the detected format.
+ * Applies fallbacks for fields required by the backend (site, username).
  *
- * @param row   Valores de la fila ya parseados.
- * @param header Cabecera normalizada (minúsculas).
- * @param format Formato detectado.
- * @returns `ImportedCredential` o `null` si la fila no tiene contraseña.
+ * @param row   Parsed row values.
+ * @param header Normalized header (lowercase).
+ * @param format Detected format.
+ * @returns `ImportedCredential` or `null` if the row has no password.
  */
 function extractCredential(
   row: string[],
@@ -212,7 +211,7 @@ function extractCredential(
       break;
 
     case "firefox":
-      // Firefox no tiene "name"; usa el hostname como identificador
+      // Firefox does not have "name"; use the hostname as an identifier
       url      = pick(row, header, "url");
       username = pick(row, header, "username");
       password = pick(row, header, "password");
@@ -238,12 +237,12 @@ function extractCredential(
       break;
   }
 
-  // Sin contraseña → fila ignorable
+  // No password → ignorable row
   if (!password.trim()) return null;
 
-  // ── Fallbacks requeridos por el backend ───────────────────────────────────
-  // El motor de Bóveda requiere `site` y `username` no vacíos.
-  // Si la URL fue usada como site, no la duplicamos en notes.
+  // ── Fallbacks required by the backend ───────────────────────────────────
+  // The Bóveda engine requires non-empty `site` and `username`.
+  // If the URL was used as the site, do not duplicate it in notes.
   const resolvedSite = (site || url || "").trim() || "Cuenta Importada";
   const resolvedUser = username.trim() || "(sin usuario)";
 
@@ -261,18 +260,18 @@ function extractCredential(
   };
 }
 
-// ─── API pública ──────────────────────────────────────────────────────────────
+// ─── Public API ──────────────────────────────────────────────────────────────
 
 /**
- * Procesa el contenido de un archivo CSV exportado por un navegador o
- * gestor de contraseñas y devuelve las credenciales normalizadas.
+ * Processes the content of a CSV file exported by a browser or
+ * password manager and returns the normalized credentials.
  *
- * **Nunca persiste datos**: toda la operación ocurre en memoria.
+ * **Never persists data**: the entire operation takes place in memory.
  *
- * @param content Contenido completo del archivo CSV como string.
- * @returns `ImportResult` con las credenciales listas y estadísticas.
- * @throws Error si el CSV está vacío, no tiene cabecera, o no contiene
- *         ninguna columna de contraseña reconocible.
+ * @param content Complete content of the CSV file as a string.
+ * @returns `ImportResult` with ready credentials and statistics.
+ * @throws Error if the CSV is empty, has no header, or does not contain
+ *         any recognizable password column.
  *
  * @example
  * ```ts
@@ -289,10 +288,10 @@ export function parseCsv(content: string): ImportResult {
     .filter((l) => l.trim() !== "");
 
   if (lines.length < 2) {
-    throw new Error("Archivo CSV vacío o sin datos");
+    throw new Error("CSV file empty or contains no data");
   }
 
-  // Normalizar cabecera: minúsculas, sin espacios, sin comillas
+  // Normalize header: lowercase, no spaces, no quotes
   const header = parseCsvLine(lines[0]).map((h) =>
     h.toLowerCase().replace(/["\s]/g, "")
   );

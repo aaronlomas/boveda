@@ -1,7 +1,7 @@
 /**
- * Ejecuta un comando nativo de edición de texto en el documento.
- * @param {string} command - El nombre del comando (ej. 'bold', 'italic').
- * @param {string | undefined} [value] - Valor opcional para el comando.
+ * Execute a native text editing command on the document.
+ * @param {string} command - the command name (ej. 'bold', 'italic').
+ * @param {string | undefined} [value] - optional value for the command.
  */
 export function execBoardCommand(command: string, value: string | undefined = undefined): void {
   if (typeof document !== "undefined") {
@@ -10,9 +10,8 @@ export function execBoardCommand(command: string, value: string | undefined = un
 }
 
 /**
- * Aplica un tamaño de fuente exacto en puntos (pt) a la selección actual.
- * Crea un <span> con estilos inline para evitar las limitaciones del scale 1-7 del navegador.
- * @param {number} size - El tamaño de la fuente en puntos.
+ * Create a <span> with inline styles to avoid browser scale 1-7 limitations.
+ * @param {number} size - The font size in pt.
  */
 export function setFontSize(size: number): void {
   if (typeof document === "undefined") return;
@@ -64,10 +63,10 @@ export function setFontSize(size: number): void {
 }
 
 /**
- * Maneja eventos de pegado con saneamiento de seguridad y detección de patrones peligrosos.
- * @param {ClipboardEvent} e - El evento de portapapeles.
- * @param {(msg: string) => void} onWarning - Callback para notificar advertencias de seguridad.
- * @returns {string | null} El texto saneado o null si ya se manejó la inserción.
+ * It handles bonding events with safety sanitation and detection of hazardous patterns.
+ * @param {ClipboardEvent} e - The clipboard event.
+ * @param {(msg: string) => void} onWarning - Callback to notify security warnings.
+ * @returns {string | null} The sanitized text or null if the insertion has already been handled.
  */
 export function handlePasteSecurity(e: ClipboardEvent, onWarning: (msg: string) => void): string | null {
   e.preventDefault();

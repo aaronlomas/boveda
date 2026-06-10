@@ -1,7 +1,7 @@
 /**
  * @composable useDocuments
- * @description Composable reactivo para la gestión de notas y documentos cifrados.
- * Coordina la vista actual, el estado del editor y la persistencia en boveda-core.
+ * @description Reactive composable for managing notes and encrypted documents.
+ * Coordinates the current view, editor state, and persistence in Boveda Core.
  */
 import { dataState } from "$lib/stores/stores.svelte";
 import {

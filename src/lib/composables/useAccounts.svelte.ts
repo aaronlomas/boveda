@@ -7,8 +7,8 @@ import { get } from "svelte/store";
 
 /**
  * @composable useAccounts
- * @description Composable reactivo para la gestión de credenciales (Accounts).
- * Encapsula la lógica de obtención de datos, estados de carga, manejo de errores y eliminación.
+ * @description Composable reactive account management system.
+ * Encapsulates the logic for data retrieval, loading status, error handling, and deletion.
  */
 export function useAccounts() {
   let loading = $state(false);
@@ -17,7 +17,7 @@ export function useAccounts() {
   const t = get(_);
 
   /**
-   * Refresca la lista de cuentas desde la base de datos local y actualiza dataState.
+   * Refresh the list of accounts from the local database and update dataState.
    */
   async function refresh(): Promise<void> {
     loading = true;
@@ -33,7 +33,7 @@ export function useAccounts() {
   }
 
   /**
-   * Solicita confirmación visual y elimina una cuenta por ID.
+   * Request visual confirmation and delete an account by ID.
    */
   async function remove(id: string): Promise<void> {
     const confirmed = await modal.openConfirm({
@@ -56,9 +56,15 @@ export function useAccounts() {
   }
 
   return {
-    get accounts() { return dataState.accounts; },
-    get loading() { return loading; },
-    get error() { return error; },
+    get accounts() {
+      return dataState.accounts;
+    },
+    get loading() {
+      return loading;
+    },
+    get error() {
+      return error;
+    },
     refresh,
     delete: remove,
   };

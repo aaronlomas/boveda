@@ -11,7 +11,7 @@ Bóveda es **Seguridad por Aislamiento**. Priorizamos la seguridad aislada de la
 
 ## Resumen de Arquitectura
 
-1.  **Aislamiento de Procesos:** La interfaz de usuario siempre esta aislada del motor (boveda-core) y toda operación sensible ocurre en el motor a través de un puente IPC (Inter-Process Communication) tipado y auditado.
+1.  **Aislamiento de Procesos:** Interfaz y motor desacoplados, con auditorias regulares.
 2.  **Soberanía Digital:** No hay "nube por defecto". Tus datos te pertenecen, residen exclusivamente en tu sistema y eres el único responsable de ellos.
 3.  **Resistencia Forense:** Se implementaron medidas para que, incluso si un atacante obtiene acceso físico a la memoria RAM o a los volcados de sistema, no encuentre rastros legibles de tu información.
 
@@ -19,10 +19,10 @@ Bóveda es **Seguridad por Aislamiento**. Priorizamos la seguridad aislada de la
 
 ## Bóveda-Core
 
-El motor `boveda-core` es una pieza independiente encargada de proteger los datos sensibles:
+El motor `boveda-core` es el responsable de proteger los datos sensibles:
 
 ### 🔐 Criptografía
--   **Almacenamiento Ciego:** Base de datos **SQLite + SQLCipher** con cifrado **AES-256-CBC**. Protegemos no solo las entradas, sino el esquema, los índices y los metadatos.
+-   **Almacenamiento:** Base de datos **SQLite + SQLCipher** con cifrado **AES-256-CBC**. Protegemos no solo las entradas, sino el esquema, los índices y los metadatos.
 -   **Secretos:** Cada entrada individual se cifra adicionalmente con **ChaCha20-Poly1305**, proporcionando Cifrado Autenticado con Datos Asociados (AEAD).
 -   **Protección contra Fuerza Bruta:** Implementamos **Argon2id** (Parámetros: 64MB RAM, 3 iteraciones, 4 hilos), el estándar de Password Hashing Competition, configurado para ser costoso en hardware especializado (ASIC/GPU).
 
@@ -43,9 +43,9 @@ flowchart TD
     Core -- "Memoria" --> RAM["Zeroized RAM / mlock"]
 ```
 
--   **`crates/boveda-core`**: El núcleo de Bóveda, sin dependencias de UI, enfocado 100% en seguridad.
+-   **`crates/boveda-core`**: El núcleo de Bóveda.
 -   **`src-tauri`**: Gestiona los permisos y la comunicación entre la webview y el sistema.
--   **`src`**: Nuestra interfáz de usuario, rápida y minimalista que hace que la seguridad se sienta natural.
+-   **`src`**: Nuestra interfáz de usuario.
 ---
 
 ## 🛠️ Configuración de Desarrollo
@@ -68,8 +68,6 @@ pnpm tauri build
 ```
 
 ## 🛡️ Auditoría y Calidad
-
-Mantenemos un estándar de "Cero Advertencias". Puedes verificar la integridad del proyecto con:
 
 ```bash
 # Auditoría completa (Rust + JS)

@@ -14,7 +14,7 @@ Bóveda means **Security through Isolation**. We prioritize network-isolated sec
 
 ## Architecture Overview
 
-1. **Process Isolation:** The user interface is always isolated from the engine (`boveda-core`), and all sensitive operations occur within the engine via a typed, audited IPC (Inter-Process Communication) bridge.
+1. **Process Isolation:** Interface and motor decoupled, with regular audits.
 2. **Digital Sovereignty:** There is no "cloud by default." Your data belongs to you, resides exclusively on your system, and you are solely responsible for it.
 3. **Forensic Resistance:** Measures are implemented so that even if an attacker gains physical access to RAM or system dumps, they will find no readable traces of your information.
 
@@ -22,10 +22,10 @@ Bóveda means **Security through Isolation**. We prioritize network-isolated sec
 
 ## Bóveda-Core
 
-The `boveda-core` engine is an independent component responsible for protecting sensitive data:
+The `boveda-core` engine is responsible for protecting sensitive data:
 
 ### Cryptography
-- **Blind Storage:** **SQLite + SQLCipher** database with **AES-256-CBC** encryption. We protect not only the entries but also the schema, indexes, and metadata.
+- **Storage:** **SQLite + SQLCipher** database with **AES-256-CBC** encryption. We protect not only the entries but also the schema, indexes, and metadata.
 - **Secrets:** Each individual entry is additionally encrypted using **ChaCha20-Poly1305**, providing Authenticated Encryption with Associated Data (AEAD).
 - **Brute-Force Protection:** We implement **Argon2id** (Parameters: 64MB RAM, 3 iterations, 4 threads), the Password Hashing Competition standard, configured to be costly on specialized hardware (ASIC/GPU).
 
@@ -46,9 +46,9 @@ flowchart TD
     Core -- "Memory" --> RAM["Zeroized RAM / mlock"]
 ```
 
-- **`crates/boveda-core`**: The core of Bóveda, free of UI dependencies, 100% focused on security.
+- **`crates/boveda-core`**: The core of Bóveda.
 - **`src-tauri`**: Manages permissions and communication between the webview and the system.
-- **`src`**: Our fast, minimalist user interface that makes security feel natural.
+- **`src`**: our user interface.
 ---
 
 ## Development Setup
@@ -71,8 +71,6 @@ pnpm tauri build
 ```
 
 ## Audit and Quality
-
-We maintain a "Zero Warnings" standard. You can verify project integrity using:
 
 ```bash
 # Full security audit (Rust + JS)

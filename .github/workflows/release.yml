@@ -9,7 +9,7 @@ on:
 
 permissions:
   contents: write
-  id-token: write # Necesario para la firma Keyless de Sigstore/Cosign
+  id-token: write #Sigstore/Cosign
 
 jobs:
   publish-tauri:

@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { logStore } from "$lib/stores/log.svelte";
 import type { Account, Pin } from "../stores/stores.svelte";
 
 export async function isVaultInitialized(): Promise<boolean> {
@@ -6,10 +7,21 @@ export async function isVaultInitialized(): Promise<boolean> {
 }
 
 export async function unlockVault(password: string): Promise<string> {
-  return invoke<string>("unlock_vault", { password });
+  const t0 = performance.now();
+  logStore.add("INIT", "Requesting vault unlock...");
+  try {
+    const res = await invoke<string>("unlock_vault", { password });
+    const t1 = performance.now();
+    logStore.add("SUCCESS", `Vault unlocked successfully [${Math.round(t1 - t0)}ms]`);
+    return res;
+  } catch (err: any) {
+    logStore.add("ERROR", `Failed to unlock vault: ${err}`);
+    throw err;
+  }
 }
 
 export async function lockVault(): Promise<void> {
+  logStore.add("MEM", "Clearing vault from memory. Locking...");
   return invoke("lock_vault");
 }
 
@@ -28,7 +40,17 @@ export async function readExternalFile(path: string): Promise<string> {
 }
 
 export async function getAccounts(): Promise<Account[]> {
-  return invoke<Account[]>("get_accounts");
+  const t0 = performance.now();
+  logStore.add("NETWORK", "Fetching secure accounts payload...");
+  try {
+    const accounts = await invoke<Account[]>("get_accounts");
+    const t1 = performance.now();
+    logStore.add("SUCCESS", `Fetched ${accounts.length} accounts [${Math.round(t1 - t0)}ms]`);
+    return accounts;
+  } catch (err: any) {
+    logStore.add("ERROR", `Failed to fetch accounts: ${err}`);
+    throw err;
+  }
 }
 
 export async function deleteAccount(id: string): Promise<void> {
@@ -122,5 +144,15 @@ export async function decryptDocumentContent(encryptedContent: string): Promise<
 }
 
 export async function decryptSecret(ciphertext: string): Promise<string> {
-  return invoke<string>("decrypt_secret", { ciphertext });
+  const t0 = performance.now();
+  logStore.add("DECRYPT", "Requesting payload decryption...");
+  try {
+    const cleartext = await invoke<string>("decrypt_secret", { ciphertext });
+    const t1 = performance.now();
+    logStore.add("CIPHER", `Payload decrypted. Integrity verified [${Math.round(t1 - t0)}ms]`);
+    return cleartext;
+  } catch (err: any) {
+    logStore.add("ERROR", `Decryption failed: ${err}`);
+    throw err;
+  }
 }

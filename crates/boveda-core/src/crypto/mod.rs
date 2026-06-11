@@ -12,14 +12,21 @@ use rand::{Rng, RngCore};
 use zeroize::Zeroize;
 use self::secret::{SecretKey, SecretString, SecretBytes};
 
+pub const ARGON2_M_COST: u32 = 65536;
+pub const ARGON2_T_COST: u32 = 3;
+pub const ARGON2_P_COST: u32 = 4;
+pub const NONCE_LEN: usize = 12;
+pub const TAG_LEN: usize = 16;
+
+
 /// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
 /// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
 pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKey> {
     let params = Params::new(
-        65536, // memory (KiB)
-        3,     // iterations
-        4,     // parallelism
+        ARGON2_M_COST, // memory (KiB)
+        ARGON2_T_COST, // iterations
+        ARGON2_P_COST, // parallelism
         Some(32),
     )
     .map_err(|e| BovedaError::CryptoError(format!("Argon2 params error: {e}")))?;
@@ -58,11 +65,11 @@ pub fn encrypt(plaintext: &SecretString, key: &SecretKey) -> BovedaResult<String
 /// Returns a `SecretString` to ensure the plaintext is zeroized on drop.
 pub fn decrypt(encoded: &str, key: &SecretKey) -> BovedaResult<SecretString> {
     let payload = B64.decode(encoded)?;
-    if payload.len() < 12 {
+    if payload.len() < NONCE_LEN {
         return Err(BovedaError::CryptoError("Ciphertext too short".to_string()));
     }
 
-    let (nonce_bytes, ciphertext) = payload.split_at(12);
+    let (nonce_bytes, ciphertext) = payload.split_at(NONCE_LEN);
     let nonce = Nonce::from_slice(nonce_bytes);
 
     let chacha_key = Key::from_slice(key.as_bytes());

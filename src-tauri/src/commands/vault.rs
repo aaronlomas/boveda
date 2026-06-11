@@ -164,3 +164,23 @@ pub async fn decrypt_document_content(
 ) -> Result<String, String> {
     state.cmd_decrypt_document_content(&encrypted_content).await
 }
+
+#[derive(serde::Serialize)]
+pub struct CryptoParams {
+    pub argon2_m_cost: u32,
+    pub argon2_t_cost: u32,
+    pub argon2_p_cost: u32,
+    pub nonce_len: usize,
+    pub tag_len: usize,
+}
+
+#[tauri::command]
+pub fn get_crypto_params() -> CryptoParams {
+    CryptoParams {
+        argon2_m_cost: boveda_core::crypto::ARGON2_M_COST,
+        argon2_t_cost: boveda_core::crypto::ARGON2_T_COST,
+        argon2_p_cost: boveda_core::crypto::ARGON2_P_COST,
+        nonce_len: boveda_core::crypto::NONCE_LEN,
+        tag_len: boveda_core::crypto::TAG_LEN,
+    }
+}

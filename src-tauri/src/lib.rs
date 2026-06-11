@@ -111,6 +111,7 @@ pub fn run() {
             commands::vault::update_document,
             commands::vault::delete_document,
             commands::vault::decrypt_document_content,
+            commands::vault::get_crypto_params,
             // ── Preferences & storage ─────────────────────────────────────
             commands::settings::get_preference,
             commands::settings::set_preference,

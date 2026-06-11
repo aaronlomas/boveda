@@ -12,7 +12,11 @@ export type LogCategory =
   | "SYSTEM"
   | "EXPORT"
   | "IMPORT"
-  | "WRITE";
+  | "WRITE"
+  | "B-CORE"
+  | "DB"
+  | "SEC"
+  | "IPC";
 
 export interface LogEntry {
   id: string;

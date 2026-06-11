@@ -2,6 +2,7 @@
   import { logStore } from "$lib/stores/log.svelte";
   import { onMount, tick } from "svelte";
   import Terminal from "../terminal/Terminal.svelte";
+  import { typewriter } from "$lib/utils/actions";
 
   let logContainer: HTMLDivElement | undefined = $state();
   let isExpanded = $state(true);
@@ -121,7 +122,7 @@
             <span class="shrink-0 w-20 whitespace-pre">
               <span class="text-text-muted">[</span><span class="font-medium text-text-primary/90">{entry.category}</span><span class="text-text-muted">]</span>
             </span>
-            <span class="break-all ml-1 text-text-primary/90">{entry.text}</span>
+            <span class="break-all ml-1 text-text-primary/90" use:typewriter={{speed: 15}}>{entry.text}</span>
           </div>
         {/each}
         {#if logStore.entries.length === 0}

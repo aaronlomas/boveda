@@ -38,11 +38,15 @@ export function typewriter(node: HTMLElement, { speed = 15, delay = 0 }: { speed
   let i = 0;
   let timeout: ReturnType<typeof setTimeout>;
   let isDestroyed = false;
+  let isThisActive = false;
   
   function type() {
     if (isDestroyed) {
-      isTyping = false;
-      processQueue();
+      if (isThisActive) {
+        isThisActive = false;
+        isTyping = false;
+        processQueue();
+      }
       return;
     }
 
@@ -51,6 +55,7 @@ export function typewriter(node: HTMLElement, { speed = 15, delay = 0 }: { speed
       i++;
       timeout = setTimeout(type, speed);
     } else {
+      isThisActive = false;
       isTyping = false;
       processQueue();
     }
@@ -58,6 +63,7 @@ export function typewriter(node: HTMLElement, { speed = 15, delay = 0 }: { speed
   
   function start() {
     if (isDestroyed) return;
+    isThisActive = true;
     if (delay > 0) {
       timeout = setTimeout(type, delay);
     } else {
@@ -75,6 +81,10 @@ export function typewriter(node: HTMLElement, { speed = 15, delay = 0 }: { speed
       const index = typewriterQueue.indexOf(start);
       if (index > -1) {
         typewriterQueue.splice(index, 1);
+      } else if (isThisActive) {
+        isThisActive = false;
+        isTyping = false;
+        processQueue();
       }
     }
   };

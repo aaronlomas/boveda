@@ -43,18 +43,18 @@ impl AppState {
     fn get_engine(&self) -> Result<BovedaEngine, String> {
         let session_ok = *self.session_verified.lock().unwrap_or_else(|e| e.into_inner());
         if !session_ok {
-            return Err("Sesión no verificada. Se requiere autenticación TOTP.".to_string());
+            return Err("Session not verified. TOTP authentication required.".to_string());
         }
         let lock = self.engine.lock()
-            .map_err(|e| format!("Vault lock poisoned: {}. Por favor, reinicia la aplicación.", e))?;
-        lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
+            .map_err(|e| format!("Vault lock poisoned: {}. Please restart the application.", e))?;
+        lock.as_ref().cloned().ok_or_else(|| "Vault is locked".to_string())
     }
 
     /// Obtains the (engine) without requiring session verification (only for TOTP auth processes).
     fn get_engine_unverified(&self) -> Result<BovedaEngine, String> {
         let lock = self.engine.lock()
-            .map_err(|e| format!("Vault lock poisoned: {}. Por favor, reinicia la aplicación.", e))?;
-        lock.as_ref().cloned().ok_or_else(|| "El baúl está bloqueado".to_string())
+            .map_err(|e| format!("Vault lock poisoned: {}. Please restart the application.", e))?;
+        lock.as_ref().cloned().ok_or_else(|| "Vault is locked".to_string())
     }
 
     // Bóveda LIFECYCLE---------------------------------------------------------
@@ -67,8 +67,6 @@ impl AppState {
     /// SEC-H3: Implements rate limiting to prevent brute force attacks on vault unlock.
     pub async fn cmd_unlock_vault(&self, password: SecretString) -> Result<String, String> {
         // SEC-H3: Rate limiting - prevent brute force unlock attempts.
-        // SEC-H5: Use app_data_dir() instead of a relative path so the lock file is always
-        // in a deterministic, OS-appropriate location regardless of the process CWD.
         let lock_file = Self::app_data_dir().join(".vault_unlock_lock");
         let failed_unlock_str = std::fs::read_to_string(&lock_file)
             .ok()
@@ -87,7 +85,7 @@ impl AppState {
             
             if now - last_fail_ts < 3600 { // 1 hour cooldown
                 return Err(format!(
-                    "Demasiados intentos fallidos de desbloqueo. Intenta en {} segundos.",
+                    "Too many failed unlock attempts. Please try again in {} seconds.",
                     3600 - (now - last_fail_ts)
                 ));
             }
@@ -109,7 +107,7 @@ impl AppState {
                 let _ = std::fs::write(&lock_file, format!("{}:{}", new_attempts, now));
                 
                 // Log failed attempt
-                eprintln!("[SECURITY] Intento fallido de desbloqueo del baúl: {}", e);
+                eprintln!("[SECURITY] Failed Bóveda unlock attempt: {}", e);
                 
                 return Err(e.to_string());
             }
@@ -198,7 +196,7 @@ impl AppState {
     pub async fn cmd_delete_account(&self, id: &str) -> Result<(), String> {
         // SEC-C2: Validate UUID to prevent invalid IDs from being used
         Uuid::parse_str(id)
-            .map_err(|_| format!("ID de cuenta inválido: '{}'. Debe ser un UUID válido.", id))?;
+            .map_err(|_| format!("Invalid account ID: '{}'. Must be a valid UUID.", id))?;
         
         let engine = self.get_engine()?;
         engine.delete_account(id).await.map_err(|e| e.to_string())
@@ -230,7 +228,7 @@ impl AppState {
     pub async fn cmd_delete_pin(&self, id: &str) -> Result<(), String> {
         // SEC-C2: Validate UUID to prevent invalid IDs from being used
         Uuid::parse_str(id)
-            .map_err(|_| format!("ID de PIN inválido: '{}'. Debe ser un UUID válido.", id))?;
+            .map_err(|_| format!("Invalid PIN ID: '{}'. Must be a valid UUID.", id))?;
         
         let engine = self.get_engine()?;
         engine.delete_pin(id).await.map_err(|e| e.to_string())
@@ -314,7 +312,7 @@ impl AppState {
     pub async fn cmd_import_background_image(src_path: &str) -> Result<String, String> {
         let src = std::path::Path::new(src_path);
         if !src.exists() {
-            return Err("El archivo de imagen no existe.".to_string());
+            return Err("The image file does not exist.".to_string());
         }
 
         let ext = src
@@ -325,7 +323,7 @@ impl AppState {
 
         let allowed = ["jpg", "jpeg", "png", "webp", "gif"];
         if !allowed.contains(&ext.as_str()) {
-            return Err("Formato de imagen no soportado. Usa JPG, PNG, WEBP o GIF.".to_string());
+            return Err("Image format not supported. Use JPG, PNG, WEBP or GIF.".to_string());
         }
 
         let dest_dir = Self::app_data_dir();
@@ -336,7 +334,7 @@ impl AppState {
         let dest_filename = format!("background.{}", ext);
         let dest = dest_dir.join(&dest_filename);
         std::fs::copy(src_path, &dest)
-            .map_err(|e| format!("Error al copiar imagen: {}", e))?;
+            .map_err(|e| format!("Error to copy image: {}", e))?;
 
         Ok(dest_filename)
     }
@@ -447,13 +445,13 @@ impl AppState {
     pub async fn cmd_prepare_import_db(&self, src_path: &str) -> Result<(), String> {
         let src = std::path::Path::new(src_path);
         if !src.exists() {
-            return Err("El archivo de origen no existe".to_string());
+            return Err("The source file does not exist".to_string());
         }
 
         let db_path = Self::vault_db_path();
         if src == db_path {
             return Err(
-                "No puedes importar el mismo archivo que la app está usando. Usa 'Exportar' para respaldos."
+                "Cannot import the same file the app is using. Use 'Export' for backups."
                     .to_string(),
             );
         }
@@ -480,13 +478,13 @@ impl AppState {
 
         if src_salt.exists() {
             std::fs::copy(&src_salt, &dest_salt)
-                .map_err(|e| format!("Error al copiar el salt: {}", e))?;
+                .map_err(|e| format!("Error to copy salt: {}", e))?;
         } else {
             let _ = std::fs::remove_file(&dest_salt);
         }
 
         std::fs::copy(src_path, &db_path)
-            .map_err(|e| format!("Error al copiar el archivo: {}", e))?;
+            .map_err(|e| format!("Error to copy file: {}", e))?;
 
         #[cfg(unix)]
         {
@@ -521,7 +519,7 @@ impl AppState {
         let engine = self.get_engine_unverified()?;
         let valid = engine.verify_totp(code).await.map_err(|e| e.to_string())?;
         if !valid {
-            return Err("Código TOTP inválido".to_string());
+            return Err("Invalid TOTP code".to_string());
         }
         *self.session_verified.lock().unwrap() = true;
         Ok(true)
@@ -534,7 +532,7 @@ impl AppState {
             .await
             .map_err(|e| e.to_string())?;
         if !valid {
-            return Err("Código de recuperación inválido o ya utilizado".to_string());
+            return Err("Invalid or already used recovery code".to_string());
         }
         *self.session_verified.lock().unwrap() = true;
         Ok(true)
@@ -605,7 +603,7 @@ impl AppState {
     pub async fn cmd_delete_document(&self, id: &str) -> Result<(), String> {
         // SEC-C2: Validate UUID to prevent invalid IDs from being used
         Uuid::parse_str(id)
-            .map_err(|_| format!("ID de documento inválido: '{}'. Debe ser un UUID válido.", id))?;
+            .map_err(|_| format!("Invalid document ID: '{}'. Must be a valid UUID.", id))?;
 
         let engine = self.get_engine()?;
         engine.delete_document(id).await.map_err(|e| e.to_string())

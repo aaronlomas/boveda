@@ -9,7 +9,10 @@ export type LogCategory =
   | "WARN"
   | "NETWORK"
   | "AUTH"
-  | "SYSTEM";
+  | "SYSTEM"
+  | "EXPORT"
+  | "IMPORT"
+  | "WRITE";
 
 export interface LogEntry {
   id: string;

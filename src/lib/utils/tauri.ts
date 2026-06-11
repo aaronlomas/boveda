@@ -15,7 +15,8 @@ export async function unlockVault(password: string): Promise<string> {
     logStore.add("SUCCESS", `Vault unlocked successfully [${Math.round(t1 - t0)}ms]`);
     return res;
   } catch (err: any) {
-    logStore.add("ERROR", `Failed to unlock vault: ${err}`);
+    // Sanitized
+    logStore.add("ERROR", "Vault unlock failed. Check your master password.");
     throw err;
   }
 }
@@ -45,10 +46,11 @@ export async function getAccounts(): Promise<Account[]> {
   try {
     const accounts = await invoke<Account[]>("get_accounts");
     const t1 = performance.now();
-    logStore.add("SUCCESS", `Fetched ${accounts.length} accounts [${Math.round(t1 - t0)}ms]`);
+    // Sanitized
+    logStore.add("SUCCESS", `Accounts payload decrypted and loaded [${Math.round(t1 - t0)}ms]`);
     return accounts;
   } catch (err: any) {
-    logStore.add("ERROR", `Failed to fetch accounts: ${err}`);
+    logStore.add("ERROR", "Failed to load accounts payload.");
     throw err;
   }
 }
@@ -155,4 +157,8 @@ export async function decryptSecret(ciphertext: string): Promise<string> {
     logStore.add("ERROR", `Decryption failed: ${err}`);
     throw err;
   }
+}
+
+export async function getOsUsername(): Promise<string> {
+  return invoke<string>("get_os_username");
 }

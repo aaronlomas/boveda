@@ -10,6 +10,10 @@
 mod commands;
 mod state;
 
+use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::time::Duration;
+use tauri::{Manager, Emitter};
+
 // ─── App Entry Point ─────────────────────────────────────────────────────────
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -40,11 +44,48 @@ pub fn run() {
         }
     };
 
+    // Shared flag: tracks if focus-loss grace period timer is running
+    let focus_lock_pending = Arc::new(AtomicBool::new(false));
+
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .manage(state::AppState::new(db_path))
+        .on_window_event({
+            let focus_lock_pending = focus_lock_pending.clone();
+            move |window, event| {
+                if let tauri::WindowEvent::Focused(focused) = event {
+                    let _app_state = window.state::<state::AppState>();
+                    if !focused {
+                        // Window lost focus: start a 10-second grace period before locking
+                        if !focus_lock_pending.swap(true, Ordering::SeqCst) {
+                            let app_handle = window.app_handle().clone();
+                            let pending_flag = focus_lock_pending.clone();
+                            std::thread::spawn(move || {
+                                std::thread::sleep(Duration::from_secs(10));
+                                // Only lock if we're still in "pending" state (focus not restored)
+                                if pending_flag.swap(false, Ordering::SeqCst) {
+                                    let state = app_handle.state::<state::AppState>();
+                                    if !state.is_locked() {
+                                        state.cmd_lock_vault();
+                                        let _ = app_handle.emit("boveda://audit", serde_json::json!({
+                                            "action": "vault_lock",
+                                            "trigger": "focus_lost",
+                                            "msg": "Vault locked: window lost focus for >10s"
+                                        }));
+                                        let _ = app_handle.emit("boveda://session-locked", ());
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        // Window regained focus: cancel pending grace period
+                        focus_lock_pending.store(false, Ordering::SeqCst);
+                    }
+                }
+            }
+        })
         .invoke_handler(tauri::generate_handler![
             // ── Vault & accounts ──────────────────────────────────────────
             commands::vault::is_vault_initialized,
@@ -78,6 +119,7 @@ pub fn run() {
             commands::settings::get_data_dir,
             commands::settings::read_external_file,
             commands::settings::get_app_info,
+            commands::settings::get_os_username,
             commands::settings::export_db,
             commands::settings::import_db,
             commands::settings::export_secure_package,

@@ -43,10 +43,11 @@
   const titleId = $derived(title ? `modal-title-${id}` : undefined);
   const descId = $derived(description ? `modal-desc-${id}` : undefined);
   import { COLORS, SIZING, ANIMATION } from "$lib/config/design-tokens";
+  import { portal } from "$lib/actions/portal";
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+  <div use:portal class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
     <!-- Backdrop: Separate element to avoid bubbling issues -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->

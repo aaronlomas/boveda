@@ -7,13 +7,22 @@
   import { sessionState, uiState } from "$lib/stores/stores.svelte";
   import { themeStore } from "$lib/stores/theme.svelte";
   import { startAutoLock, stopAutoLock } from "$lib/utils/autoLock";
+  import { startSecurityListeners, stopSecurityListeners } from "$lib/utils/securityEvents";
 
-  // Watch for unlock state changes to start/stop the auto-lock timer
+  function doLock() {
+    sessionState.isUnlocked = false;
+    stopAutoLock();
+    stopSecurityListeners();
+  }
+
+  // Watch for unlock state changes to start/stop the auto-lock timer and security listeners
   $effect(() => {
     if (sessionState.isUnlocked) {
-      startAutoLock({ onLock: () => (sessionState.isUnlocked = false) });
+      startAutoLock({ onLock: doLock });
+      startSecurityListeners({ onLock: doLock });
     } else {
       stopAutoLock();
+      stopSecurityListeners();
     }
   });
 </script>

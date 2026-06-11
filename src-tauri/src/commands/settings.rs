@@ -80,6 +80,13 @@ pub fn get_app_info() -> AppInfo {
     }
 }
 
+#[tauri::command]
+pub fn get_os_username() -> String {
+    std::env::var("USER")
+        .or_else(|_| std::env::var("USERNAME"))
+        .unwrap_or_else(|_| "guest".to_string())
+}
+
 /// Importa una base de datos externa: cierra el pool, copia archivos y reinicia la app.
 /// La lógica de archivos vive en boveda-core; solo `app.restart()` permanece aquí.
 #[tauri::command]

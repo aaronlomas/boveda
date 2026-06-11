@@ -144,6 +144,14 @@ impl AppState {
         }
     }
 
+    /// Returns true if no engine is loaded (vault is locked).
+    pub fn is_locked(&self) -> bool {
+        self.engine
+            .lock()
+            .map(|guard| guard.is_none())
+            .unwrap_or(true) // Safer default: consider locked if mutex is poisoned
+    }
+
     /// Completely delete the vault (files .bvda and .salt) if the password is correct.
     pub async fn cmd_delete_vault(&self, password: SecretString) -> Result<(), String> {
         // 1. Verify password by attempting unlock (this handles rate limiting automatically)

@@ -1,4 +1,4 @@
-use tauri::State;
+use tauri::{State, Emitter};
 use crate::state::AppState;
 use boveda_core::SecretString;
 
@@ -8,13 +8,27 @@ pub fn is_vault_initialized(state: State<'_, AppState>) -> bool {
 }
 
 #[tauri::command]
-pub async fn unlock_vault(password: SecretString, state: State<'_, AppState>) -> Result<String, String> {
-    state.cmd_unlock_vault(password).await
+pub async fn unlock_vault(
+    password: SecretString,
+    state: State<'_, AppState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    match state.cmd_unlock_vault(password).await {
+        Ok(result) => {
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "vault_unlock" }));
+            Ok(result)
+        }
+        Err(e) => {
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "failed_login_attempt" }));
+            Err(e)
+        }
+    }
 }
 
 #[tauri::command]
-pub fn lock_vault(state: State<'_, AppState>) -> Result<(), String> {
+pub fn lock_vault(state: State<'_, AppState>, app: tauri::AppHandle) -> Result<(), String> {
     state.cmd_lock_vault();
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "vault_lock", "trigger": "manual" }));
     Ok(())
 }
 
@@ -53,8 +67,14 @@ pub fn generate_password(length: usize, use_symbols: bool) -> Result<String, Str
 
 /// Descifra un campo secreto individual bajo demanda.
 #[tauri::command]
-pub async fn decrypt_secret(ciphertext: String, state: State<'_, AppState>) -> Result<String, String> {
-    state.cmd_decrypt_secret(&ciphertext).await
+pub async fn decrypt_secret(
+    ciphertext: String,
+    state: State<'_, AppState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    let result = state.cmd_decrypt_secret(&ciphertext).await;
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "secret_access" }));
+    result
 }
 
 // ─── Group commands ───────────────────────────────────────────────────────────

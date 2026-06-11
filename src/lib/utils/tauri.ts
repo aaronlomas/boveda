@@ -21,10 +21,8 @@ export async function getCryptoParams(): Promise<CryptoParams> {
 export async function unlockVault(password: string): Promise<string> {
   const t0 = performance.now();
   const params = await getCryptoParams();
-  logStore.add("B-CORE", "Initializing vault decryption sequence...");
   await new Promise(r => setTimeout(r, 50));
   logStore.add("KDF", `Invoking Argon2id (m_cost: ${params.argon2_m_cost}, t_cost: ${params.argon2_t_cost}, parallelism: ${params.argon2_p_cost})`);
-  logStore.add("KDF", "Computing master key hash...");
   await new Promise(r => setTimeout(r, 50));
 
   try {

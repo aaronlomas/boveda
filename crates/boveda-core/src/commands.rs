@@ -46,7 +46,7 @@ impl AppState {
         }
     }
 
-    /// Devuelve el engine si la sesión está verificada.
+    /// Returns the engine if the session is verified.
     fn get_engine(&self) -> Result<BovedaEngine, String> {
         let session_ok = *self.session_verified.lock().unwrap_or_else(|e| e.into_inner());
         if !session_ok {

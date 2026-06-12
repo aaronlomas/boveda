@@ -71,7 +71,7 @@
 </script>
 
 <aside
-  class="h-screen bg-panel/30 border-r border-surface/8 transition-all overflow-hidden backdrop-blur-2xl flex flex-col py-4 px-2"
+  class="h-screen bg-panel/30 border-r border-surface/8 transition-all overflow-hidden backdrop-blur-2xl flex flex-col px-2 gap-4"
   style="width: {uiState.sidebarCollapsed
     ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
     : UI_CONFIG.SIDEBAR_FULL_WIDTH}; min-width: {uiState.sidebarCollapsed
@@ -79,8 +79,9 @@
     : UI_CONFIG.SIDEBAR_FULL_WIDTH}; transition-duration: {UI_CONFIG.ANIMATION_DURATION_MS}ms;"
 >
   <!-- Brand -->
+  <!-- centrar esto cuando el boton de toggle este colapsado -->
   <div
-    class="flex items-center gap-2 px-1 pb-5 border-b border-surface/8 mb-3 overflow-hidden whitespace-nowrap"
+    class="flex items-center gap-2 py-4 border-b border-surface/8 overflow-hidden whitespace-nowrap {uiState.sidebarCollapsed ? 'justify-center px-0' : ''}"
   >
     <div
       class="text-2xl shrink-0 w-10 h-10 flex items-center justify-center bg-transparent rounded-sm"
@@ -88,7 +89,7 @@
       <Logo size={32} class="text-text-primary" />
     </div>
     {#if !uiState.sidebarCollapsed}
-      <div class="flex flex-col">
+      <div class="flex flex-col align-center">
         <span
           class="text-base font-bold text-text-primary block pointer-events-none"
           >Bóveda</span
@@ -140,7 +141,7 @@
 
   <!-- Collapse toggle -->
   <button
-    class="flex items-center gap-2.5 mb-6 p-4 border-none border-t border-surface/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary"
+    class="flex items-center gap-2.5 mb-12 p-4 border-none border-t border-surface/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary"
     onclick={toggle}
     aria-label="Toggle sidebar"
   >

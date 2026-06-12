@@ -22,6 +22,8 @@
     "retry": "Reintentar",
     "select": "Seleccionar",
     "back": "Volver",
+    "disable":"Desactivado",
+    "enable":"Activado",
     "status": {
       "encrypting": "Encriptando...",
       "decryption": "Desencriptando...",
@@ -218,8 +220,8 @@
       "system": "Sistema"
     },
     "security": {
-      "title": "Extender Desbloqueo de Bóveda",
-      "desc": "Añade capas adicionales de desbloqueo a tu bóveda.",
+      "title": "Extender Seguridad",
+      "desc": "Añade medidas adicionales de seguridad.",
       "totp_label": "Autenticación de Dos Factores (2FA)",
       "totp_enabled": "Activo",
       "totp_disabled": "Desactivado",
@@ -249,7 +251,15 @@
       "totp_recovery_error": "Código de recuperación inválido o ya utilizado.",
       "totp_recovery_success": "¡2FA desactivado con éxito! Ahora puedes entrar solo con tu contraseña maestra.",
       "totp_recovery_warning_setup": "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil.",
-      "pro_tip_desc": "Ten disponible tu dispositivo móvil ahora mismo, antes de continuar."
+      "tip_desc": "Ten disponible tu dispositivo móvil ahora mismo, antes de continuar."
+    },
+    "automatic_session_close":{
+      "title": "Cierre de Sesión Automática",
+      "desc": "Establece un temporizador para cerrar sesión automáticamente.",
+      "timer_prefix": "Cerrar sesión después de: ",
+      "timer_suffix": " segundos",
+      "tooltip": "Bóveda se bloqueará tras {seconds} segundos de inactividad.",
+      "tooltip_never": "Bóveda permanece desbloqueada hasta que la cierres manualmente."
     },
     "theme": {
       "accent_description": "El color de acento personaliza botones, iconos activos y elementos destacados. Bóveda generará automáticamente tonos claros y efectos de brillo basados en tu elección.",
@@ -297,7 +307,7 @@
       "description": "Ajustes para optimizar la experiencia con grandes volúmenes de datos.",
       "massive_list_title": "Lista Masiva",
       "massive_list_badge": "Gestión Empresarial",
-      "massive_list_desc": "Optimiza el rendimiento cuando gestionas grandes volúmenes de credenciales. Al activarse, la vista cambia a un modo de lista virtualizada que solo renderiza los elementos visibles en pantalla, manteniendo la interfaz fluida incluso con miles de registros. Ideal para entornos corporativos o de gestión empresarial.",
+      "massive_list_desc": "Optimiza el rendimiento cuando gestionas grandes volúmenes de credenciales.",
       "massive_list_threshold": "Se activa automáticamente cuando superas las 100 credenciales.",
       "massive_list_active_badge": "Activo con {count} credenciales",
       "massive_list_enabled": "Activado",

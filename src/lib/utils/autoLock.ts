@@ -5,21 +5,12 @@
  * the vault after a configurable period of inactivity.
  *
  * Usage:
- *   import { startAutoLock, stopAutoLock } from '$lib/utils/autoLock';
- *
- *   // Start watching when the vault unlocks (inside your +page.svelte onMount)
- *   startAutoLock({ onLock: () => isUnlocked.set(false) });
- *
- *   // Stop watching when the vault locks manually or the component unmounts
+ *   startAutoLock({ onLock: () => ..., seconds: 60 });
+ *   updateAutoLockSeconds(120); // live-reconfigure without restarting
  *   stopAutoLock();
  */
 
 import { invoke } from "@tauri-apps/api/core";
-
-// ─── Configuration ───────────────────────────────────────────────────────────
-
-/** How many minutes of inactivity before the vault auto-locks. */
-const AUTO_LOCK_MINUTES = 5;
 
 /** Events that count as "user activity". */
 const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
@@ -34,26 +25,34 @@ const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 let onLockCallback: (() => void) | null = null;
+let _seconds = 0; // 0 means disabled
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export interface AutoLockOptions {
-  /** Called when the inactivity timeout fires. Use this to update your UI store. */
+  /** Called when the inactivity timeout fires. */
   onLock: () => void;
-  /** Override the default timeout in minutes (default: AUTO_LOCK_MINUTES). */
-  minutes?: number;
+  /** Timeout in seconds. 0 = disabled. */
+  seconds?: number;
 }
 
 /** Begin monitoring inactivity. Safe to call multiple times — resets the timer. */
 export function startAutoLock(options: AutoLockOptions): void {
   onLockCallback = options.onLock;
-  const minutes = options.minutes ?? AUTO_LOCK_MINUTES;
+  _seconds = options.seconds ?? 0;
 
   ACTIVITY_EVENTS.forEach((event) => {
+    window.removeEventListener(event, resetTimer);
     window.addEventListener(event, resetTimer, { passive: true });
   });
 
-  scheduleTimer(minutes);
+  scheduleTimer();
+}
+
+/** Update the timeout live without restarting listeners. */
+export function updateAutoLockSeconds(seconds: number): void {
+  _seconds = seconds;
+  scheduleTimer(); // resets the countdown with the new value
 }
 
 /** Stop monitoring and clear the pending timer. */
@@ -63,20 +62,19 @@ export function stopAutoLock(): void {
     window.removeEventListener(event, resetTimer);
   });
   onLockCallback = null;
+  _seconds = 0;
 }
 
 // ─── Internal ────────────────────────────────────────────────────────────────
 
-let _minutes = AUTO_LOCK_MINUTES;
-
 function resetTimer(): void {
-  scheduleTimer(_minutes);
+  scheduleTimer();
 }
 
-function scheduleTimer(minutes: number): void {
-  _minutes = minutes;
+function scheduleTimer(): void {
   clearPendingTimer();
-  timer = setTimeout(triggerLock, minutes * 60 * 1000);
+  if (_seconds <= 0) return; // disabled
+  timer = setTimeout(triggerLock, _seconds * 1000);
 }
 
 function clearPendingTimer(): void {

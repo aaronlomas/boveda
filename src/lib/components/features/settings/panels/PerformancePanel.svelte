@@ -1,11 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { performanceStore } from "$lib/stores/performance.svelte";
-  import {
-    IconRocket,
-    IconToggleLeft,
-    IconToggleRight,
-  } from "@tabler/icons-svelte";
+  import Switch from "$lib/components/core/primitives/Switch.svelte";
+  import { IconRocket } from "@tabler/icons-svelte";
 </script>
 
 <!-- ─ Performance Section ─ -->
@@ -15,14 +12,10 @@
 
 <!-- Massive List Toggle Card -->
 <div
-  class="grid grid-cols-[auto_1fr_auto] gap-x-4 p-5 rounded-2xl border transition-all cursor-pointer
+  class="grid grid-cols-[auto_1fr_auto] gap-x-4 p-5 rounded-2xl border transition-all
     {performanceStore.massiveList
     ? 'border-accent bg-accent-dim'
-    : 'border-surface/8 bg-surface/3 hover:border-surface/20'}"
-  onclick={() => performanceStore.toggle()}
-  role="button"
-  tabindex="0"
-  onkeydown={(e) => e.key === 'Enter' && performanceStore.toggle()}
+    : 'border-surface/8 bg-surface/3'}"
 >
   <!-- Icon (Spans Badge and Toggle rows) -->
   <div
@@ -57,12 +50,8 @@
   </span>
 
   <!-- Toggle icon (Below Badge) -->
-  <div class="justify-self-end mt-1 {performanceStore.massiveList ? 'text-accent' : 'text-text-muted'}">
-    {#if performanceStore.massiveList}
-      <IconToggleRight size={32} />
-    {:else}
-      <IconToggleLeft size={32} />
-    {/if}
+  <div class="justify-self-end mt-1 flex items-center">
+    <Switch bind:checked={performanceStore.massiveList} />
   </div>
 
   <!-- Description (Full width) -->

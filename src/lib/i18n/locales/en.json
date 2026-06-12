@@ -22,6 +22,8 @@
     "retry": "Retry",
     "select": "Select",
     "back": "Back",
+    "disable":"Disable",
+    "enable":"Enable",
     "status": {
       "encrypting": "Encrypting...",
       "decryption": "Decrypting...",
@@ -217,8 +219,8 @@
       "system": "System"
     },
     "security": {
-      "title": "Extend vault unlock",
-      "desc": "Add additional layers of unlocking to your vault.",
+      "title": "Extend Security",
+      "desc": "It adds additional security measures.",
       "totp_label": "Two-factor authentication (2FA)",
       "totp_enabled": "Active",
       "totp_disabled": "Disabled",
@@ -248,7 +250,15 @@
       "totp_recovery_error": "Invalid or already used recovery code.",
       "totp_recovery_success": "2FA deactivated successfully! You can now access with just your master password.",
       "totp_recovery_warning_setup": "⚠️ KEEP THESE CODES IN A SAFE PLACE. They are the only way to access if you lose your mobile device.",
-      "pro_tip_desc": "Have your mobile device ready now, before continuing."
+      "tip_desc": "Have your mobile device ready now, before continuing."
+    },
+    "automatic_session_close":{
+      "title": "Automatic Session Close",
+      "desc": "Set a timer to automatically close the session.",
+      "timer_prefix": "Close session after: ",
+      "timer_suffix": " seconds",
+      "tooltip": "Bóveda will lock after {seconds} seconds of inactivity.",
+      "tooltip_never": "Bóveda remains unlocked until manually closed."
     },
     "theme": {
       "accent_description": "The accent color personalizes buttons, active icons, and highlighted elements. Bóveda will automatically generate light tones and glow effects based on your choice.",
@@ -296,7 +306,7 @@
       "description": "Settings for optimal performance with large volumes of data.",
       "massive_list_title": "Massive List",
       "massive_list_badge": "Enterprise Management",
-      "massive_list_desc": "Optimize performance when managing large volumes of credentials. When enabled, the view switches to a virtualized list mode that only renders visible elements on screen, keeping the interface fluid even with thousands of records. Ideal for corporate or enterprise management environments.",
+      "massive_list_desc": "Optimize performance when managing large volumes of credentials.",
       "massive_list_threshold": "Automatically activated when exceeding 100 credentials.",
       "massive_list_active_badge": "Active with {count} credentials",
       "massive_list_enabled": "Enabled",

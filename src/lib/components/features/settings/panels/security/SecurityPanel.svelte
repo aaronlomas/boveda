@@ -15,6 +15,7 @@
   import TotpSetupView from "./TotpSetupView.svelte";
   import TotpRecoveryCodesView from "./TotpRecoveryCodesView.svelte";
   import ExportPasswordModal from "../../../../modals/forms/ExportPasswordModal.svelte";
+  import SessionTimeout from "./SessionTimeout.svelte";
 
   // COMPONENT STATUS
   let isEnabled = $state(false);
@@ -138,7 +139,7 @@
   }}
 />
 
-<div class="space-y-6">
+<div>
   <!-- Panel Header -->
   <header class="flex items-center gap-2">
     <div>
@@ -155,7 +156,7 @@
       <IconLoader2 size={32} class="animate-spin text-accent" />
     </div>
   {:else}
-    <div class="bg-surface/3 border border-surface/8 rounded-2xl p-5 space-y-4">
+    <div class="bg-surface/3 border border-surface/8 rounded-2xl p-4 space-y-4">
       <!-- Decoupled Component 1: General State -->
       <TotpStatusView
         {isEnabled}
@@ -198,7 +199,7 @@
   <!-- Suggestions -->
 
   <p class="text-xs text-text-muted leading-relaxed">
-    {$_("settings.security.pro_tip_desc")}
+    {$_("settings.security.tip_desc")}
   </p>
 </div>
 
@@ -223,3 +224,6 @@
     oncancel={() => (showExportForDisable = false)}
   />
 {/if}
+
+<SessionTimeout />
+

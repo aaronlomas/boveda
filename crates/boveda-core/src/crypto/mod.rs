@@ -1,6 +1,6 @@
 pub mod secret;
 
-// Key Derivation (KDF) | Derivación de Clave
+// Key Derivation (KDF)
 use chacha20poly1305::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     ChaCha20Poly1305, Key, Nonce,
@@ -18,10 +18,7 @@ pub const ARGON2_P_COST: u32 = 4;
 pub const NONCE_LEN: usize = 12;
 pub const TAG_LEN: usize = 16;
 
-
-/// Derive a 32-byte key from `password` and `salt` using Argon2id.
 /// Returns a SecretKey (fixed-size array) to prevent leaving copies on the stack/heap.
-/// Params: t=3 iterations, m=65536 KiB, p=4 lanes — OWASP recommended.
 pub fn derive_key(password: &SecretString, salt: &[u8]) -> BovedaResult<SecretKey> {
     let params = Params::new(
         ARGON2_M_COST, // memory (KiB)

@@ -81,16 +81,6 @@ impl PartialEq for SecretKey {
     }
 }
 
-/// A wrapper for sensitive strings that zeroizes its contents upon drop.
-/// Envoltura para cadenas sensibles que se ponen a cero al descartar.
-///
-/// # Serde behaviour
-///
-/// `SecretString` intentionally does **not** derive `Serialize`. Instead it provides a
-/// hand-written impl that always emits the literal string `"[REDACTED]"`, so that a
-/// `SecretString` field can never accidentally leak plaintext into JSON responses, logs,
-/// or error messages — even if the containing struct derives `Serialize`.
-///
 /// `Deserialize` is kept so that values can be received over the Tauri IPC layer.
 #[derive(Clone, Deserialize)]
 #[serde(transparent)]

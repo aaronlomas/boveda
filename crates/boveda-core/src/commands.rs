@@ -26,6 +26,7 @@ mod preferences;
 mod utilities;
 mod totp;
 mod document;
+mod shell;
 
 // ─── AppState ─────────────────────────────────────────────────────────────────
 

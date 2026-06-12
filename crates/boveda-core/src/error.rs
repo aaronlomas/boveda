@@ -2,37 +2,37 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum BovedaError {
-    #[error("El baúl está bloqueado")]
+    #[error("Bóveda está bloqueado")]
     VaultLocked,
 
-    #[error("Contraseña incorrecta o archivo dañado")]
+    #[error("Incorrect password or corrupted file")]
     InvalidPassword,
 
-    #[error("Código TOTP inválido o expirado")]
+    #[error("Invalid or expired TOTP code")]
     InvalidTotpCode,
 
-    #[error("Error de base de datos: {0}")]
+    #[error("Database error: {0}")]
     DatabaseError(String),
 
-    #[error("Error criptográfico: {0}")]
+    #[error("Cryptographic error: {0}")]
     CryptoError(String),
 
-    #[error("Error de decodificación: {0}")]
+    #[error("Decoding error: {0}")]
     DecodeError(String),
 
-    #[error("Dato demasiado largo: {field} (máx {max} caracteres)")]
+    #[error("Data too long: {field} (máx {max} length)")]
     InputTooLong { field: String, max: usize },
 
-    #[error("El nombre no puede estar vacío: {field}")]
+    #[error("The name cannot be empty.: {field}")]
     EmptyInput { field: String },
 
-    #[error("Error de E/S: {0}")]
+    #[error("E/S Error: {0}")]
     IoError(String),
 
-    #[error("Error de serialización: {0}")]
+    #[error("Serialization error: {0}")]
     SerializationError(String),
 
-    #[error("No se encontró el recurso: {0}")]
+    #[error("The resource was not found.: {0}")]
     NotFound(String),
 
     #[error("{0}")]

@@ -13,12 +13,22 @@ pub async fn unlock_vault(
     state: State<'_, AppState>,
     app: tauri::AppHandle,
 ) -> Result<String, String> {
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let t0 = std::time::Instant::now();
+    let m_cost = boveda_core::crypto::ARGON2_M_COST;
+    let t_cost = boveda_core::crypto::ARGON2_T_COST;
+    let p_cost = boveda_core::crypto::ARGON2_P_COST;
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "KDF", "msg": format!("Invoking Argon2id (m_cost: {}, t_cost: {}, parallelism: {})", m_cost, t_cost, p_cost) }));
+
     match state.cmd_unlock_vault(password).await {
         Ok(result) => {
+            let elapsed = t0.elapsed().as_millis();
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "SUCCESS", "msg": format!("Vault unlocked successfully [{}ms]", elapsed) }));
             let _ = app.emit("boveda://audit", serde_json::json!({ "action": "vault_unlock" }));
             Ok(result)
         }
         Err(e) => {
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault unlock failed. Check your master password." }));
             let _ = app.emit("boveda://audit", serde_json::json!({ "action": "failed_login_attempt" }));
             Err(e)
         }
@@ -27,6 +37,8 @@ pub async fn unlock_vault(
 
 #[tauri::command]
 pub fn lock_vault(state: State<'_, AppState>, app: tauri::AppHandle) -> Result<(), String> {
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "MEM", "msg": "Clearing vault from memory. Locking..." }));
     state.cmd_lock_vault();
     let _ = app.emit("boveda://audit", serde_json::json!({ "action": "vault_lock", "trigger": "manual" }));
     Ok(())
@@ -50,8 +62,21 @@ pub async fn add_account(
 }
 
 #[tauri::command]
-pub async fn get_accounts(state: State<'_, AppState>) -> Result<Vec<boveda_core::Account>, String> {
-    state.cmd_get_accounts().await
+pub async fn get_accounts(state: State<'_, AppState>, app: tauri::AppHandle) -> Result<Vec<boveda_core::Account>, String> {
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let t0 = std::time::Instant::now();
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "DB", "msg": "Querying local SQLCipher store for accounts..." }));
+    let res = state.cmd_get_accounts().await;
+    match &res {
+        Ok(_) => {
+            let elapsed = t0.elapsed().as_millis();
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "SUCCESS", "msg": format!("Accounts payload decrypted and loaded [{}ms]", elapsed) }));
+        }
+        Err(_) => {
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Failed to load accounts payload." }));
+        }
+    }
+    res
 }
 
 #[tauri::command]
@@ -72,9 +97,31 @@ pub async fn decrypt_secret(
     state: State<'_, AppState>,
     app: tauri::AppHandle,
 ) -> Result<String, String> {
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let t0 = std::time::Instant::now();
+    let req_id = if ciphertext.len() > 8 { &ciphertext[..8] } else { "42" };
+    let nonce_len = boveda_core::crypto::NONCE_LEN;
+    let tag_len = boveda_core::crypto::TAG_LEN;
+
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "IPC", "msg": format!("Audited command received: GetSecret(id: {}...)", req_id) }));
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "CIPHER", "msg": "Fetching entry payload..." }));
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "CIPHER", "msg": "Decrypting with ChaCha20-Poly1305 (AEAD)" }));
+    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "CIPHER", "msg": format!("Extracting Nonce ({} bytes) and Auth Tag ({} bytes)", nonce_len, tag_len) }));
+
     let result = state.cmd_decrypt_secret(&ciphertext).await;
-    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "secret_access" }));
-    result
+    match result {
+        Ok(cleartext) => {
+            let elapsed = t0.elapsed().as_millis();
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "SUCCESS", "msg": "MAC validation passed. Integrity verified." }));
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "CIPHER", "msg": format!("Payload decrypted. Integrity verified [{}ms]", elapsed) }));
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "secret_access" }));
+            Ok(cleartext)
+        }
+        Err(e) => {
+            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": format!("Decryption failed: {}", e) }));
+            Err(e)
+        }
+    }
 }
 
 // ─── Group commands ───────────────────────────────────────────────────────────

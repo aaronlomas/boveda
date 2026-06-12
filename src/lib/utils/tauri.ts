@@ -19,26 +19,15 @@ export async function getCryptoParams(): Promise<CryptoParams> {
 }
 
 export async function unlockVault(password: string): Promise<string> {
-  const t0 = performance.now();
-  const params = await getCryptoParams();
-  await new Promise(r => setTimeout(r, 50));
-  logStore.add("KDF", `Invoking Argon2id (m_cost: ${params.argon2_m_cost}, t_cost: ${params.argon2_t_cost}, parallelism: ${params.argon2_p_cost})`);
-  await new Promise(r => setTimeout(r, 50));
-
   try {
     const res = await invoke<string>("unlock_vault", { password });
-    const t1 = performance.now();
-    logStore.add("SUCCESS", `Vault unlocked successfully [${Math.round(t1 - t0)}ms]`);
     return res;
   } catch (err: any) {
-    // Sanitized
-    logStore.add("ERROR", "Vault unlock failed. Check your master password.");
     throw err;
   }
 }
 
 export async function lockVault(): Promise<void> {
-  logStore.add("MEM", "Clearing vault from memory. Locking...");
   return invoke("lock_vault");
 }
 
@@ -57,16 +46,10 @@ export async function readExternalFile(path: string): Promise<string> {
 }
 
 export async function getAccounts(): Promise<Account[]> {
-  const t0 = performance.now();
-  logStore.add("DB", "Querying local SQLCipher store for accounts...");
   try {
     const accounts = await invoke<Account[]>("get_accounts");
-    const t1 = performance.now();
-    // Sanitized
-    logStore.add("SUCCESS", `Accounts payload decrypted and loaded [${Math.round(t1 - t0)}ms]`);
     return accounts;
   } catch (err: any) {
-    logStore.add("ERROR", "Failed to load accounts payload.");
     throw err;
   }
 }
@@ -162,22 +145,10 @@ export async function decryptDocumentContent(encryptedContent: string): Promise<
 }
 
 export async function decryptSecret(ciphertext: string): Promise<string> {
-  const t0 = performance.now();
-  const reqId = ciphertext.length > 8 ? ciphertext.substring(0, 8) : "42";
-  const params = await getCryptoParams();
-  logStore.add("IPC", `Audited command received: GetSecret(id: ${reqId}...)`);
-  logStore.add("CIPHER", "Fetching entry payload...");
-  logStore.add("CIPHER", "Decrypting with ChaCha20-Poly1305 (AEAD)");
-  logStore.add("CIPHER", `Extracting Nonce (${params.nonce_len} bytes) and Auth Tag (${params.tag_len} bytes)`);
-  
   try {
     const cleartext = await invoke<string>("decrypt_secret", { ciphertext });
-    const t1 = performance.now();
-    logStore.add("SUCCESS", "MAC validation passed. Integrity verified.");
-    logStore.add("CIPHER", `Payload decrypted. Integrity verified [${Math.round(t1 - t0)}ms]`);
     return cleartext;
   } catch (err: any) {
-    logStore.add("ERROR", `Decryption failed: ${err}`);
     throw err;
   }
 }

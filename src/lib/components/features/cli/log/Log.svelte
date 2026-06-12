@@ -116,12 +116,8 @@
       >
         {#each logStore.entries as entry (entry.id)}
           <div class="log-line flex p-1 hover:bg-white/5 transition-colors rounded-sm text-text-primary/80">
-            <span class="shrink-0 mr-2 whitespace-pre">
-              <span class="text-text-muted">[</span>{entry.timestamp}<span class="text-text-muted">]</span>
-            </span>
-            <span class="shrink-0 w-20 whitespace-pre">
-              <span class="text-text-muted">[</span><span class="font-medium text-text-primary/90">{entry.category}</span><span class="text-text-muted">]</span>
-            </span>
+            <span class="shrink-0 mr-2 whitespace-pre text-text-muted" use:typewriter={{speed: 15}}>[{entry.timestamp}]</span>
+            <span class="shrink-0 w-24 whitespace-pre font-medium text-text-primary/90" use:typewriter={{speed: 15}}>[{entry.category}]</span>
             <span class="break-all ml-1 text-text-primary/90" use:typewriter={{speed: 15}}>{entry.text}</span>
           </div>
         {/each}

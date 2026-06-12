@@ -34,9 +34,6 @@ const AUDIT_MAP: Record<string, { category: LogCategory; msg: string }> = {
   document_delete:     { category: "WRITE",   msg: "Encrypted document deleted." },
 };
 
-// Focus-loss trigger: override the message to be explicit
-const FOCUS_LOST_MSG = "⚠ SECURITY: Vault auto-locked — window lost focus for >10s.";
-
 let unlistenAudit: UnlistenFn | null = null;
 let unlistenLocked: UnlistenFn | null = null;
 let onSessionLock: (() => void) | null = null;
@@ -49,11 +46,21 @@ export async function startSecurityListeners(opts: {
   // Listen to audit events from Rust core
   unlistenAudit = await listen<{ action: string; trigger?: string; msg?: string }>(
     "boveda://audit",
-    ({ payload }) => {
+    ({ payload }: { payload: any }) => {
       const isFocusLock = payload.trigger === "focus_lost";
 
       if (isFocusLock) {
-        logStore.add("WARN", FOCUS_LOST_MSG);
+        logStore.add("WARN", payload.msg ?? "Vault locked: window lost focus.");
+        return;
+      }
+
+      if (payload.action === "clear_log") {
+        logStore.clear();
+        return;
+      }
+
+      if (payload.action === "custom") {
+        logStore.add(payload.category, payload.msg);
         return;
       }
 

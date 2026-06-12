@@ -245,6 +245,7 @@
 
       <Button
         type="submit"
+        class="gap-2"
         disabled={loading || cooldown > 0}
       >
         {#if loading}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from "$lib/components/core/primitives/Button.svelte"
   import { sessionState } from "$lib/stores/stores.svelte";
   import { unlockVault, isVaultInitialized } from "$lib/utils/tauri";
   import { onMount } from "svelte";
@@ -12,7 +13,7 @@
   import { invoke } from "@tauri-apps/api/core";
   import { _ } from "svelte-i18n";
   import Logo from "$lib/components/ui/Logo.svelte";
-  
+
   import MasterPasswordForm from "./unlock/MasterPasswordForm.svelte";
   import TotpForm from "./unlock/TotpForm.svelte";
   import RecoveryForm from "./unlock/RecoveryForm.svelte";
@@ -215,12 +216,21 @@
       class="w-full flex flex-col gap-4"
     >
       {#if !pendingTotp}
-        <MasterPasswordForm bind:password bind:confirmPassword {isNew} {cooldown} />
+        <MasterPasswordForm
+          bind:password
+          bind:confirmPassword
+          {isNew}
+          {cooldown}
+        />
       {:else if isRecovery}
-        <RecoveryForm bind:recoveryCode {recoverySuccess} oncancel={() => {
-          isRecovery = false;
-          error = "";
-        }} />
+        <RecoveryForm
+          bind:recoveryCode
+          {recoverySuccess}
+          oncancel={() => {
+            isRecovery = false;
+            error = "";
+          }}
+        />
       {:else}
         <TotpForm bind:totpCode onreset={resetUnlock} />
       {/if}
@@ -233,9 +243,8 @@
         </p>
       {/if}
 
-      <button
+      <Button
         type="submit"
-        class="w-full justify-center py-2 px-4 text-sm font-semibold bg-accent hover:bg-accent-light text-white rounded-lg shadow-sm shadow-accent/20 transition-all active:scale-[0.98] disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer disabled:bg-surface/10 disabled:text-text-muted disabled:shadow-none"
         disabled={loading || cooldown > 0}
       >
         {#if loading}
@@ -258,7 +267,7 @@
         {:else}
           <IconLock size={18} /> {$_("unlock_screen.button_unlock")}
         {/if}
-      </button>
+      </Button>
 
       {#if pendingTotp && !isRecovery && !recoverySuccess}
         <button

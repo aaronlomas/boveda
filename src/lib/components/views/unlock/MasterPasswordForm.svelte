@@ -31,10 +31,11 @@
       ? 'opacity-50 grayscale'
       : ''}"
   >
+  <!-- MASTER PASS INPUT -->
     <input
       id="master-pw"
       use:focus
-      class="w-full border-0 text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:bg-transparent tracking-widest disabled:cursor-not-allowed"
+      class="w-full text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:bg-transparent tracking-widest disabled:cursor-not-allowed"
       type={showPassword ? "text" : "password"}
       bind:value={password}
       placeholder={$_("unlock_screen.placeholder")}

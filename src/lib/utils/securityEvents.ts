@@ -47,13 +47,6 @@ export async function startSecurityListeners(opts: {
   unlistenAudit = await listen<{ action: string; trigger?: string; msg?: string }>(
     "boveda://audit",
     ({ payload }: { payload: any }) => {
-      const isFocusLock = payload.trigger === "focus_lost";
-
-      if (isFocusLock) {
-        logStore.add("WARN", payload.msg ?? "Vault locked: window lost focus.");
-        return;
-      }
-
       if (payload.action === "clear_log") {
         logStore.clear();
         return;
@@ -67,8 +60,8 @@ export async function startSecurityListeners(opts: {
       const mapped = AUDIT_MAP[payload.action];
       if (mapped) {
         logStore.add(mapped.category, mapped.msg);
-      } else {
-        logStore.add("SYSTEM", payload.msg ?? `Core event: ${payload.action}`);
+      } else if (payload.msg) {
+        logStore.add("SYSTEM", payload.msg);
       }
     }
   );

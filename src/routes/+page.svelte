@@ -7,7 +7,7 @@
   import { sessionState, uiState } from "$lib/stores/stores.svelte";
   import { themeStore } from "$lib/stores/theme.svelte";
   import { startAutoLock, stopAutoLock } from "$lib/utils/autoLock";
-  import { startSecurityListeners, stopSecurityListeners } from "$lib/utils/securityEvents";
+  import { startLogListeners, stopLogListeners } from "$lib/utils/logEvents";
   import { invoke } from "@tauri-apps/api/core";
 
   async function loadTimeoutSeconds(): Promise<number> {
@@ -19,7 +19,7 @@
   function doLock() {
     sessionState.isUnlocked = false;
     stopAutoLock();
-    stopSecurityListeners();
+    stopLogListeners();
   }
 
   // Watch for unlock state changes to start/stop the auto-lock timer and security listeners
@@ -28,10 +28,10 @@
       loadTimeoutSeconds().then((seconds) => {
         startAutoLock({ onLock: doLock, seconds });
       });
-      startSecurityListeners({ onLock: doLock });
+      startLogListeners();
     } else {
       stopAutoLock();
-      stopSecurityListeners();
+      stopLogListeners();
     }
   });
 </script>

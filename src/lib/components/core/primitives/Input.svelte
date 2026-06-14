@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { HTMLInputAttributes } from "svelte/elements";
+  import { COMPONENTS, COLORS } from "$lib/config/design-tokens";
 
   interface Props extends HTMLInputAttributes {
     label?: string;
@@ -15,10 +16,9 @@
     id = crypto.randomUUID(),
     ...rest
   }: Props = $props();
-  import { COMPONENTS, COLORS } from "$lib/config/design-tokens";
 </script>
 
-<div class="flex flex-col gap-1.5 w-full">
+<div class="flex flex-col gap-1 w-full">
   {#if label}
     <label for={id} class="text-sm font-medium {COLORS.text.secondary}">
       {label}

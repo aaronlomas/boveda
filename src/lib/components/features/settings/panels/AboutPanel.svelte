@@ -4,7 +4,6 @@
     IconInfoCircle,
     IconAlertTriangle,
     IconTrash,
-    IconLock,
     IconEye,
     IconEyeOff,
   } from "@tabler/icons-svelte";
@@ -132,11 +131,6 @@
             {$_("unlock_screen.master_password_label")}
           </label>
           <div class="relative">
-            <div
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-            >
-              <IconLock size={18} />
-            </div>
             <input
               id="del-pw"
               type={showPassword ? "text" : "password"}

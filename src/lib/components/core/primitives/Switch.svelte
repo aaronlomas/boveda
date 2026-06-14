@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { HTMLInputAttributes } from "svelte/elements";
-  import { COLORS, ANIMATION } from "$lib/config/design-tokens";
 
   interface Props extends Omit<HTMLInputAttributes, 'type'> {
     checked?: boolean;

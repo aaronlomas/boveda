@@ -5,12 +5,22 @@
    * Displays the QR code to scan and the verification input with action buttons.
    */
   import { _ } from "svelte-i18n";
-  import { IconShieldCheck, IconLoader2, IconCheck } from "@tabler/icons-svelte";
+  import {
+    IconShieldCheck,
+    IconLoader2,
+    IconCheck,
+  } from "@tabler/icons-svelte";
   import Button from "../../../../core/primitives/Button.svelte";
   import Input from "../../../../core/primitives/Input.svelte";
 
   // Props
-  let { setupData, processing, verificationCode = $bindable(), onCancel, onVerify } = $props<{
+  let {
+    setupData,
+    processing,
+    verificationCode = $bindable(),
+    onCancel,
+    onVerify,
+  } = $props<{
     setupData: { qr_png_b64: string; otpauth_url: string };
     processing: boolean;
     verificationCode: string;
@@ -18,10 +28,9 @@
     onVerify: () => void;
   }>();
 </script>
-<!-- MAIN CONFIGURATION CONTAINER -->
-<div class="pt-4 border-t border-surface/8 space-y-5 animate-in fade-in slide-in-from-top-2">
-  
-  <!-- Advertencia de Seguridad -->
+
+<div class="pt-4 col-span-3 space-y-5 animate-in fade-in slide-in-from-top-2">
+  <!-- Warning Message -->
   <div class="bg-accent/10 border border-accent/20 p-4 rounded-xl flex gap-3">
     <IconShieldCheck size={20} class="text-accent shrink-0" />
     <p class="text-xs text-text-primary leading-relaxed">
@@ -56,7 +65,7 @@
         bind:value={verificationCode}
         class="text-center text-lg font-mono tracking-[0.5em] focus-visible:ring-accent"
       />
-      
+
       <!-- Buttons -->
       <div class="flex gap-2 pt-2">
         <Button
@@ -67,10 +76,11 @@
         >
           {$_("actions.cancel")}
         </Button>
-        
+
         <Button
           class="flex-1 gap-2 font-bold"
-          disabled={verificationCode.replace(/\s/g, "").length !== 6 || processing}
+          disabled={verificationCode.replace(/\s/g, "").length !== 6 ||
+            processing}
           onclick={onVerify}
         >
           {#if processing}

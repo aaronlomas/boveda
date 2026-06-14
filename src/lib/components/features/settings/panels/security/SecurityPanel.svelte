@@ -11,11 +11,13 @@
   import DisableTotpModal from "../../../../modals/warnings/DisableTotpModal.svelte";
 
   // Decoupled Components
+  import ListItem from "$lib/components/core/primitives/ListItem.svelte";
   import TotpStatusView from "./TotpStatusView.svelte";
   import TotpSetupView from "./TotpSetupView.svelte";
   import TotpRecoveryCodesView from "./TotpRecoveryCodesView.svelte";
   import ExportPasswordModal from "../../../../modals/forms/ExportPasswordModal.svelte";
   import SessionTimeout from "./SessionTimeout.svelte";
+  import RemoteConnection from "./RemoteConnection.svelte";
 
   // COMPONENT STATUS
   let isEnabled = $state(false);
@@ -138,26 +140,20 @@
       showExportForDisable = false;
   }}
 />
+<div class="grid gap-4">
+  <div>
+    <h1 class="text-xl font-bold text-text-primary">
+      {$_("settings.security.title")}
+    </h1>
+    <p class="text-xs text-text-muted">{$_("settings.security.desc")}</p>
+  </div>
 
-<div>
-  <!-- Panel Header -->
-  <header class="flex items-center gap-2">
-    <div>
-      <h1 class="text-xl font-bold text-text-primary">
-        {$_("settings.security.title")}
-      </h1>
-      <p class="text-xs text-text-muted">{$_("settings.security.desc")}</p>
-    </div>
-  </header>
-
-  <!-- Main container -->
   {#if loading}
     <div class="flex justify-center py-12">
       <IconLoader2 size={32} class="animate-spin text-accent" />
     </div>
   {:else}
-    <div class="bg-surface/3 border border-surface/8 rounded-2xl p-4 space-y-4">
-      <!-- Decoupled Component 1: General State -->
+    <ListItem layout="triple">
       <TotpStatusView
         {isEnabled}
         {processing}
@@ -193,37 +189,36 @@
           onDone={() => (step = 1)}
         />
       {/if}
-    </div>
+    </ListItem>
   {/if}
 
-  <!-- Suggestions -->
+  <!-- Deactivation Warning Modality -->
+  {#if showDisableConfirm}
+    <DisableTotpModal
+      onconfirm={handleDisableTotpConfirm}
+      oncancel={() => (showDisableConfirm = false)}
+      {processing}
+    />
+  {/if}
 
-  <p class="text-xs text-text-muted leading-relaxed">
-    {$_("settings.security.tip_desc")}
-  </p>
+  <!--Export Modal Required to Disable 2FA-->
+  {#if showExportForDisable}
+    <ExportPasswordModal
+      customTitle={$_("settings.security.totp_export_title")}
+      customWarning={$_("settings.security.totp_export_warning")}
+      onconfirm={async () => {
+        showExportForDisable = false;
+        await disableTotp();
+      }}
+      oncancel={() => (showExportForDisable = false)}
+    />
+  {/if}
+
+  <ListItem layout="triple">
+    <SessionTimeout />
+  </ListItem>
+
+  <ListItem layout="triple">
+    <RemoteConnection />
+  </ListItem>
 </div>
-
-<!-- Deactivation Warning Modality -->
-{#if showDisableConfirm}
-  <DisableTotpModal
-    onconfirm={handleDisableTotpConfirm}
-    oncancel={() => (showDisableConfirm = false)}
-    {processing}
-  />
-{/if}
-
-<!--Export Modal Required to Disable 2FA-->
-{#if showExportForDisable}
-  <ExportPasswordModal
-    customTitle={$_("settings.security.totp_export_title")}
-    customWarning={$_("settings.security.totp_export_warning")}
-    onconfirm={async () => {
-       showExportForDisable = false;
-       await disableTotp();
-    }}
-    oncancel={() => (showExportForDisable = false)}
-  />
-{/if}
-
-<SessionTimeout />
-

@@ -250,8 +250,7 @@
       "totp_recovery_btn": "Recuperar Acceso",
       "totp_recovery_error": "Código de recuperación inválido o ya utilizado.",
       "totp_recovery_success": "¡2FA desactivado con éxito! Ahora puedes entrar solo con tu contraseña maestra.",
-      "totp_recovery_warning_setup": "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil.",
-      "tip_desc": "Ten disponible tu dispositivo móvil ahora mismo, antes de continuar."
+      "totp_recovery_warning_setup": "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil."
     },
     "automatic_session_close":{
       "title": "Cierre de Sesión Automática",
@@ -261,14 +260,14 @@
       "tooltip": "Bóveda se bloqueará tras {seconds} segundos de inactividad.",
       "tooltip_never": "Bóveda permanece desbloqueada hasta que la cierres manualmente."
     },
+    "remote_connection":{
+      "title": "Proteger contra conexiones remotas",
+      "desc": "Bloquea Bóveda si detecta conexiones remotas."
+    },
     "theme": {
       "accent_description": "El color de acento personaliza botones, iconos activos y elementos destacados. Bóveda generará automáticamente tonos claros y efectos de brillo basados en tu elección.",
       "color_label": "Color de Acento",
       "color_desc": "Selecciona tu color preferido",
-      "preview_button": "Vista previa Botón",
-      "preview_button_primary": "Botón Primario",
-      "preview_active": "Vista previa Activo",
-      "preview_active_item": "Elemento Seleccionado",
       "title_options": "Tema de Acento",
       "text_options": "Tema de Texto",
       "appearance": "Apariencia",
@@ -317,8 +316,10 @@
       "title": "Acerca de Bóveda",
       "desc": "Información sobre la aplicación y licencias.",
       "version_label": "Versión",
-      "core_label": "Motor Core",
-      "philosophy": "Bóveda es un gestor de credenciales con filosofía \"Seguridad por Aislamiento\". Nunca usamos la nube, ni ningún servicio externo para guardar tus datos.",
+      "core_label": "Bóveda Core"
+    },
+    "account_system": {
+      "title": "Cuenta",
       "delete_account": "Eliminar Cuenta",
       "delete_account_desc": "Use esta opción para restablecer definitivamente su Bóveda",
       "delete_confirm": "Esta acción eliminará sus datos guardados, ¿seguro que quiere eliminar su cuenta?",

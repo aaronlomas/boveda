@@ -16,7 +16,9 @@
 
   // Load persisted preference on mount
   onMount(async () => {
-    const raw = await invoke<string | null>("get_preference", { key: PREF_KEY });
+    const raw = await invoke<string | null>("get_preference", {
+      key: PREF_KEY,
+    });
     if (raw !== null) {
       const saved = parseInt(raw, 10);
       if (saved > 0) {
@@ -38,50 +40,46 @@
   });
 </script>
 
-<div class="bg-surface/3 border border-surface/8 rounded-2xl p-4 space-y-4 mt-6">
-  <div class="flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div
-        class="w-10 h-10 rounded-full flex items-center justify-center transition-colors {isEnabled
-          ? 'bg-accent/10 text-accent'
-          : 'bg-surface/10 text-text-muted'}"
-      >
-        <IconClock size={20} />
-      </div>
-      <div>
-        <h2 class="text-sm font-semibold text-text-primary">
-          {$_("settings.automatic_session_close.title")}
-        </h2>
-        <p class="text-xs text-text-muted">
-          {$_("settings.automatic_session_close.desc")}
-        </p>
-      </div>
-    </div>
-
-    <Switch bind:checked={isEnabled} />
-  </div>
-
-  {#if isEnabled}
-    <div class="pt-4 border-t border-surface/8 animate-in fade-in slide-in-from-top-2">
-      <div class="flex justify-between text-sm text-text-muted mb-3">
-        <span>{$_("settings.automatic_session_close.timer_prefix")}</span>
-        <span class="font-medium text-text-primary"
-          >{rangeValue}{$_("settings.automatic_session_close.timer_suffix")}</span
-        >
-      </div>
-
-      <input
-        type="range"
-        step="10"
-        bind:value={rangeValue}
-        max={maxRange}
-        min={minRange}
-        class="w-full accent-accent cursor-pointer"
-      />
-      <div class="flex justify-between text-xs text-text-muted mt-1">
-        <span>{minRange}s</span>
-        <span>{maxRange}s</span>
-      </div>
-    </div>
-  {/if}
+<div
+  class="w-10 h-10 rounded-full flex items-center justify-center transition-colors {isEnabled
+    ? 'bg-accent/10 text-accent'
+    : 'bg-surface/10 text-text-muted'}"
+>
+  <IconClock size={20} />
 </div>
+<div>
+  <h2 class="text-sm font-semibold text-text-primary">
+    {$_("settings.automatic_session_close.title")}
+  </h2>
+  <p class="text-xs text-text-muted">
+    {$_("settings.automatic_session_close.desc")}
+  </p>
+</div>
+
+<Switch bind:checked={isEnabled} />
+
+{#if isEnabled}
+  <div
+    class="pt-4 border-t border-surface/8 animate-in fade-in slide-in-from-top-2 col-span-3"
+  >
+    <div class="flex justify-between text-sm text-text-muted mb-3">
+      <span>{$_("settings.automatic_session_close.timer_prefix")}</span>
+      <span class="font-medium text-text-primary"
+        >{rangeValue}{$_("settings.automatic_session_close.timer_suffix")}</span
+      >
+    </div>
+
+    <input
+      type="range"
+      step="10"
+      bind:value={rangeValue}
+      max={maxRange}
+      min={minRange}
+      class="w-full accent-accent cursor-pointer"
+    />
+    <div class="flex justify-between text-xs text-text-muted mt-1">
+      <span>{minRange}s</span>
+      <span>{maxRange}s</span>
+    </div>
+  </div>
+{/if}

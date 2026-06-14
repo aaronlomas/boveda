@@ -249,8 +249,7 @@
       "totp_recovery_btn": "Recover access",
       "totp_recovery_error": "Invalid or already used recovery code.",
       "totp_recovery_success": "2FA deactivated successfully! You can now access with just your master password.",
-      "totp_recovery_warning_setup": "⚠️ KEEP THESE CODES IN A SAFE PLACE. They are the only way to access if you lose your mobile device.",
-      "tip_desc": "Have your mobile device ready now, before continuing."
+      "totp_recovery_warning_setup": "⚠️ KEEP THESE CODES IN A SAFE PLACE. They are the only way to access if you lose your mobile device."
     },
     "automatic_session_close":{
       "title": "Automatic Session Close",
@@ -260,14 +259,14 @@
       "tooltip": "Bóveda will lock after {seconds} seconds of inactivity.",
       "tooltip_never": "Bóveda remains unlocked until manually closed."
     },
+    "remote_connection":{
+      "title": "Protect against remote connections",
+      "desc": "Block Bóveda if it detects remote connections."
+    },
     "theme": {
       "accent_description": "The accent color personalizes buttons, active icons, and highlighted elements. Bóveda will automatically generate light tones and glow effects based on your choice.",
       "color_label": "Accent color",
       "color_desc": "Select your preferred color",
-      "preview_button": "Button preview",
-      "preview_button_primary": "Primary button",
-      "preview_active": "Active preview",
-      "preview_active_item": "Selected element",
       "title_options": "Accent theme",
       "text_options": "Text theme",
       "appearance": "Appearance",
@@ -313,13 +312,15 @@
       "massive_list_disabled": "Disabled"
     },
     "about": {
-      "title": "About Bóveda",
+      "title": "About",
       "desc": "Information about the application and licenses.",
       "version_label": "Version",
-      "core_label": "Core Engine",
-      "philosophy": "Bóveda is a credential manager with a \"Security by Isolation\" philosophy. We never use the cloud or any external service to store your data.",
+      "core_label": "Bóveda Core"
+    },
+    "account_system": {
+      "title": "Account",
       "delete_account": "Delete Account",
-      "delete_account_desc": "Use this option to permanently reset your Vault",
+      "delete_account_desc": "Use this option to permanently reset your Bóveda",
       "delete_confirm": "This action will delete your saved data, are you sure you want to delete your account?",
       "delete_success": "Account deleted successfully.",
       "delete_error": "Failed to delete account."

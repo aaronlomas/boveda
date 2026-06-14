@@ -53,7 +53,9 @@
   }
 </script>
 
-<div class="space-y-6">
+<div class="grid gap-4">
+  <!-- About: Title and description -->
+
   <div>
     <h2 class="text-xl font-bold text-text-primary flex items-center gap-2">
       <IconInfoCircle class="text-accent" />
@@ -64,48 +66,40 @@
     </p>
   </div>
 
-  <div class="space-y-4">
-    <div class="p-4 bg-surface/5 border border-surface/10 rounded-xl">
-      <div class="flex justify-between items-center">
-        <span class="text-sm text-text-secondary"
-          >{$_("settings.about.version_label")}</span
-        >
-        <span class="text-sm font-mono text-accent">{appInfo.app_version}</span>
-      </div>
-    </div>
+  <!-- Items -->
 
-    <div class="p-4 bg-surface/5 border border-surface/10 rounded-xl">
-      <div class="flex justify-between items-center">
-        <span class="text-sm text-text-secondary"
-          >{$_("settings.about.core_label")}</span
-        >
-        <span class="text-sm font-mono text-accent"
-          >{appInfo.core_version}</span
-        >
-      </div>
-    </div>
+  <div class="flex justify-between items-center border-b border-surface/8">
+    <span class="text-sm text-text-secondary"
+      >{$_("settings.about.version_label")}</span
+    >
+    <span class="text-sm font-mono text-accent">v{appInfo.app_version}</span>
+  </div>
 
-    <div class="p-4 bg-surface/5 border border-surface/10 rounded-xl">
-      <p class="text-xs text-text-muted leading-relaxed">
-        {$_("settings.about.philosophy")}
+  <div class="flex justify-between items-center border-b border-surface/8">
+    <span class="text-sm text-text-secondary"
+      >{$_("settings.about.core_label")}</span
+    >
+    <span class="text-sm font-mono text-accent">v{appInfo.core_version}</span>
+  </div>
+
+  <!-- Account System -->
+
+  <h1 class="text-text-primary text-xl font-bold">
+    {$_("settings.account_system.title")}
+  </h1>
+
+  <div class="flex justify-between items-center">
+    <div>
+      <h3 class="text-sm font-medium text-danger">
+        {$_("settings.account_system.delete_account")}
+      </h3>
+      <p class="text-xs text-text-muted">
+        {$_("settings.account_system.delete_account_desc")}
       </p>
     </div>
-
-    <div class="pt-4 border-t border-surface/10">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-sm font-medium text-danger">
-            {$_("settings.about.delete_account")}
-          </h3>
-          <p class="text-xs text-text-muted mt-1">
-            {$_("settings.about.delete_account_desc")}
-          </p>
-        </div>
-        <Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
-          {$_("actions.delete")}
-        </Button>
-      </div>
-    </div>
+    <Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
+      {$_("actions.delete")}
+    </Button>
   </div>
 </div>
 
@@ -113,7 +107,7 @@
   <Modal
     show={true}
     onclose={() => (showDeleteConfirm = false)}
-    title={$_("settings.about.delete_account")}
+    title={$_("settings.account_system.delete_account")}
   >
     <div class="space-y-6">
       <div
@@ -121,7 +115,7 @@
       >
         <IconAlertTriangle class="text-danger shrink-0" size={20} />
         <p class="text-xs text-danger/90 leading-relaxed">
-          {$_("settings.about.delete_confirm")}
+          {$_("settings.account_system.delete_confirm")}
         </p>
       </div>
 

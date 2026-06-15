@@ -66,6 +66,17 @@ impl BovedaEngine {
             *key_lock = Some(MasterKey::new(key));
         }
 
+        // Check remote connection setting
+        if let Ok(Some(pref)) = engine.get_preference("security.block_remote").await {
+            if pref == "true" {
+                if crate::security::environment_check() {
+                    let _ = engine.log_audit(crate::audit::AuditAction::VaultUnlock, Some("Blocked: Remote Session Detected")).await;
+                    engine.lock(); // Lock it back immediately
+                    return Err(BovedaError::RemoteSessionDetected);
+                }
+            }
+        }
+
         // SOC2: Log successful unlock
         let _ = engine.log_audit(crate::audit::AuditAction::VaultUnlock, Some("Success")).await;
 

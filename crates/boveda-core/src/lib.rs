@@ -7,6 +7,7 @@ pub mod error;
 pub mod auth;
 pub mod audit;
 pub mod commands;
+pub mod security;
 
 #[cfg(test)]
 mod tests;

@@ -9,7 +9,7 @@
   {$_("settings.language.description")}
 </p>
 
-<div class="grid grid-cols-1 gap-3">
+<div class="grid gap-4">
   <!-- Option: Spanish -->
   <button
     class="flex items-center gap-4 p-4 rounded-xl border transition-all text-left w-full cursor-pointer

@@ -6,7 +6,8 @@
    */
   import { _ } from "svelte-i18n";
   import { IconAuth2fa, IconTrash } from "@tabler/icons-svelte";
-  import Button from "../../../../core/primitives/Button.svelte";
+  import Button from "$lib/components/core/primitives/Button.svelte";
+  import Switch from "$lib/components/core/primitives/Switch.svelte";
 
   //Props
   let { isEnabled, processing, error, onStartSetup, onConfirmDisable } =
@@ -31,43 +32,35 @@
     {$_("settings.security.totp_label")}
   </p>
   <p class="text-xs text-text-muted">
-    {isEnabled
-      ? $_("settings.security.totp_enabled")
-      : $_("settings.security.totp_disabled")}
+    {$_("settings.security.totp_desc")}
   </p>
 </div>
 
 <!-- Activation/Deactivation Controls -->
-{#if !isEnabled || (error && error.includes("configurado"))}
-  <div class="flex items-center gap-2">
-    {#if !isEnabled}
-      <Button size="sm" onclick={onStartSetup} disabled={processing}>
-        {$_("settings.security.totp_enable_btn")}
-      </Button>
-    {/if}
-
-    {#if error && error.includes("configurado")}
-      <Button
-        variant="ghost"
-        size="icon"
-        class="text-danger hover:text-danger hover:bg-danger/10"
-        onclick={onConfirmDisable}
-        title={$_("settings.security.totp_disable_btn")}
-        disabled={processing}
-      >
-        <IconTrash size={20} />
-      </Button>
-    {/if}
-  </div>
-{:else if isEnabled}
-  <Button
-    variant="ghost"
-    size="icon"
-    class="text-danger hover:text-danger hover:bg-danger/10"
-    onclick={onConfirmDisable}
-    title={$_("settings.security.totp_disable_btn")}
+<div class="flex items-center gap-2">
+  <Switch
+    checked={isEnabled}
     disabled={processing}
-  >
-    <IconTrash size={20} />
-  </Button>
-{/if}
+    onclick={(e) => {
+      e.preventDefault();
+      if (isEnabled) {
+        onConfirmDisable();
+      } else {
+        onStartSetup();
+      }
+    }}
+  />
+
+  {#if error && error.includes("configurado")}
+    <Button
+      variant="ghost"
+      size="icon"
+      class="text-danger hover:text-danger hover:bg-danger/10"
+      onclick={onConfirmDisable}
+      title={$_("settings.security.totp_disable_btn")}
+      disabled={processing}
+    >
+      <IconTrash size={20} />
+    </Button>
+  {/if}
+</div>

@@ -33,7 +33,7 @@
   }
 </script>
 <!-- SUCCESS SCREEN AND RECOVERY CODES -->
-<div class="pt-4 border-t border-surface/8 text-center space-y-3 animate-in zoom-in-95">
+<div class="pt-4 border-t border-surface/8 text-center space-y-3 animate-in zoom-in-95 col-span-3">
   
   <div class="w-12 h-12 bg-success/20 text-success rounded-full flex items-center justify-center mx-auto">
     <IconCheck size={28} />
@@ -83,7 +83,7 @@
     <!-- Saving Warning -->
     <div class="p-3 bg-warning/10 border border-warning/20 rounded-lg">
       <p class="text-xs text-warning text-center leading-relaxed font-medium">
-        {$_("settings.security.totp_recovery_warning_setup") || "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil."}
+        {$_("settings.security.totp_recovery_warning_setup")}
       </p>
     </div>
   </div>

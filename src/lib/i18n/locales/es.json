@@ -222,11 +222,8 @@
     "security": {
       "title": "Extender Seguridad",
       "desc": "Añade medidas adicionales de seguridad.",
-      "totp_label": "Autenticación de Dos Factores (2FA)",
-      "totp_enabled": "Activo",
-      "totp_disabled": "Desactivado",
-      "totp_enable_btn": "Activar 2FA",
-      "totp_disable_btn": "Desactivar 2FA",
+      "totp_desc": "Ten su dispositivo móvil a la mano",
+      "totp_label": "Autenticación de Dos Factores",
       "totp_disable_confirm": "Puede volver a activar el 2FA en cualquier momento.",
       "totp_disable_title": "Desactivar Autenticación de Dos Factores",
       "totp_disable_subtitle": "ADVERTENCIA: Después de ésta acción tendrás que eliminar la cuenta de Bóveda en tu app móvil y volver a configurar el 2FA si decides volver a utilizarlo, para que la sincronización sea válida.",
@@ -254,7 +251,7 @@
     },
     "automatic_session_close":{
       "title": "Cierre de Sesión Automática",
-      "desc": "Establece un temporizador para cerrar sesión automáticamente.",
+      "desc": "El temporizador iniciará solo si hay inactividad.",
       "timer_prefix": "Cerrar sesión después de: ",
       "timer_suffix": " segundos",
       "tooltip": "Bóveda se bloqueará tras {seconds} segundos de inactividad.",

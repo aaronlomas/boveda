@@ -28,9 +28,9 @@ pub fn environment_check() -> bool {
 
         // 2. Check systemd-logind via dlsym to avoid hard dependency on libsystemd.so
         unsafe {
-            let handle = libc::dlopen(b"libsystemd.so.0\0".as_ptr() as *const _, libc::RTLD_LAZY);
+            let handle = libc::dlopen(c"libsystemd.so.0".as_ptr() as *const _, libc::RTLD_LAZY);
             if !handle.is_null() {
-                let func = libc::dlsym(handle, b"sd_session_is_remote\0".as_ptr() as *const _);
+                let func = libc::dlsym(handle, c"sd_session_is_remote".as_ptr() as *const _);
                 if !func.is_null() {
                     let sd_session_is_remote: extern "C" fn(*const libc::c_char) -> libc::c_int = std::mem::transmute(func);
                     // Pass NULL to check the current session

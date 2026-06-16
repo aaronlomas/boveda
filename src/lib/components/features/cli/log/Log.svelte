@@ -70,23 +70,21 @@
     ></div>
   {/if}
 
-  <div class="terminal-header flex items-center justify-between px-4 py-2 border-b border-surface/8">
-    <div class="flex items-center gap-4">
+  <div class="terminal-header grid grid-cols-[80px_80px_auto] grid-rows-[30px] items-center border-b border-surface/8">
       <button 
-        class="text-xs font-medium transition-colors focus:outline-none {viewMode === 'log' ? 'text-accent' : 'text-text-muted hover:text-text-primary'}"
+        class="text-xs font-medium transition-colors focus:outline-none h-full {viewMode === 'log' ? 'bg-surface/8' : 'hover:bg-surface/8'}"
         onclick={() => viewMode = "log"}
       >
         Log
       </button>
       <button 
-        class="text-xs font-medium transition-colors focus:outline-none {viewMode === 'terminal' ? 'text-accent' : 'text-text-muted hover:text-text-primary'}"
+        class="text-xs font-medium transition-colors focus:outline-none h-full {viewMode === 'terminal' ? 'bg-surface/8' :  'hover:bg-surface/8'}"
         onclick={() => viewMode = "terminal"}
       >
         Terminal
       </button>
-    </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center justify-end gap-4 px-4 h-full">
       <button 
         class="text-text-muted hover:text-danger transition-colors focus:outline-none"
         onclick={clearCurrentView}

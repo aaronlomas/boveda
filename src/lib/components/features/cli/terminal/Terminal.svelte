@@ -10,7 +10,7 @@
   }
 
   let history = $state<TerminalLine[]>([
-    { id: crypto.randomUUID(), text: "CLI — type 'help' for available commands.", isCommand: false },
+    { id: crypto.randomUUID(), text: "Type 'help' for available commands.", isCommand: false },
   ]);
   let inputValue = $state("");
   let terminalContainer: HTMLDivElement | undefined = $state();

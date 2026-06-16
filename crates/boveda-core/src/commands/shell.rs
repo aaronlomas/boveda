@@ -8,7 +8,7 @@ use crate::crypto;
 impl AppState {
     /// Processes a plain text command and returns response lines.
     /// This method is the only entry point for the Bóveda CLI.
-    pub fn cmd_query_shell(&self, input: &str) -> Vec<String> {
+    pub async fn cmd_query_shell(&self, input: &str) -> Vec<String> {
         let parts: Vec<&str> = input.trim().splitn(2, ' ').collect();
         let command = parts[0].to_lowercase();
         let _args = parts.get(1).copied().unwrap_or("");
@@ -18,7 +18,7 @@ impl AppState {
                 "┌─ boveda-core CLI ─────────────────────────────────────────┐".into(),
                 "│  crypto    Show active cryptographic parameters           │".into(),
                 "│  status    Show vault lock state and session info         │".into(),
-                "│  audit     Show last 10 audit log entries (async)         │".into(),
+                "│  audit     Show last 10 audit log entries                 │".into(),
                 "│  clear     Clear terminal output                          │".into(),
                 "│  help      Show this help message                         │".into(),
                 "└───────────────────────────────────────────────────────────┘".into(),
@@ -52,6 +52,27 @@ impl AppState {
                     format!("  DB Path          : {}", self.db_path.display()),
                     "────────────────────────────────────────────────────────────".into(),
                 ]
+            }
+
+            "audit" => {
+                match self.cmd_get_audit_logs(10).await {
+                    Ok(logs) => {
+                        let mut output = vec![
+                            "── Recent Audit Logs (Last 10) ─────────────────────────────".into(),
+                        ];
+                        if logs.is_empty() {
+                            output.push("  No audit logs found.".into());
+                        } else {
+                            for log in logs {
+                                let meta = log.metadata.unwrap_or_else(|| "N/A".into());
+                                output.push(format!("  [{}] {} - {}", log.created_at, log.action, meta));
+                            }
+                        }
+                        output.push("────────────────────────────────────────────────────────────".into());
+                        output
+                    }
+                    Err(e) => vec![format!("Error fetching audit logs: {}", e)],
+                }
             }
 
             "" => vec![],

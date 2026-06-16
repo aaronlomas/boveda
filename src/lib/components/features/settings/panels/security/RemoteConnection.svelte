@@ -26,7 +26,7 @@
 </script>
 
 <div
-  class="w-10 h-10 rounded-full flex items-center justify-center transition-colors {isEnabled
+  class="p-2 rounded-full transition-colors {isEnabled
     ? 'bg-accent/10 text-accent'
     : 'bg-surface/10 text-text-muted'}"
 >

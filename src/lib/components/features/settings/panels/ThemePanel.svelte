@@ -9,7 +9,6 @@
   import {
     IconPhoto,
     IconCheck,
-    IconTypography,
     IconSun,
     IconMoon,
     IconDeviceDesktop,
@@ -45,7 +44,7 @@
         title: $_("actions.select"),
         filters: [
           {
-            name: $_("actions.images_filter_name"),
+            name: $_("actions.status.loading"),
             extensions: ["jpg", "jpeg", "png", "webp", "gif"],
           },
         ],
@@ -115,7 +114,7 @@
     {/each}
   </div>
 
-  <hr class="border-surface/8 my-1" />
+  <hr class="border-surface/8" />
 
   <!-- ─ Appearance Section ─ -->
 
@@ -125,7 +124,7 @@
     </h1>
   </div>
 
-  <div class="grid grid-cols-3 gap-3">
+  <div class="grid grid-cols-3 gap-4">
     <button
       class="p-3 rounded-xl border transition-all flex flex-col items-center gap-2 {themeStore.colorScheme ===
       'light'
@@ -159,7 +158,7 @@
     </button>
   </div>
 
-  <hr class="border-surface/8 my-1" />
+  <hr class="border-surface/8" />
 
   <!-- ─ Accent Color Section ─ -->
 
@@ -256,7 +255,7 @@
       {$_("settings.theme.bg_description")}
     </h1>
 
-    <div class="grid grid-cols-1 gap-3">
+    <div class="grid gap-4">
       <!-- Option: Gradient -->
       <button
         class="flex items-center gap-4 p-4 rounded-xl border transition-all text-left w-full cursor-pointer
@@ -265,10 +264,13 @@
           : 'border-surface/8 bg-surface/3 hover:border-surface/20'}"
         onclick={applyGradient}
       >
+        <!-- color -->
         <div
-          class="w-12 h-12 rounded-lg shrink-0"
+          class="w-12 h-12 rounded-lg"
           style="background: #07070e;"
         ></div>
+
+        <!-- title and description -->
         <div class="flex-1">
           <p class="text-sm font-medium text-text-primary">
             {$_("settings.theme.bg_dark")}
@@ -290,12 +292,15 @@
           : 'border-surface/8 bg-surface/3 hover:border-surface/20'}"
         onclick={applySolid}
       >
+        <!-- color -->
         <div
-          class="w-12 h-12 rounded-lg shrink-0 border border-surface/10"
+          class="w-12 h-12 rounded-lg"
           style="background: {themeStore.bgType === 'solid'
             ? themeStore.bgValue
             : '#0d0d1a'};"
         ></div>
+
+        <!-- title and description -->
         <div class="flex-1">
           <p class="text-sm font-medium text-text-primary">
             {$_("settings.theme.bg_solid")}
@@ -304,6 +309,8 @@
             {$_("settings.theme.bg_solid_desc")}
           </p>
         </div>
+
+        <!-- button to change color -->
         <div
           class="shrink-0 p-2 bg-surface/3 rounded-sm flex items-center gap-2"
           onclick={(e) => e.stopPropagation()}

@@ -299,14 +299,10 @@
       "english": "English"
     },
     "performance": {
-      "description": "Settings for optimal performance with large volumes of data.",
+      "title": "Additional performance tuning.",
       "massive_list_title": "Massive List",
-      "massive_list_badge": "Enterprise Management",
       "massive_list_desc": "Optimize performance when managing large volumes of credentials.",
-      "massive_list_threshold": "Automatically activated when exceeding 100 credentials.",
-      "massive_list_active_badge": "Active with {count} credentials",
-      "massive_list_enabled": "Enabled",
-      "massive_list_disabled": "Disabled"
+      "massive_list_active_badge": "Active with {count} credentials"
     },
     "about": {
       "title": "About",

@@ -98,11 +98,11 @@
 
   <!-- CONTENT AREA -->
   <main
-    class="bg-surface/4 w-full h-full p-4 overflow-y-auto backdrop-blur-sm shadow-xl shadow-black/5"
+    class="bg-surface/4 w-full h-full p-4 overflow-y-auto"
   >
     <div class="max-w-2xl mx-auto h-full">
       {#key activeSection}
-        <div class="animate-in fade-in slide-in-from-right-4 duration-300">
+        <div class="grid gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
           {#if ActivePanel}
             <ActivePanel />
           {/if}

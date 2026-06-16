@@ -58,7 +58,7 @@
 <svelte:window onmousemove={resize} onmouseup={stopResizing} />
 
 <div 
-  class="terminal-log-container relative flex flex-col w-full bg-panel/30 border-t border-surface/20"
+  class="terminal-log-container relative flex flex-col w-full bg-panel/30 border-t border-surface/8"
   style={isExpanded ? `height: ${currentHeight}px;` : ''}
 >
   <!-- Drag Handle -->
@@ -70,7 +70,7 @@
     ></div>
   {/if}
 
-  <div class="terminal-header flex items-center justify-between px-4 py-2 border-b border-white/5">
+  <div class="terminal-header flex items-center justify-between px-4 py-2 border-b border-surface/8">
     <div class="flex items-center gap-4">
       <button 
         class="text-xs font-medium transition-colors focus:outline-none {viewMode === 'log' ? 'text-accent' : 'text-text-muted hover:text-text-primary'}"

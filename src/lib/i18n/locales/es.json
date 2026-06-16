@@ -300,14 +300,10 @@
       "english": "Inglés"
     },
     "performance": {
-      "description": "Ajustes para optimizar la experiencia con grandes volúmenes de datos.",
+      "title": "Ajuste de rendimiento adicional.",
       "massive_list_title": "Lista Masiva",
-      "massive_list_badge": "Gestión Empresarial",
       "massive_list_desc": "Optimiza el rendimiento cuando gestionas grandes volúmenes de credenciales.",
-      "massive_list_threshold": "Se activa automáticamente cuando superas las 100 credenciales.",
-      "massive_list_active_badge": "Activo con {count} credenciales",
-      "massive_list_enabled": "Activado",
-      "massive_list_disabled": "Desactivado"
+      "massive_list_active_badge": "Activo con {count} credenciales"
     },
     "about": {
       "title": "Acerca de Bóveda",

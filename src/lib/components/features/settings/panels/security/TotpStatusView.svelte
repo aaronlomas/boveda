@@ -21,7 +21,7 @@
 </script>
 
 <div
-  class="w-10 h-10 rounded-full flex items-center justify-center {isEnabled
+  class="p-2 rounded-full {isEnabled
     ? 'bg-success/10 text-success'
     : 'bg-surface/10 text-text-muted'}"
 >

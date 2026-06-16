@@ -46,7 +46,7 @@ impl AppState {
                 let session_state = if session_ok { "VERIFIED" } else if !locked { "PENDING_TOTP" } else { "N/A" };
 
                 vec![
-                    "── Vault Status ────────────────────────────────────────────".into(),
+                    "── Bóveda Status ────────────────────────────────────────────".into(),
                     format!("  Bóveda State      : {}", vault_state),
                     format!("  Session          : {}", session_state),
                     format!("  DB Path          : {}", self.db_path.display()),

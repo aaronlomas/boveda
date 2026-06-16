@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { logStore } from "$lib/stores/log.svelte";
 import type { Account, Pin } from "../stores/stores.svelte";
 
 export async function isVaultInitialized(): Promise<boolean> {

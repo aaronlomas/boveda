@@ -10,13 +10,13 @@
   }
 
   let history = $state<TerminalLine[]>([
-    { id: crypto.randomUUID(), text: "Bóveda Core CLI — type 'help' for available commands.", isCommand: false },
+    { id: crypto.randomUUID(), text: "CLI — type 'help' for available commands.", isCommand: false },
   ]);
   let inputValue = $state("");
   let terminalContainer: HTMLDivElement | undefined = $state();
   let inputElement: HTMLInputElement | undefined = $state();
   let username = $state("");
-  let prompt = $derived(username ? `${username}@boveda:~$` : "boveda:~$");
+  let prompt = $derived(username ? `${username}@boveda-core:~$` : "boveda-core:~$");
 
   onMount(async () => {
     try {

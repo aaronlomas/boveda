@@ -294,12 +294,12 @@
       "text_secondary_desc": "Color of labels and supporting texts"
     },
     "language": {
-      "description": "Select your preferred language.",
+      "description": "Select your preferred language",
       "spanish": "Spanish",
       "english": "English"
     },
     "performance": {
-      "title": "Additional performance tuning.",
+      "title": "Additional performance tuning",
       "massive_list_title": "Massive List",
       "massive_list_desc": "Optimize performance when managing large volumes of credentials.",
       "massive_list_active_badge": "Active with {count} credentials"

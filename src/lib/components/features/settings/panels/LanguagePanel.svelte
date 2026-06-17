@@ -5,9 +5,9 @@
 </script>
 
 <!-- ─ Language Section ─ -->
-<p class="text-xs text-text-muted mb-4">
+<h1 class="text-xl text-text-primary font-bold">
   {$_("settings.language.description")}
-</p>
+</h1>
 
 <div class="grid gap-4">
   <!-- Option: Spanish -->

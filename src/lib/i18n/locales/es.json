@@ -295,12 +295,12 @@
       "text_secondary_desc": "Color de etiquetas y textos de apoyo"
     },
     "language": {
-      "description": "Selecciona tu idioma preferido.",
+      "description": "Selecciona tu idioma preferido",
       "spanish": "Español",
       "english": "Inglés"
     },
     "performance": {
-      "title": "Ajuste de rendimiento adicional.",
+      "title": "Ajuste de rendimiento adicional",
       "massive_list_title": "Lista Masiva",
       "massive_list_desc": "Optimiza el rendimiento cuando gestionas grandes volúmenes de credenciales.",
       "massive_list_active_badge": "Activo con {count} credenciales"

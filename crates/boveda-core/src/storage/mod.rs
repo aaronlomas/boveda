@@ -447,7 +447,13 @@ pub async fn delete_preference_tx(conn: &mut SqliteConnection, key: &str) -> Bov
 
 // Audit Logging---------------------------------------------------------------
 
-/// Add a new entry to the audit log.
+/// Maximum number of audit log rows retained at any time.
+/// Rows older than this cap are pruned automatically on each insert.
+pub const AUDIT_LOG_MAX_ROWS: i64 = 1_000;
+
+/// Add a new entry to the audit log and prune any rows that exceed
+/// [`AUDIT_LOG_MAX_ROWS`]. The pruning runs on the same pool so it
+/// never blocks an unrelated caller.
 pub async fn add_audit_log(
     pool: &SqlitePool,
     action: &str,
@@ -460,12 +466,35 @@ pub async fn add_audit_log(
         .bind(&now)
         .execute(pool)
         .await?;
+
+    prune_audit_log(pool).await?;
+    Ok(())
+}
+
+/// Delete all audit log rows that exceed the [`AUDIT_LOG_MAX_ROWS`] cap,
+/// retaining only the most recent entries.
+pub async fn prune_audit_log(pool: &SqlitePool) -> BovedaResult<()> {
+    sqlx::query(
+        "DELETE FROM audit_log \
+         WHERE id NOT IN (SELECT id FROM audit_log ORDER BY id DESC LIMIT ?)",
+    )
+    .bind(AUDIT_LOG_MAX_ROWS)
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+/// Remove all rows from the audit log (manual reset).
+pub async fn clear_audit_log(pool: &SqlitePool) -> BovedaResult<()> {
+    sqlx::query("DELETE FROM audit_log")
+        .execute(pool)
+        .await?;
     Ok(())
 }
 
 /// Fetch recent audit logs.
 pub async fn get_audit_logs(pool: &SqlitePool, limit: i64) -> BovedaResult<Vec<(i64, String, Option<String>, String)>> {
-    let rows: Vec<(i64, String, Option<String>, String)> = 
+    let rows: Vec<(i64, String, Option<String>, String)> =
         sqlx::query_as("SELECT id, action, metadata, created_at FROM audit_log ORDER BY id DESC LIMIT ?")
             .bind(limit)
             .fetch_all(pool)
@@ -557,5 +586,56 @@ mod tests {
 
         let count = count_accounts_in_group(&pool, "G2").await.unwrap();
         assert_eq!(count, 0);
+    }
+
+    #[tokio::test]
+    async fn test_audit_log_prune_respects_cap() {
+        let pool = setup_db().await;
+
+        // Insert more rows than the cap to trigger pruning.
+        let over_cap = (AUDIT_LOG_MAX_ROWS + 5) as usize;
+        for i in 0..over_cap {
+            add_audit_log(&pool, "vault_unlock", Some(&format!("entry {i}"))).await.unwrap();
+        }
+
+        let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM audit_log")
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(count.0, AUDIT_LOG_MAX_ROWS, "Row count must equal the cap after pruning");
+    }
+
+    #[tokio::test]
+    async fn test_audit_log_clear() {
+        let pool = setup_db().await;
+
+        add_audit_log(&pool, "vault_lock", None).await.unwrap();
+        add_audit_log(&pool, "vault_unlock", Some("ok")).await.unwrap();
+
+        clear_audit_log(&pool).await.unwrap();
+
+        let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM audit_log")
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(count.0, 0, "Table must be empty after clear");
+    }
+
+    #[tokio::test]
+    async fn test_audit_log_retains_newest() {
+        let pool = setup_db().await;
+
+        // Insert cap + 3 rows; the 3 oldest must be pruned.
+        let total = (AUDIT_LOG_MAX_ROWS + 3) as usize;
+        for i in 0..total {
+            add_audit_log(&pool, "secret_access", Some(&format!("seq {i}"))).await.unwrap();
+        }
+
+        // The oldest surviving row should have metadata "seq 3" (0-based).
+        let rows = get_audit_logs(&pool, AUDIT_LOG_MAX_ROWS).await.unwrap();
+        assert_eq!(rows.len() as i64, AUDIT_LOG_MAX_ROWS);
+
+        let oldest = rows.last().unwrap();
+        assert_eq!(oldest.2.as_deref(), Some("seq 3"));
     }
 }

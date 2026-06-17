@@ -1,4 +1,5 @@
 use crate::storage;
+use crate::storage::AUDIT_LOG_MAX_ROWS;
 
 pub struct AuditLogView {
     pub id: i64,
@@ -25,5 +26,18 @@ impl super::AppState {
             .collect();
 
         Ok(view)
+    }
+
+    /// Deletes all audit log entries (manual reset).
+    pub async fn cmd_clear_audit_logs(&self) -> Result<(), String> {
+        let engine = self.get_engine()?;
+        storage::clear_audit_log(&engine.db)
+            .await
+            .map_err(|e| e.to_string())
+    }
+
+    /// Returns the configured maximum number of retained audit log rows.
+    pub fn cmd_get_audit_log_limit(&self) -> i64 {
+        AUDIT_LOG_MAX_ROWS
     }
 }

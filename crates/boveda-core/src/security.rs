@@ -44,6 +44,31 @@ pub fn environment_check() -> bool {
                 }
             }
         }
+
+        // 3. Detect remote desktop software processes (AnyDesk, TeamViewer, VNC, etc.)
+        if let Ok(entries) = std::fs::read_dir("/proc") {
+            let remote_procs = ["anydesk", "teamviewer", "rustdesk", "xrdp", "vnc", "remmina"];
+            for entry in entries.flatten() {
+                if let Ok(file_type) = entry.file_type() {
+                    if file_type.is_dir() {
+                        let file_name = entry.file_name();
+                        let file_name_str = file_name.to_string_lossy();
+                        if file_name_str.chars().all(|c| c.is_ascii_digit()) {
+                            let mut comm_path = entry.path();
+                            comm_path.push("comm");
+                            if let Ok(comm) = std::fs::read_to_string(comm_path) {
+                                let comm_lower = comm.trim().to_lowercase();
+                                for rp in &remote_procs {
+                                    if comm_lower.contains(rp) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     false

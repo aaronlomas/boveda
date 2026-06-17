@@ -22,16 +22,37 @@
     stopLogListeners();
   }
 
-  // Watch for unlock state changes to start/stop the auto-lock timer and security listeners
+  let remoteGuardInterval: ReturnType<typeof setInterval> | null = null;
+
+  function startRemoteGuard() {
+    remoteGuardInterval = setInterval(async () => {
+      try {
+        const locked = await invoke<boolean>("is_vault_locked");
+        if (locked && sessionState.isUnlocked) {
+          doLock();
+        }
+      } catch {}
+    }, 5000);
+  }
+
+  function stopRemoteGuard() {
+    if (remoteGuardInterval !== null) {
+      clearInterval(remoteGuardInterval);
+      remoteGuardInterval = null;
+    }
+  }
+
   $effect(() => {
     if (sessionState.isUnlocked) {
       loadTimeoutSeconds().then((seconds) => {
         startAutoLock({ onLock: doLock, seconds });
       });
       startLogListeners();
+      startRemoteGuard();
     } else {
       stopAutoLock();
       stopLogListeners();
+      stopRemoteGuard();
     }
   });
 </script>

@@ -68,10 +68,41 @@ impl BovedaEngine {
 
         // Check remote connection setting
         if let Ok(Some(pref)) = engine.get_preference("security.block_remote").await {
-            if pref == "true" && crate::security::environment_check() {
-                let _ = engine.log_audit(crate::audit::AuditAction::VaultUnlock, Some("Blocked: Remote Session Detected")).await;
-                engine.lock(); // Lock it back immediately
-                return Err(BovedaError::RemoteSessionDetected);
+            if pref == "true" {
+                if crate::security::environment_check() {
+                    let _ = engine.log_audit(crate::audit::AuditAction::VaultUnlock, Some("Blocked: Remote Session Detected")).await;
+                    engine.lock(); // Lock it back immediately
+                    return Err(BovedaError::RemoteSessionDetected);
+                } else {
+                    // Spawn a background task to monitor for remote sessions actively
+                    let master_key_clone = Arc::clone(&engine.master_key);
+                    tokio::spawn(async move {
+                        loop {
+                            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+                            
+                            // Stop monitoring if the vault is already locked
+                            let is_locked = {
+                                if let Ok(lock) = master_key_clone.lock() {
+                                    lock.is_none()
+                                } else {
+                                    true // Poisoned, consider locked
+                                }
+                            };
+                            
+                            if is_locked {
+                                break;
+                            }
+                            
+                            // If a remote session is detected while unlocked, lock immediately
+                            if crate::security::environment_check() {
+                                if let Ok(mut lock) = master_key_clone.lock() {
+                                    *lock = None;
+                                }
+                                break;
+                            }
+                        }
+                    });
+                }
             }
         }
 

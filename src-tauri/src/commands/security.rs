@@ -31,3 +31,13 @@ pub async fn totp_recovery_check(code: String, state: State<'_, AppState>) -> Re
 pub async fn totp_disable(state: State<'_, AppState>) -> Result<(), String> {
     state.cmd_totp_disable().await
 }
+
+#[tauri::command]
+pub fn is_vault_locked(state: State<'_, AppState>) -> bool {
+    state.is_locked()
+}
+
+#[tauri::command]
+pub fn remote_session_active() -> bool {
+    boveda_core::security::environment_check()
+}

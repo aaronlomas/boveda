@@ -26,6 +26,11 @@ export async function startLogListeners(): Promise<void> {
         return;
       }
 
+      if (payload.action === "remote_blocked") {
+        logStore.add("SEC", "Vault unlock blocked: remote session detected (AnyDesk/VNC/RDP)");
+        return;
+      }
+
       if (payload.action === "custom" || payload.msg) {
         logStore.add(payload.category || "SYSTEM", payload.msg);
         return;

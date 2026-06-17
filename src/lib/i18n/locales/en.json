@@ -329,6 +329,7 @@
     "error_empty": "Please enter your master password.",
     "error_mismatch": "Passwords do not match.",
     "error_incorrect": "Incorrect password. Try again.",
+    "error_remote_session": "Remote session detected. Bóveda cannot be unlocked.",
     "button_create": "Create vault",
     "button_unlock": "Unlock",
     "warning_new": "⚠️ This password cannot be recovered. Keep it in a safe place.",

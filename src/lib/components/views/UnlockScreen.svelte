@@ -137,11 +137,17 @@
   }
 
   function handleError(e: any) {
+    const errStr = String(e ?? "");
+
+    if (errStr.includes("Remote session detected")) {
+      error = $_("unlock_screen.error_remote_session");
+      return;
+    }
+
     error = $_("unlock_screen.error_incorrect");
     isShaking = true;
     setTimeout(() => (isShaking = false), 500);
 
-    // Add cooldown (1-3 seconds) to prevent rapid brute force
     cooldown = Math.floor(Math.random() * 3) + 1;
     const timer = setInterval(() => {
       cooldown--;

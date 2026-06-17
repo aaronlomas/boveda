@@ -28,8 +28,18 @@ pub async fn unlock_vault(
             Ok(result)
         }
         Err(e) => {
-            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault unlock failed. Check your master password." }));
-            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "failed_login_attempt" }));
+            let err_str = e.to_string();
+            if err_str.contains("Remote session detected") {
+                let _ = app.emit("boveda://audit", serde_json::json!({
+                    "action": "custom",
+                    "category": "SEC",
+                    "msg": "Vault unlock blocked: remote session detected (AnyDesk/VNC/RDP)"
+                }));
+                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "remote_blocked" }));
+            } else {
+                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault unlock failed. Check your master password." }));
+                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "failed_login_attempt" }));
+            }
             Err(e)
         }
     }

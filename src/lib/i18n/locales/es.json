@@ -330,6 +330,7 @@
     "error_empty": "Por favor ingresa tu contraseña maestra.",
     "error_mismatch": "Las contraseñas no coinciden.",
     "error_incorrect": "Contraseña incorrecta. Intenta de nuevo.",
+    "error_remote_session": "Sesión remota detectada. Bóveda no puede desbloquearse.",
     "button_create": "Crear Bóveda",
     "button_unlock": "Desbloquear",
     "warning_new": "⚠️ Esta contraseña no puede recuperarse. Guárdala en un lugar seguro.",

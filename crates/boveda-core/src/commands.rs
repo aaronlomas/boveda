@@ -154,10 +154,17 @@ impl AppState {
     }
 
     /// Returns true if the vault is locked.
+    ///
+    /// Checks both the outer engine presence in AppState and the inner master key
+    /// inside BovedaEngine, so that background guards that clear only the key
+    /// are correctly reflected.
     pub fn is_locked(&self) -> bool {
         self.engine
             .lock()
-            .map(|guard| guard.is_none())
+            .map(|guard| match guard.as_ref() {
+                None => true,
+                Some(engine) => engine.is_locked(),
+            })
             .unwrap_or(true)
     }
 

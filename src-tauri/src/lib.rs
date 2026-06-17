@@ -92,6 +92,8 @@ pub fn run() {
             commands::security::totp_check,
             commands::security::totp_recovery_check,
             commands::security::totp_disable,
+            commands::security::is_vault_locked,
+            commands::security::remote_session_active,
             // ── Shell CLI ─────────────────────────────────────────────────
             commands::shell::shell_query,
         ])

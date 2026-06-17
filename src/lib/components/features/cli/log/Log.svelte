@@ -65,7 +65,7 @@
   {#if isExpanded}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div 
-      class="absolute top-0 left-0 w-full h-1 cursor-ns-resize hover:bg-accent/40 transition-colors z-20"
+      class="absolute top-0 left-0 w-full h-1 cursor-ns-resize z-20"
       onmousedown={startResizing}
     ></div>
   {/if}

@@ -26,48 +26,50 @@ pub enum ImportStrategy {
     Replace,
 }
 
-/// ChaCha20-Poly1305 master key wrapper. Uses mlock/VirtualLock for memory protection.
-pub struct MasterKey(Box<[u8; 32]>);
+/// ChaCha20-Poly1305 master key wrapper.
+///
+/// The inner `SecretKey` is heap-allocated inside a `Box` so that its address
+/// remains stable and can be pinned with `mlock`/`VirtualLock`.
+pub struct MasterKey(Box<SecretKey>);
 
 impl MasterKey {
     pub fn new(key: SecretKey) -> Self {
-        let boxed_key = Box::new(*key.as_bytes());
+        let boxed = Box::new(key);
 
         #[cfg(unix)]
         unsafe {
-            let ptr = boxed_key.as_ptr() as *const libc::c_void;
+            let ptr = boxed.as_bytes().as_ptr() as *const libc::c_void;
             let _ = libc::mlock(ptr, 32);
         }
         #[cfg(windows)]
         unsafe {
             use windows_sys::Win32::System::Memory::VirtualLock;
-            let ptr = boxed_key.as_ptr() as *const std::ffi::c_void;
+            let ptr = boxed.as_bytes().as_ptr() as *const std::ffi::c_void;
             let _ = VirtualLock(ptr, 32);
         }
-        Self(boxed_key)
+        Self(boxed)
     }
 
-    pub fn as_bytes(&self) -> &[u8; 32] {
+    /// Returns a reference to the confined key without copying any bytes.
+    pub fn as_secret_key(&self) -> &SecretKey {
         &self.0
     }
 }
 
 impl Drop for MasterKey {
     fn drop(&mut self) {
-        use zeroize::Zeroize;
-        self.0.zeroize();
-
         #[cfg(unix)]
         unsafe {
-            let ptr = self.0.as_ptr() as *const libc::c_void;
+            let ptr = self.0.as_bytes().as_ptr() as *const libc::c_void;
             let _ = libc::munlock(ptr, 32);
         }
         #[cfg(windows)]
         unsafe {
             use windows_sys::Win32::System::Memory::VirtualUnlock;
-            let ptr = self.0.as_ptr() as *const std::ffi::c_void;
+            let ptr = self.0.as_bytes().as_ptr() as *const std::ffi::c_void;
             let _ = VirtualUnlock(ptr, 32);
         }
+        // SecretKey::drop handles zeroization via its own Drop impl.
     }
 }
 

@@ -1,6 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// 🔒 Lifecycle & Authentication
-// ─────────────────────────────────────────────────────────────────────────────
+// Lifecycle & Authentication
 
 use std::path::Path;
 use std::sync::{Arc, Mutex};
@@ -113,7 +111,6 @@ impl BovedaEngine {
     }
 
     /// Opens an **unencrypted** SQLite database. **FOR TESTING ONLY**.
-    /// Should not be used in production. Exists to support unit tests with in-memory databases.
     pub async fn open_unencrypted(db_path: &Path) -> BovedaResult<Self> {
         let url = format!("sqlite://{}?mode=rwc", db_path.to_string_lossy());
         let pool = SqlitePoolOptions::new()
@@ -154,12 +151,7 @@ impl BovedaEngine {
         // This is safe from SQL injection, even though sqlx concatenates PRAGMA values.
         //
         // SEC-C5: All KDF/cipher parameters are pinned explicitly to avoid relying on
-        // SQLCipher compiled-in defaults, which may vary across versions and platforms.
-        // Values follow SQLCipher 4.x best-practice recommendations:
-        //   - cipher_kdf_algorithm  : PBKDF2-HMAC-SHA512 (stronger than default SHA1)
-        //   - cipher_hmac_algorithm : HMAC-SHA512 (integrity of each page)
-        //   - cipher_page_size      : 4096 bytes  (performance + security balance)
-        //   - kdf_iter              : 256 000     (OWASP minimum for PBKDF2-SHA512)
+        // SQLCipher compiled-in defaults
         options = options
             .pragma("key", pragma_key.as_str().to_string())
             .pragma("cipher_use_hmac", "ON")
@@ -204,19 +196,16 @@ impl BovedaEngine {
     }
 
     /// Internal helper to execute a closure with the master key if unlocked.
+    /// Lends `&SecretKey` directly from the heap-pinned, mlock'd `MasterKey`
     pub(crate) fn with_key<F, R>(&self, f: F) -> BovedaResult<R>
     where
         F: FnOnce(&SecretKey) -> R,
     {
         let lock = self.master_key.lock()
             .map_err(|_| BovedaError::Other("Vault lock poisoned".to_string()))?;
-            
+
         lock.as_ref()
-            .map(|mk| {
-                // Temporary reconstruct SecretKey from the safe boxed memory
-                let sk = SecretKey::new(*mk.as_bytes());
-                f(&sk)
-            })
+            .map(|mk| f(mk.as_secret_key()))
             .ok_or(BovedaError::VaultLocked)
     }
 }

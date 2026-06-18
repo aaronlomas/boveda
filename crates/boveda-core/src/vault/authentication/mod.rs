@@ -168,6 +168,22 @@ impl BovedaEngine {
             .connect_with(options)
             .await?;
 
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Audit Recommendation #3 Verification:
+        // Ensure that we are genuinely linked against SQLCipher and not falling back
+        // to a standard system SQLite (which might silently ignore the key PRAGMA).
+        // ─────────────────────────────────────────────────────────────────────────────
+        let cipher_version: Option<(String,)> = sqlx::query_as("PRAGMA cipher_version;")
+            .fetch_optional(&pool)
+            .await?;
+        
+        if cipher_version.is_none() || cipher_version.as_ref().unwrap().0.trim().is_empty() {
+            return Err(BovedaError::Other(
+                "CRITICAL: SQLCipher is not correctly linked or configured. \
+                 Falling back to standard SQLite is prohibited for security reasons.".to_string()
+            ));
+        }
+
         Ok(Self {
             db: pool,
             master_key: Arc::new(Mutex::new(None)),

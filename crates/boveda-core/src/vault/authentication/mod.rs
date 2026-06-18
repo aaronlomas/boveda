@@ -45,6 +45,19 @@ impl BovedaEngine {
                 use std::os::unix::fs::PermissionsExt;
                 let _ = std::fs::set_permissions(&salt_path, std::fs::Permissions::from_mode(0o600));
             }
+            #[cfg(windows)]
+            {
+                // On Windows, std::fs::Permissions can only control the read-only attribute.
+                // We mark vault.salt as read-only to prevent accidental modification.
+                // Security: Bóveda stores its data in the user's LocalAppData folder
+                // (e.g., C:\Users\<User>\AppData\Local\...), which by default inherits ACLs
+                // that restrict access strictly to the current user profile and administrators.
+                let mut perms = std::fs::metadata(&salt_path)
+                    .map_err(|e| BovedaError::IoError(format!("Error leyendo metadatos de salt: {}", e)))?
+                    .permissions();
+                perms.set_readonly(true);
+                let _ = std::fs::set_permissions(&salt_path, perms);
+            }
             new_salt
         };
 
@@ -168,11 +181,7 @@ impl BovedaEngine {
             .connect_with(options)
             .await?;
 
-        // ─────────────────────────────────────────────────────────────────────────────
-        // Audit Recommendation #3 Verification:
-        // Ensure that we are genuinely linked against SQLCipher and not falling back
-        // to a standard system SQLite (which might silently ignore the key PRAGMA).
-        // ─────────────────────────────────────────────────────────────────────────────
+        //using SQLChiper
         let cipher_version: Option<(String,)> = sqlx::query_as("PRAGMA cipher_version;")
             .fetch_optional(&pool)
             .await?;

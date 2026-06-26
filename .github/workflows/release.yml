@@ -90,3 +90,11 @@ jobs:
               gh release upload "${{ github.ref_name }}" "$file.sigstore" --clobber
             fi
           done
+  #Notify Vercel of changes
+  deploy-vercel:
+    needs: publish-tauri
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Deploy
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"

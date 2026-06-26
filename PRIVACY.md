@@ -21,8 +21,3 @@ Data is protected using:
 ## Third Parties
 
 Bóveda does not integrate third-party SDKs that collect data. Project dependencies are open-source and auditable in `Cargo.toml` and `package.json`.
-
-## Code Signing
-
-Free code signing for Bóveda is provided by the [SignPath Foundation](https://signpath.org). Please review our [Code Signing Policy](./CODE_SIGNING_POLICY.md).
-

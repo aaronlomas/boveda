@@ -1,4 +1,4 @@
-# Security Policy 🛡️
+# Security Policy
 
 We deeply value the security of **Bóveda**. If you believe you have found a security vulnerability, we appreciate you reporting it to us in a responsible manner.
 

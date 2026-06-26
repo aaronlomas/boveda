@@ -1,5 +1,3 @@
-[Leer en español 🇪🇸](./README.es.md)
-
 # Bóveda — Credential Manager
 <img width="1100" height="720" alt="image" src="https://github.com/user-attachments/assets/07a9cbb6-dac0-4ab3-923c-b2af61be6c9e" />
 

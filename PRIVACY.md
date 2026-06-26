@@ -1,4 +1,4 @@
-# Privacy Policy — Bóveda
+# Privacy Policy
 
 **Bóveda** is a local credential manager designed with the principle of **digital sovereignty**.
 

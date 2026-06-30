@@ -36,12 +36,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG_NAME="${{ github.event.release.tag_name }}"
-          # Si se dispara manualmente (workflow_dispatch), buscamos la última versión
+          # If it is triggered manually (workflow_dispatch), we look for the last version
           if [ -z "$TAG_NAME" ]; then
             TAG_NAME=$(gh release view --json tagName -q .tagName)
           fi
           echo "Downloading .deb for tag: $TAG_NAME"
-          # Descargamos el .deb directamente a la carpeta del pool
+          # Download the .deb directly to the pool folder
           gh release download "$TAG_NAME" -p "*.deb" -D apt-repo/pool/main/ || echo "No .deb found in release"
 
       - name: Import GPG key
@@ -57,11 +57,11 @@ jobs:
         run: |
           cd apt-repo
           
-          # Generar archivo Packages
+          # Generate Packages file
           dpkg-scanpackages --arch amd64 pool/ > dists/stable/main/binary-amd64/Packages
           cat dists/stable/main/binary-amd64/Packages | gzip -9 > dists/stable/main/binary-amd64/Packages.gz
           
-          # Generar archivo Release
+          # Generate Release file
           cd dists/stable
           echo "Origin: Boveda APT Repository" > Release
           echo "Label: Boveda" >> Release
@@ -72,11 +72,11 @@ jobs:
           echo "Description: Boveda Password Manager APT Repository" >> Release
           apt-ftparchive release . >> Release
           
-          # Firmar el repositorio (crea InRelease y Release.gpg)
+          # Sign the repository (creates InRelease and Release.gpg)
           gpg --default-key "$GPG_FINGERPRINT" --armor --clearsign --output InRelease --sign Release
           gpg --default-key "$GPG_FINGERPRINT" --armor --detach-sign --output Release.gpg Release
           
-          # Exportar la clave pública para que los usuarios puedan descargarla
+          # Export the public key
           cd ../../
           gpg --armor --export "$GPG_FINGERPRINT" > boveda-archive-keyring.gpg
 

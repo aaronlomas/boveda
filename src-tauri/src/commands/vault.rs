@@ -1,6 +1,6 @@
-use tauri::{State, Emitter};
 use crate::state::AppState;
 use boveda_core::SecretString;
+use tauri::{Emitter, State};
 
 #[tauri::command]
 pub fn is_vault_initialized(state: State<'_, AppState>) -> bool {
@@ -13,7 +13,10 @@ pub async fn unlock_vault(
     state: State<'_, AppState>,
     app: tauri::AppHandle,
 ) -> Result<String, String> {
-    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({ "action": "clear_log" }),
+    );
     let t0 = std::time::Instant::now();
     let m_cost = boveda_core::crypto::ARGON2_M_COST;
     let t_cost = boveda_core::crypto::ARGON2_T_COST;
@@ -24,21 +27,33 @@ pub async fn unlock_vault(
         Ok(result) => {
             let elapsed = t0.elapsed().as_millis();
             let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "SUCCESS", "msg": format!("Vault unlocked successfully [{}ms]", elapsed) }));
-            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "vault_unlock" }));
+            let _ = app.emit(
+                "boveda://audit",
+                serde_json::json!({ "action": "vault_unlock" }),
+            );
             Ok(result)
         }
         Err(e) => {
             let err_str = e.to_string();
             if err_str.contains("Remote session detected") {
-                let _ = app.emit("boveda://audit", serde_json::json!({
-                    "action": "custom",
-                    "category": "SEC",
-                    "msg": "Vault unlock blocked: remote session detected (AnyDesk/VNC/RDP)"
-                }));
-                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "remote_blocked" }));
+                let _ = app.emit(
+                    "boveda://audit",
+                    serde_json::json!({
+                        "action": "custom",
+                        "category": "SEC",
+                        "msg": "Vault unlock blocked: remote session detected (AnyDesk/VNC/RDP)"
+                    }),
+                );
+                let _ = app.emit(
+                    "boveda://audit",
+                    serde_json::json!({ "action": "remote_blocked" }),
+                );
             } else {
                 let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault unlock failed. Check your master password." }));
-                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "failed_login_attempt" }));
+                let _ = app.emit(
+                    "boveda://audit",
+                    serde_json::json!({ "action": "failed_login_attempt" }),
+                );
             }
             Err(e)
         }
@@ -47,15 +62,24 @@ pub async fn unlock_vault(
 
 #[tauri::command]
 pub fn lock_vault(state: State<'_, AppState>, app: tauri::AppHandle) -> Result<(), String> {
-    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({ "action": "clear_log" }),
+    );
     let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "MEM", "msg": "Clearing vault from memory. Locking..." }));
     state.cmd_lock_vault();
-    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "vault_lock", "trigger": "manual" }));
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({ "action": "vault_lock", "trigger": "manual" }),
+    );
     Ok(())
 }
 
 #[tauri::command]
-pub async fn delete_vault(password: SecretString, state: State<'_, AppState>) -> Result<(), String> {
+pub async fn delete_vault(
+    password: SecretString,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
     state.cmd_delete_vault(password).await
 }
 
@@ -68,12 +92,20 @@ pub async fn add_account(
     notes: SecretString,
     state: State<'_, AppState>,
 ) -> Result<String, String> {
-    state.cmd_add_account(site, username, password, recovery_code, notes).await
+    state
+        .cmd_add_account(site, username, password, recovery_code, notes)
+        .await
 }
 
 #[tauri::command]
-pub async fn get_accounts(state: State<'_, AppState>, app: tauri::AppHandle) -> Result<Vec<boveda_core::Account>, String> {
-    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+pub async fn get_accounts(
+    state: State<'_, AppState>,
+    app: tauri::AppHandle,
+) -> Result<Vec<boveda_core::Account>, String> {
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({ "action": "clear_log" }),
+    );
     let t0 = std::time::Instant::now();
     let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "DB", "msg": "Querying local SQLCipher store for accounts..." }));
     let res = state.cmd_get_accounts().await;
@@ -107,9 +139,16 @@ pub async fn decrypt_secret(
     state: State<'_, AppState>,
     app: tauri::AppHandle,
 ) -> Result<String, String> {
-    let _ = app.emit("boveda://audit", serde_json::json!({ "action": "clear_log" }));
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({ "action": "clear_log" }),
+    );
     let t0 = std::time::Instant::now();
-    let req_id = if ciphertext.len() > 8 { &ciphertext[..8] } else { "42" };
+    let req_id = if ciphertext.len() > 8 {
+        &ciphertext[..8]
+    } else {
+        "42"
+    };
     let nonce_len = boveda_core::crypto::NONCE_LEN;
     let tag_len = boveda_core::crypto::TAG_LEN;
 
@@ -124,7 +163,10 @@ pub async fn decrypt_secret(
             let elapsed = t0.elapsed().as_millis();
             let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "SUCCESS", "msg": "MAC validation passed. Integrity verified." }));
             let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "CIPHER", "msg": format!("Payload decrypted. Integrity verified [{}ms]", elapsed) }));
-            let _ = app.emit("boveda://audit", serde_json::json!({ "action": "secret_access" }));
+            let _ = app.emit(
+                "boveda://audit",
+                serde_json::json!({ "action": "secret_access" }),
+            );
             Ok(cleartext)
         }
         Err(e) => {
@@ -142,7 +184,9 @@ pub async fn update_account_group(
     group_name: Option<String>,
     state: State<'_, AppState>,
 ) -> Result<(), String> {
-    state.cmd_update_account_group(&id, group_name.as_deref()).await
+    state
+        .cmd_update_account_group(&id, group_name.as_deref())
+        .await
 }
 
 #[tauri::command]
@@ -194,7 +238,9 @@ pub async fn add_document(
 }
 
 #[tauri::command]
-pub async fn get_documents(state: State<'_, AppState>) -> Result<Vec<boveda_core::Document>, String> {
+pub async fn get_documents(
+    state: State<'_, AppState>,
+) -> Result<Vec<boveda_core::Document>, String> {
     state.cmd_get_documents().await
 }
 
@@ -206,7 +252,9 @@ pub async fn update_document(
     content: SecretString,
     state: State<'_, AppState>,
 ) -> Result<(), String> {
-    state.cmd_update_document(&id, title, description, content).await
+    state
+        .cmd_update_document(&id, title, description, content)
+        .await
 }
 
 #[tauri::command]

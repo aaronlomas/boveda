@@ -45,3 +45,6 @@ tauri-plugin-dialog = "2.7.0"
 version = "0.30"
 default-features = false
 features = ["bundled-sqlcipher-vendored-openssl"]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"

@@ -1,0 +1,89 @@
+name: "APT Repository Update"
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-apt-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install APT tools
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev apt-utils
+
+      # I verify and download the gh-pages branch
+      - name: Checkout existing APT repo
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: apt-repo
+
+      - name: Prepare APT structure
+        run: |
+          mkdir -p apt-repo/pool/main
+          mkdir -p apt-repo/dists/stable/main/binary-amd64
+
+      - name: Download latest .deb from Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          # Si se dispara manualmente (workflow_dispatch), buscamos la última versión
+          if [ -z "$TAG_NAME" ]; then
+            TAG_NAME=$(gh release view --json tagName -q .tagName)
+          fi
+          echo "Downloading .deb for tag: $TAG_NAME"
+          # Descargamos el .deb directamente a la carpeta del pool
+          gh release download "$TAG_NAME" -p "*.deb" -D apt-repo/pool/main/ || echo "No .deb found in release"
+
+      - name: Import GPG key
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.APT_GPG_PASSPHRASE }}
+
+      - name: Generate APT Repository Index
+        env:
+          GPG_FINGERPRINT: ${{ steps.import-gpg.outputs.fingerprint }}
+        run: |
+          cd apt-repo
+          
+          # Generar archivo Packages
+          dpkg-scanpackages --arch amd64 pool/ > dists/stable/main/binary-amd64/Packages
+          cat dists/stable/main/binary-amd64/Packages | gzip -9 > dists/stable/main/binary-amd64/Packages.gz
+          
+          # Generar archivo Release
+          cd dists/stable
+          echo "Origin: Boveda APT Repository" > Release
+          echo "Label: Boveda" >> Release
+          echo "Suite: stable" >> Release
+          echo "Codename: stable" >> Release
+          echo "Architectures: amd64" >> Release
+          echo "Components: main" >> Release
+          echo "Description: Boveda Password Manager APT Repository" >> Release
+          apt-ftparchive release . >> Release
+          
+          # Firmar el repositorio (crea InRelease y Release.gpg)
+          gpg --default-key "$GPG_FINGERPRINT" --armor --clearsign --output InRelease --sign Release
+          gpg --default-key "$GPG_FINGERPRINT" --armor --detach-sign --output Release.gpg Release
+          
+          # Exportar la clave pública para que los usuarios puedan descargarla
+          cd ../../
+          gpg --armor --export "$GPG_FINGERPRINT" > boveda-archive-keyring.gpg
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apt-repo
+          publish_branch: gh-pages
+          keep_files: true # It maintains previous versions.

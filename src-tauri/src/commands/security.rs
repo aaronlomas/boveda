@@ -1,6 +1,6 @@
-use tauri::State;
 use crate::state::AppState;
 use boveda_core::auth::TotpSetupPayload;
+use tauri::State;
 
 #[tauri::command]
 pub async fn totp_is_enabled(state: State<'_, AppState>) -> Result<bool, String> {

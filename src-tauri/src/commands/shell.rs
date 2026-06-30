@@ -1,5 +1,5 @@
-use tauri::State;
 use crate::state::AppState;
+use tauri::State;
 
 /// Ejecuta un comando de texto en la CLI interna de Bóveda Core.
 /// Devuelve las líneas de respuesta formateadas como strings.

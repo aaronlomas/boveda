@@ -1,11 +1,14 @@
-use tauri::State;
 use crate::state::AppState;
 use boveda_core::vault::ImportStrategy;
+use tauri::State;
 
 // ─── User Preferences ─────────────────────────────────────────────────────────
 
 #[tauri::command]
-pub async fn get_preference(key: String, state: State<'_, AppState>) -> Result<Option<String>, String> {
+pub async fn get_preference(
+    key: String,
+    state: State<'_, AppState>,
+) -> Result<Option<String>, String> {
     state.cmd_get_preference(&key).await
 }
 
@@ -63,7 +66,9 @@ pub async fn import_secure_package(
     strategy: ImportStrategy,
     state: State<'_, AppState>,
 ) -> Result<(), String> {
-    state.cmd_import_secure_package(&src_path, password, strategy).await
+    state
+        .cmd_import_secure_package(&src_path, password, strategy)
+        .await
 }
 
 #[derive(serde::Serialize)]

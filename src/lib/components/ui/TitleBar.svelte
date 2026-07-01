@@ -60,10 +60,6 @@
     <div
       class="w-4 h-4 bg-linear-to-br from-accent rounded-full pointer-events-none"
     ></div>
-    <span
-      class="text-xs font-semibold text-text-muted tracking-wide pointer-events-none transition-opacity duration-200"
-      class:opacity-50={!isFocused}>Bóveda</span
-    >
   </div>
 
   <div class="flex h-full" onmousedown={(e) => e.stopPropagation()} role="none">

@@ -6,4 +6,118 @@
   export { className as class };
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" class={className} height={sizeY ?? size} width={sizeX ?? size} viewBox="0 0 135.467 135.467"><path fill="currentColor" d="M128.298 9.039c-5.12-.13-16.26 2.825-23.446 28.536a100 100 0 0 0-1.863 7.783 62 62 0 0 0-3.949-1.95c-3.915-1.768-13.683-1.95-18.117-2.978-5.302-1.228-13.161-4.27-13.161-4.27s-7.34 3.57-12.488 4.723c-5.183 1.159-11.831 1.046-16.304 3.203a60 60 0 0 0-6.114 3.394c-.491-2.944-1.222-6.22-2.241-9.87C21.033 3.329 4.424 9.504 4.424 9.504s-8.305 19.164 0 48.761c2.536 9.039 5.37 13.968 8.083 16.453a34.8 34.8 0 0 0-.742 7.149c0 24.613 25.953 44.566 57.968 44.566s57.968-19.953 57.968-44.566c0-3.774-.61-7.438-1.759-10.937 1.75-2.853 3.486-6.942 5.1-12.7 8.305-29.597 0-48.76 0-48.76s-1.037-.387-2.744-.43M93.64 60.727c5.42-.174 10.631 4.928 11.991 12.202 1.45 7.76-1.96 15.696-7.823 16.003-7.071.37-13.431-8.552-13.431-8.552s.162-18.232 8.178-19.547a8 8 0 0 1 1.085-.106m-46.97.8a8 8 0 0 1 1.071.105c7.904 1.297 8.064 19.275 8.064 19.275s-6.271 8.798-13.244 8.433c-5.781-.303-9.145-8.13-7.714-15.78 1.34-7.173 6.48-12.204 11.824-12.032m1.892 38.527 6.767 2.766 15.275-1.343 13.82 1.093 6.501-2.516.81 1.162-7.047 2.945-13.938-1.207-15.643 1.332-7.239-2.954z"/></svg>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://w3.org"
+  xml:space="preserve"
+  class={className}
+  height={sizeY ?? size}
+  width={sizeX ?? size}
+  viewBox="0 0 135.47 135.47"
+  ><defs
+    ><linearGradient id="linearGradient2"
+      ><stop offset="0" stop-color="none" stop-opacity="0" /><stop
+        offset=".814"
+        stop-color="none"
+      /></linearGradient
+    ><linearGradient
+      xlink:href="#linearGradient2"
+      id="linearGradient37"
+      x1="5.349"
+      x2="78.32"
+      y1="65.233"
+      y2="65.233"
+      gradientTransform="matrix(1.0399 0 0 1.1365 .015 -6.172)"
+      gradientUnits="userSpaceOnUse"
+    /></defs
+  ><ellipse
+    cx="72.465"
+    cy="67.968"
+    fill="none"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-width="10.426"
+    rx="53.465"
+    ry="54.194"
+    style="paint-order:fill markers stroke"
+  /><g stroke="currentColor" stroke-linecap="round" stroke-width="2.592"
+    ><rect
+      width="8.84"
+      height="33.124"
+      x="6.817"
+      y="87.59"
+      fill="url(#linearGradient37)"
+      ry="1.725"
+      style="paint-order:fill markers stroke"
+    /><rect
+      width="8.84"
+      height="33.124"
+      x="6.817"
+      y="16.1"
+      fill="url(#linearGradient37)"
+      ry="1.725"
+      style="paint-order:fill markers stroke"
+    /><path
+      fill="none"
+      d="m41.271 13.547-.021.001c-1.22.006-2.438.518-3.372 1.539l-8.062 8.81h-23v17.115h19.195v54.377H6.817v17.114H26.01v0h3.901l7.965 8.706c.935 1.021 2.153 1.531 3.373 1.537l.02.002v0h29.715V109.67H53.64a13.545 14.803 0 0 1-9.577-4.337l-6.433-7.03v-60.31l6.433-7.031a13.545 14.803 0 0 1 9.577-4.335h17.346V13.55H41.3l-.03-.002z"
+      style="paint-order:fill markers stroke"
+    /><rect
+      width="11.401"
+      height="26.706"
+      x="68.822"
+      y="2.16"
+      fill="url(#linearGradient37)"
+      ry="3.519"
+      style="paint-order:fill markers stroke"
+    /><rect
+      width="11.401"
+      height="26.706"
+      x="68.822"
+      y="107.07"
+      fill="url(#linearGradient37)"
+      ry="3.519"
+      style="paint-order:fill markers stroke"
+    /></g
+  ><g fill="currentColor" class="i-rudder"
+    ><path
+      d="M72.464 32.592c-19.284 0-34.94 15.896-34.94 35.375s15.656 35.377 34.94 35.377 34.943-15.899 34.943-35.377-15.659-35.375-34.943-35.375m0 6.208c15.883 0 28.735 12.999 28.735 29.167s-12.852 29.17-28.735 29.17-28.733-13.002-28.733-29.17S56.581 38.8 72.464 38.8"
+      style="paint-order:fill markers stroke"
+    /><path
+      fill-rule="evenodd"
+      d="M41.947 37.45a3.727 3.727 0 0 0 .006 5.282l20.83 20.83 5.277-5.275-20.831-20.831a3.727 3.727 0 0 0-5.283-.006zm34.859 40.134 20.895 20.895a3.726 3.726 0 0 0 5.282.006 3.727 3.727 0 0 0-.006-5.282L82.082 72.308zM102.98 37.45a3.727 3.727 0 0 0-5.282.006l-20.83 20.83 5.275 5.277 20.831-20.831a3.727 3.727 0 0 0 .006-5.283zM62.846 72.309 41.951 93.205a3.727 3.727 0 0 0-.006 5.282 3.727 3.727 0 0 0 5.282-.006l20.896-20.895z"
+      style="paint-order:fill markers stroke"
+    /></g
+  ><circle
+    cx="72.465"
+    cy="67.968"
+    r="13.238"
+    fill="none"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-width="7.388"
+    style="paint-order:fill markers stroke"
+  /></svg
+>
+
+<style>
+  .i-rudder {
+    animation: spin 5s ease-in-out;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    20% {
+      transform: rotate(12deg);
+    }
+    30% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>

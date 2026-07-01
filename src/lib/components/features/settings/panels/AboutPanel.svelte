@@ -15,6 +15,7 @@
   import { toast } from "$lib/stores/toast.svelte";
   import { sessionState } from "$lib/stores/stores.svelte";
   import { focus } from "$lib/utils/actions";
+  import { check, type Update } from "@tauri-apps/plugin-updater";
 
   let appInfo = $state({ app_version: "...", core_version: "..." });
 
@@ -23,6 +24,9 @@
   let showPassword = $state(false);
   let loadingDelete = $state(false);
   let errorDelete = $state("");
+
+  let updateState = $state<"idle" | "checking" | "available" | "downloading" | "done">("idle");
+  let updateData = $state<Update | null>(null);
 
   onMount(async () => {
     try {
@@ -49,6 +53,42 @@
       errorDelete = e.toString();
     } finally {
       loadingDelete = false;
+    }
+  }
+
+  async function handleUpdater() {
+    if (updateState === "idle") {
+      updateState = "checking";
+      try {
+        const update = await check();
+        if (update) {
+          updateData = update;
+          updateState = "available";
+        } else {
+          toast.success("Bóveda is up to date.");
+          updateState = "idle";
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to check for updates.");
+        updateState = "idle";
+      }
+    } else if (updateState === "available" && updateData) {
+      updateState = "downloading";
+      try {
+        await updateData.downloadAndInstall();
+        updateState = "done";
+        toast.success("Update ready. Please restart Bóveda.");
+      } catch (err: any) {
+        console.error("Update error:", err);
+        // Fallback for unsupported platforms (like .deb on Linux)
+        if (err.toString().toLowerCase().includes("unsupported")) {
+           toast.info("Update available. Please run: 'sudo apt update && sudo apt install boveda'");
+        } else {
+           toast.error("Update failed: " + err.toString());
+        }
+        updateState = "idle";
+      }
     }
   }
 </script>
@@ -90,9 +130,33 @@
   <ListItem layout="double" flush={true}>
     <div>
       <p class="text-sm">{$_("settings.updater.sub_title")}</p>
-      <p class="text-xs text-text-muted">{$_("settings.updater.desc")}</p>
+      <p class="text-xs text-text-muted">
+        {#if updateState === "available" && updateData}
+          Versión {updateData.version} disponible
+        {:else}
+          {$_("settings.updater.desc")}
+        {/if}
+      </p>
     </div>
-    <Button variant="primary">{$_("actions.search")}</Button>
+    <Button 
+      variant={updateState === "available" ? "primary" : "secondary"} 
+      onclick={handleUpdater}
+      disabled={updateState === "checking" || updateState === "downloading" || updateState === "done"}
+    >
+      {#if updateState === "idle"}
+        {$_("actions.search")}
+      {:else if updateState === "checking"}
+        <span class="w-3 h-3 border-2 border-text-primary/30 border-t-text-primary rounded-full animate-spin mr-1.5"></span>
+        Buscando...
+      {:else if updateState === "available"}
+        {$_("actions.update")}
+      {:else if updateState === "downloading"}
+        <span class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1.5"></span>
+        Actualizando...
+      {:else if updateState === "done"}
+        Listo
+      {/if}
+    </Button>
   </ListItem>
 
   <!-- Account System -->

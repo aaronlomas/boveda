@@ -24,6 +24,8 @@
     "back": "Back",
     "disable":"Disable",
     "enable":"Enable",
+    "update": "Update",
+    "search": "Search",
     "status": {
       "encrypting": "Encrypting...",
       "decryption": "Decrypting...",
@@ -317,6 +319,11 @@
       "delete_confirm": "This action will delete your saved data, are you sure you want to delete your account?",
       "delete_success": "Account deleted successfully.",
       "delete_error": "Failed to delete account."
+    },
+    "updater": {
+      "title": "Updates",
+      "sub_title": "View Updates",
+      "desc": "Make sure to keep Bóveda updated."
     }
   },
   "unlock_screen": {

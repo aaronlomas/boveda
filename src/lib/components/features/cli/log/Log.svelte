@@ -5,7 +5,7 @@
   import { typewriter } from "$lib/utils/actions";
 
   let logContainer: HTMLDivElement | undefined = $state();
-  let isExpanded = $state(true);
+  let isExpanded = $state(false);
   let viewMode = $state<"log" | "terminal">("log");
   let terminalRef: ReturnType<typeof Terminal> | undefined = $state();
 

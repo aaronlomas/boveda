@@ -11,6 +11,7 @@
   import { onMount } from "svelte";
   import Button from "../../../core/primitives/Button.svelte";
   import Modal from "../../../core/primitives/Modal.svelte";
+  import ListItem from "../../../core/primitives/ListItem.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { sessionState } from "$lib/stores/stores.svelte";
   import { focus } from "$lib/utils/actions";
@@ -81,13 +82,25 @@
     <span class="text-sm font-mono text-accent">v{appInfo.core_version}</span>
   </div>
 
+  <!-- updater -->
+
+  <h1 class="text-text-primary text-xl font-bold border-b border-surface/8">
+    {$_("settings.updater.title")}
+  </h1>
+  <ListItem layout="double" flush={true}>
+    <div>
+      <p class="text-sm">{$_("settings.updater.sub_title")}</p>
+      <p class="text-xs text-text-muted">{$_("settings.updater.desc")}</p>
+    </div>
+    <Button variant="primary">{$_("actions.search")}</Button>
+  </ListItem>
+
   <!-- Account System -->
 
-  <h1 class="text-text-primary text-xl font-bold">
+  <h1 class="text-text-primary text-xl font-bold border-b border-surface/8">
     {$_("settings.account_system.title")}
   </h1>
-
-  <div class="flex justify-between items-center">
+  <ListItem layout="double" flush={true}>
     <div>
       <h3 class="text-sm font-medium text-danger">
         {$_("settings.account_system.delete_account")}
@@ -99,7 +112,7 @@
     <Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
       {$_("actions.delete")}
     </Button>
-  </div>
+  </ListItem>
 </div>
 
 {#if showDeleteConfirm}

@@ -24,6 +24,8 @@
     "back": "Volver",
     "disable":"Desactivado",
     "enable":"Activado",
+    "update": "Actualizar",
+    "search": "Buscar",
     "status": {
       "encrypting": "Encriptando...",
       "decryption": "Desencriptando...",
@@ -318,6 +320,11 @@
       "delete_confirm": "Esta acción eliminará sus datos guardados, ¿seguro que quiere eliminar su cuenta?",
       "delete_success": "Cuenta eliminada exitosamente.",
       "delete_error": "Error al eliminar la cuenta."
+    },
+    "updater": {
+      "title": "Actualizaciones",
+      "sub_title": "Buscar Actualizaciones",
+      "desc": "Asegurese de manter actualizado a Bóveda"
     }
   },
   "unlock_screen": {

@@ -1,4 +1,4 @@
-name: "Tauri Build & Release"
+name: "Boveda Build & Release"
 
 on:
   push:
@@ -64,8 +64,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__ # tauri-action replaces this with the app version
-          releaseName: "Bóveda v__VERSION__"
+          tagName: ${{ github.ref_name }} 
+          releaseName: "Bóveda ${{ github.ref_name }}"
           releaseBody: "See the assets below to download the new version of Bóveda."
           releaseDraft: true
           prerelease: false

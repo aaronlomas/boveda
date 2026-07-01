@@ -82,13 +82,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Tauri guarda los bundles en este directorio
           for file in src-tauri/target/release/bundle/deb/*.deb src-tauri/target/release/bundle/appimage/*.AppImage; do
             if [ -f "$file" ]; then
-              echo "Firmando $file con Cosign..."
+              echo "Signing $file with Cosign..."
               cosign sign-blob --yes "$file" --bundle "$file.sigstore"
               
-              # Subir la firma al release que acaba de crear/actualizar tauri-action
+              # Upload the signature to the release you just created/updated tauri-action
               gh release upload "${{ github.ref_name }}" "$file.sigstore" --clobber
             fi
           done

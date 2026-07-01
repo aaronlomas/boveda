@@ -54,6 +54,7 @@ jobs:
       - name: Generate APT Repository Index
         env:
           GPG_FINGERPRINT: ${{ steps.import-gpg.outputs.fingerprint }}
+          GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
         run: |
           cd apt-repo
           
@@ -73,12 +74,12 @@ jobs:
           apt-ftparchive release . >> Release
           
           # Sign the repository (creates InRelease and Release.gpg)
-          gpg --default-key "$GPG_FINGERPRINT" --armor --clearsign --output InRelease --sign Release
-          gpg --default-key "$GPG_FINGERPRINT" --armor --detach-sign --output Release.gpg Release
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --default-key "$GPG_FINGERPRINT" --armor --clearsign --output InRelease --sign Release
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --default-key "$GPG_FINGERPRINT" --armor --detach-sign --output Release.gpg Release
           
           # Export the public key
           cd ../../
-          gpg --armor --export "$GPG_FINGERPRINT" > boveda-archive-keyring.gpg
+          gpg --batch --yes --armor --export "$GPG_FINGERPRINT" > boveda-archive-keyring.gpg
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

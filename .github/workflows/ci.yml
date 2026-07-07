@@ -13,7 +13,6 @@ env:
   CARGO_TERM_COLOR: always
   SQLX_OFFLINE: true 
 
-
 permissions:
   contents: read
   checks: write
@@ -24,18 +23,24 @@ jobs:
     name: Security Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run cargo-audit
         uses: rustsec/audit-check@v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ignore: RUSTSEC-2026-0195 RUSTSEC-2026-0194 RUSTSEC-2023-0071 RUSTSEC-2024-0363
 
-  # 2. in charge (Lints + Tests + Coverage)
+  # 2. Quality (Lints + Tests)
   quality:
     name: Quality & Testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
       
       - name: Install system dependencies
         run: |
@@ -47,12 +52,11 @@ jobs:
         with:
           components: clippy
 
-      # save compilation time
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
 
       - name: Run Clippy (Lints)
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
       - name: Run Tests
         run: cargo test --all-features --workspace

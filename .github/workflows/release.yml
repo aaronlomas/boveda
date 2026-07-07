@@ -24,7 +24,7 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -34,7 +34,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "pnpm"
 
       - name: Install NASM

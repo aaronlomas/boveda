@@ -1,0 +1,28 @@
+# cargo audit configuration for Bóveda
+# See: https://docs.rs/cargo-audit/latest/cargo_audit/config/index.html
+#
+# All ignored advisories are for vulnerabilities in TRANSITIVE dependencies
+# that Bóveda does not control and that are not exploitable in this application.
+
+[advisories]
+ignore = [
+    # RUSTSEC-2026-0195: Unbounded namespace-declaration allocation in quick-xml NsReader
+    # RUSTSEC-2026-0194: Quadratic run time when parsing duplicate XML attributes in quick-xml
+    # Origin: wayland-scanner (Linux system build dep pulled in by Tauri/WRY).
+    #         Bóveda never parses untrusted XML data; this library is used only at
+    #         build time to generate Wayland protocol bindings.
+    # Track upstream fix: https://github.com/tauri-apps/wry/issues (update when Tauri upgrades)
+    "RUSTSEC-2026-0195",
+    "RUSTSEC-2026-0194",
+
+    # RUSTSEC-2023-0071: Marvin Attack timing side-channel in `rsa` 0.9.x
+    # Origin: sqlx-mysql (MySQL driver) pulled in by sqlx 0.7.x lockfile artifacts.
+    #         Bóveda only uses SQLite (features = ["sqlite"]). The MySQL driver
+    #         and its `rsa` dependency are never compiled into any Bóveda binary.
+    "RUSTSEC-2023-0071",
+
+    # RUSTSEC-2024-0363: Binary protocol truncation in sqlx 0.7.4
+    # Origin: ghost in older lockfile. Bóveda's Cargo.toml pins sqlx = "0.8"
+    #         (resolves to 0.8.6). This advisory does not apply to any compiled code.
+    "RUSTSEC-2024-0363",
+]

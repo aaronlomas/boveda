@@ -18,7 +18,7 @@ permissions:
   checks: write
 
 jobs:
-  # 1. Audit
+  # 1. Audit (Lee automáticamente tu audit.toml)
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -28,9 +28,8 @@ jobs:
         uses: rustsec/audit-check@v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          ignore: RUSTSEC-2026-0195 RUSTSEC-2026-0194 RUSTSEC-2023-0071 RUSTSEC-2024-0363
 
-  # 2. Quality (Lints + Tests)
+  # 2. Quality & Testing
   quality:
     name: Quality & Testing
     runs-on: ubuntu-latest
@@ -60,5 +59,4 @@ jobs:
 
       - name: Run Tests
         run: cargo test --all-features --workspace
-
 

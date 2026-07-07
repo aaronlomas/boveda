@@ -5,6 +5,9 @@
 # that Bóveda does not control and that are not exploitable in this application.
 
 [advisories]
+# Desactiva que las dependencias sin mantenimiento ("unmaintained") hagan fallar la CI
+informational_warnings = []
+
 ignore = [
     # RUSTSEC-2026-0195: Unbounded namespace-declaration allocation in quick-xml NsReader
     # RUSTSEC-2026-0194: Quadratic run time when parsing duplicate XML attributes in quick-xml

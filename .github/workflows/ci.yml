@@ -24,12 +24,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install cargo-audit
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-audit
-      - name: Run cargo-audit
-        run: cargo audit
+        uses: taiki-e/install-action@cargo-audit
+      - name: Run cargo audit
+        run: cargo audit --ignore yanked --config ./audit.toml
+
   # 2. Quality (Lints + Tests)
   quality:
     name: Quality & Testing

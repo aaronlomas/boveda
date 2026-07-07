@@ -28,7 +28,7 @@ jobs:
       - name: Install cargo-audit
         uses: taiki-e/install-action@cargo-audit
       - name: Run cargo audit
-        run: cargo audit --ignore yanked --config ./audit.toml
+        run: cargo audit
 
   # 2. Quality (Lints + Tests)
   quality:

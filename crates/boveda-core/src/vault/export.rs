@@ -28,11 +28,20 @@ pub struct ExportPin {
     pub notes: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ExportDocument {
+    pub title: String,
+    pub description: Option<String>,
+    pub content: String,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct ExportPayload {
     pub accounts: Vec<ExportAccount>,
     #[serde(default)]
     pub pins: Vec<ExportPin>,
+    #[serde(default)]
+    pub documents: Vec<ExportDocument>,
     pub preferences: Vec<(String, String)>,
     pub timestamp: String,
 }
@@ -107,6 +116,7 @@ mod tests {
                 }
             ],
             pins: vec![],
+            documents: vec![],
             preferences: vec![("theme".to_string(), "dark".to_string())],
             timestamp: "2024-01-01T00:00:00Z".to_string(),
         };
@@ -136,6 +146,7 @@ mod tests {
         let payload = ExportPayload {
             accounts: vec![],
             pins: vec![],
+            documents: vec![],
             preferences: vec![],
             timestamp: "2024".to_string(),
         };

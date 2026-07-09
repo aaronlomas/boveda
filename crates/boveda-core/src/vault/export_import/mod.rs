@@ -51,6 +51,24 @@ impl BovedaEngine {
             });
         }
         
+        // 1.75 Get all documents (DECRYPTED)
+        let documents = self.get_documents().await?;
+        let mut export_documents = Vec::with_capacity(documents.len());
+        
+        for d in documents {
+            let description = d.encrypted_description.as_ref()
+                .map(|c| self.decrypt_document_content(c))
+                .transpose()?;
+                
+            let content = self.decrypt_document_content(&d.encrypted_content)?;
+                
+            export_documents.push(export::ExportDocument {
+                title: d.title.clone(),
+                description,
+                content,
+            });
+        }
+        
         // 2. Get all preferences
         let all_preferences = storage::get_all_preferences(&self.db).await?;
         
@@ -63,6 +81,7 @@ impl BovedaEngine {
         let payload = export::ExportPayload {
             accounts: export_accounts,
             pins: export_pins,
+            documents: export_documents,
             preferences,
             timestamp: chrono::Utc::now().to_rfc3339(),
         };
@@ -100,6 +119,8 @@ impl BovedaEngine {
             sqlx::query("DELETE FROM accounts").execute(&self.db).await?;
             // Clear current pins
             sqlx::query("DELETE FROM pins").execute(&self.db).await?;
+            // Clear current documents
+            sqlx::query("DELETE FROM documents").execute(&self.db).await?;
             // Note: Preferences are overwritten anyway by set_preference later, 
             // but we might want to clear them too if we want a full replacement.
             // For now, let's just clear accounts as that's what "duplicates" refers to.
@@ -153,6 +174,29 @@ impl BovedaEngine {
                 }
             }
             self.add_pin(p.name.into(), p.pin.into(), p.notes.map(Into::into)).await?;
+        }
+
+        // 3.75 Insert documents
+        let existing_documents = if matches!(strategy, ImportStrategy::Merge) {
+            self.get_documents().await?
+        } else {
+            vec![]
+        };
+
+        for d in payload.documents {
+            if matches!(strategy, ImportStrategy::Merge) {
+                let duplicate = existing_documents.iter().any(|existing| {
+                    existing.title.as_str() == d.title.as_str()
+                });
+                if duplicate {
+                    continue; // Skip existing entry
+                }
+            }
+            self.add_document(
+                d.title.into(),
+                d.description.map(Into::into),
+                d.content.into(),
+            ).await?;
         }
 
         // 4. Apply preferences (Optional merge)

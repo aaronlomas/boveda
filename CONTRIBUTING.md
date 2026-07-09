@@ -22,7 +22,7 @@ Before proposing any changes, it is vital to understand our architecture:
 
 ### Environment Setup
 1. Fork the repository.
-2. Clone your fork: `git clone https://github.com`
+2. Clone your fork: `git clone https://github.com/aaronlomas/boveda.git`
 3. Install dependencies: `pnpm install`
 4. Run in development mode: `pnpm tauri dev`
 

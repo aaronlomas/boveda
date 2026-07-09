@@ -236,6 +236,7 @@ async fn test_deduplication() {
             }
         ],
         pins: vec![],
+        documents: vec![],
         preferences: vec![],
         timestamp: "2024".to_string(),
     };

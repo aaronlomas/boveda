@@ -324,7 +324,11 @@
     "updater": {
       "title": "Actualizaciones",
       "sub_title": "Buscar Actualizaciones",
-      "desc": "Asegurese de manter actualizado a Bóveda"
+      "desc": "Asegurese de manter actualizado a Bóveda",
+      "update_success": "Actualización completada. Reinicia la aplicación para aplicar los cambios.",
+      "update_not_found": "No se encontraron actualizaciones disponibles.",
+      "update_error": "Error al buscar actualizaciones.",
+      "update_available": "Actualización disponible"
     }
   },
   "unlock_screen": {

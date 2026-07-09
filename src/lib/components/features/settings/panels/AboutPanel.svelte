@@ -6,15 +6,16 @@
     IconTrash,
     IconEye,
     IconEyeOff,
+    IconLock,
   } from "@tabler/icons-svelte";
   import { invoke } from "@tauri-apps/api/core";
   import { onMount } from "svelte";
   import Button from "../../../core/primitives/Button.svelte";
   import Modal from "../../../core/primitives/Modal.svelte";
   import ListItem from "../../../core/primitives/ListItem.svelte";
+  import Input from "../../../core/primitives/Input.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { sessionState } from "$lib/stores/stores.svelte";
-  import { focus } from "$lib/utils/actions";
   import { check, type Update } from "@tauri-apps/plugin-updater";
 
   let appInfo = $state({ app_version: "...", core_version: "..." });
@@ -25,7 +26,9 @@
   let loadingDelete = $state(false);
   let errorDelete = $state("");
 
-  let updateState = $state<"idle" | "checking" | "available" | "downloading" | "done">("idle");
+  let updateState = $state<
+    "idle" | "checking" | "available" | "downloading" | "done"
+  >("idle");
   let updateData = $state<Update | null>(null);
 
   onMount(async () => {
@@ -46,7 +49,7 @@
     errorDelete = "";
     try {
       await invoke("delete_vault", { password });
-      toast.success($_("settings.about.delete_success"));
+      toast.success($_("settings.account_system.delete_success"));
       showDeleteConfirm = false;
       sessionState.isUnlocked = false; // Redirects to login
     } catch (e: any) {
@@ -65,12 +68,12 @@
           updateData = update;
           updateState = "available";
         } else {
-          toast.success("Bóveda is up to date.");
+          toast.success($_("settings.updater.update_success"));
           updateState = "idle";
         }
       } catch (err) {
         console.error(err);
-        toast.error("Failed to check for updates.");
+        toast.error($_("settings.updater.update_error"));
         updateState = "idle";
       }
     } else if (updateState === "available" && updateData) {
@@ -83,9 +86,11 @@
         console.error("Update error:", err);
         // Fallback for unsupported platforms (like .deb on Linux)
         if (err.toString().toLowerCase().includes("unsupported")) {
-           toast.info("Update available. Please run: 'sudo apt update && sudo apt install boveda'");
+          toast.info(
+            "Update available. Please run: 'sudo apt update && sudo apt install boveda'",
+          );
         } else {
-           toast.error("Update failed: " + err.toString());
+          toast.error("Update failed: " + err.toString());
         }
         updateState = "idle";
       }
@@ -138,20 +143,26 @@
         {/if}
       </p>
     </div>
-    <Button 
-      variant={updateState === "available" ? "primary" : "secondary"} 
+    <Button
+      variant={updateState === "available" ? "primary" : "secondary"}
       onclick={handleUpdater}
-      disabled={updateState === "checking" || updateState === "downloading" || updateState === "done"}
+      disabled={updateState === "checking" ||
+        updateState === "downloading" ||
+        updateState === "done"}
     >
       {#if updateState === "idle"}
         {$_("actions.search")}
       {:else if updateState === "checking"}
-        <span class="w-3 h-3 border-2 border-text-primary/30 border-t-text-primary rounded-full animate-spin mr-1.5"></span>
+        <span
+          class="w-3 h-3 border-2 border-text-primary/30 border-t-text-primary rounded-full animate-spin mr-1.5"
+        ></span>
         Buscando...
       {:else if updateState === "available"}
         {$_("actions.update")}
       {:else if updateState === "downloading"}
-        <span class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1.5"></span>
+        <span
+          class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1.5"
+        ></span>
         Actualizando...
       {:else if updateState === "done"}
         Listo
@@ -201,33 +212,32 @@
         class="space-y-4"
       >
         <div class="space-y-2">
-          <label
-            for="del-pw"
-            class="text-xs font-bold text-text-muted uppercase tracking-wider"
+          <Input
+            id="del-pw"
+            type={showPassword ? "text" : "password"}
+            label={$_("unlock_screen.master_password_label")}
+            bind:value={password}
+            variant="triple"
+            required
+            autofocus
           >
-            {$_("unlock_screen.master_password_label")}
-          </label>
-          <div class="relative">
-            <input
-              id="del-pw"
-              type={showPassword ? "text" : "password"}
-              bind:value={password}
-              class="w-full bg-surface/5 border border-surface/10 rounded-lg pl-10 pr-12 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-danger transition-colors text-sm"
-              required
-              use:focus
-            />
-            <button
-              type="button"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
-              onclick={() => (showPassword = !showPassword)}
-            >
-              {#if showPassword}
-                <IconEyeOff size={18} />
-              {:else}
-                <IconEye size={18} />
-              {/if}
-            </button>
-          </div>
+            {#snippet icon()}
+              <IconLock size={18} class="text-text-muted" />
+            {/snippet}
+            {#snippet action()}
+              <button
+                type="button"
+                class="text-text-muted hover:text-text-primary transition-colors flex items-center justify-center"
+                onclick={() => (showPassword = !showPassword)}
+              >
+                {#if showPassword}
+                  <IconEyeOff size={18} />
+                {:else}
+                  <IconEye size={18} />
+                {/if}
+              </button>
+            {/snippet}
+          </Input>
           {#if errorDelete}
             <p
               class="text-xs text-danger font-medium animate-in fade-in slide-in-from-top-1"

@@ -323,7 +323,11 @@
     "updater": {
       "title": "Updates",
       "sub_title": "View Updates",
-      "desc": "Make sure to keep Bóveda updated."
+      "desc": "Make sure to keep Bóveda updated.",
+      "update_success": "Update completed. Restart the application to apply the changes.",
+      "update_not_found": "No updates available.",
+      "update_error": "Error updating. Please try again later.",
+      "update_available": "Update available"
     }
   },
   "unlock_screen": {

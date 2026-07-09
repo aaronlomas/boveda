@@ -1,5 +1,5 @@
 # Bóveda — Credential Manager
-<img width="1100" height="720" alt="image" src="https://github.com/user-attachments/assets/07a9cbb6-dac0-4ab3-923c-b2af61be6c9e" />
+<img width="1100" height="720" alt="image" src="https://github.com/user-attachments/assets/9b7b4f73-668a-4b27-b07d-26bd7a02672f" />
 
 Bóveda means **Security through Isolation**. We prioritize network-isolated security and practice digital transparency.
 

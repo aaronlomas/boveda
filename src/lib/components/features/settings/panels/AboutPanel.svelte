@@ -68,7 +68,7 @@
           updateData = update;
           updateState = "available";
         } else {
-          toast.success($_("settings.updater.update_success"));
+          toast.success($_("settings.updater.update_status"));
           updateState = "idle";
         }
       } catch (err) {
@@ -81,7 +81,7 @@
       try {
         await updateData.downloadAndInstall();
         updateState = "done";
-        toast.success("Update ready. Please restart Bóveda.");
+        toast.success($_("settings.updater.update_ready"));
       } catch (err: any) {
         console.error("Update error:", err);
         // Fallback for unsupported platforms (like .deb on Linux)

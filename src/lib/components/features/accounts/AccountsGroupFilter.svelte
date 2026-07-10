@@ -123,8 +123,8 @@
           <button
             class="p-1 text-text-muted hover:text-accent cursor-pointer transition-colors"
             onclick={() => startRename(group)}
-            aria-label={$_("groups.rename")}
-            title={$_("groups.rename")}
+            aria-label={$_("actions.rename")}
+            title={$_("actions.rename")}
           >
             <IconPencil size={10} />
           </button>

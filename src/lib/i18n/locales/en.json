@@ -26,6 +26,7 @@
     "enable":"Enable",
     "update": "Update",
     "search": "Search",
+    "rename": "Rename",
     "status": {
       "encrypting": "Encrypting...",
       "decryption": "Decrypting...",

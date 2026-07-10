@@ -5,20 +5,20 @@ Codename: stable
 Architectures: amd64
 Components: main
 Description: Boveda Password Manager APT Repository
-Date: Fri, 10 Jul 2026 01:04:03 +0000
+Date: Fri, 10 Jul 2026 01:52:43 +0000
 MD5Sum:
- 836e34444cf59e52e2266001132d69d9              203 Release
+ e5426afd9fae3d83e90c83f4c5781f2d              203 Release
  2da96e4ac3c4680191b71a8710ad05a2              455 main/binary-amd64/Packages
  962c08820ea23240f18f4ad6fa0fbd0b              368 main/binary-amd64/Packages.gz
 SHA1:
- 441177a51cf516c290cb3b76fd7a33e5e566babf              203 Release
+ 1b7b75cff9e83f5385141cf573f79051645d16ad              203 Release
  f0631350884af469bbd5e3bff3c80b8fb83aec41              455 main/binary-amd64/Packages
  ab5b571475408605df13bbb1ec41ad1f6bc830f1              368 main/binary-amd64/Packages.gz
 SHA256:
- e1f2a547c6bf2e6e7e409d7a75baf467b86e5fa6f0ee18c46d72bfd75474128c              203 Release
+ ef44b6cd823cad3977257cc9b30337475e1c442f73537355dab1753015f77fb6              203 Release
  0a37ca603dde0303c3186c2231b5286fdbb34261591d4db74dccceea3822dd2c              455 main/binary-amd64/Packages
  50926277108d697994114902a51a4745143a5d36de13e7931a1ef100d7c80b5d              368 main/binary-amd64/Packages.gz
 SHA512:
- fac20509b021f96db15999dd19228fb38b98c39e5f08f5f64566ee125f5ed11f038fe820864d892fa8475cf985291b30a457b80fbd334bc3a7202d92eaeeeae7              203 Release
+ ec4896f7fb73e85dc5472dc5da9bc2e0829c92835b048c8498a8459ba609ec5e8165c1e3bb443c8514accfaf51a45fa3cf8855190cff7eb995210b168b9594c5              203 Release
  d10a8fba94300f2921e2da8b5eb635c10dc93a8c66c8953d8db1572f3842d181f8c4562f103f180828ed0eb7dc0d5846ca9000b383f438f9091cb57ef0be94a6              455 main/binary-amd64/Packages
  77c6f07162373ce97fe80e2be4f1fed1ddae02a0d26b82ff1d7bedae3940c175267c192832550d5297dc5d26b7df77475c7c0a17ff57705138f453f21fbfe244              368 main/binary-amd64/Packages.gz

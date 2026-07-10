@@ -41,24 +41,28 @@
     ry="54.194"
     style="paint-order:fill markers stroke"
   /><g stroke="currentColor" stroke-linecap="round" stroke-width="2.592"
-    ><rect
+    >
+    <!-- ----------------------HINGES----------------- -->
+    <rect
       width="8.84"
       height="33.124"
-      x="6.817"
+      x="5.817"
       y="87.59"
-      fill="url(#linearGradient37)"
+      fill="currentColor"
       ry="1.725"
       style="paint-order:fill markers stroke"
     /><rect
       width="8.84"
       height="33.124"
-      x="6.817"
+      x="5.817"
       y="16.1"
-      fill="url(#linearGradient37)"
+      fill="currentColor"
       ry="1.725"
       style="paint-order:fill markers stroke"
-    /><path
-      fill="none"
+    />
+    <!-- ---------------------------------------------- -->
+    <path
+      fill="currentColor"
       d="m41.271 13.547-.021.001c-1.22.006-2.438.518-3.372 1.539l-8.062 8.81h-23v17.115h19.195v54.377H6.817v17.114H26.01v0h3.901l7.965 8.706c.935 1.021 2.153 1.531 3.373 1.537l.02.002v0h29.715V109.67H53.64a13.545 14.803 0 0 1-9.577-4.337l-6.433-7.03v-60.31l6.433-7.031a13.545 14.803 0 0 1 9.577-4.335h17.346V13.55H41.3l-.03-.002z"
       style="paint-order:fill markers stroke"
     /><rect
@@ -66,7 +70,7 @@
       height="26.706"
       x="68.822"
       y="2.16"
-      fill="url(#linearGradient37)"
+      fill="currentColor"
       ry="3.519"
       style="paint-order:fill markers stroke"
     /><rect
@@ -74,7 +78,7 @@
       height="26.706"
       x="68.822"
       y="107.07"
-      fill="url(#linearGradient37)"
+      fill="currentColor"
       ry="3.519"
       style="paint-order:fill markers stroke"
     /></g

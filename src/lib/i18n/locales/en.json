@@ -385,6 +385,7 @@
     "renamed_error": "Error renaming group.",
     "deleted_success": "Group deleted.",
     "deleted_error": "Error deleting group.",
-    "no_accounts_in_group": "No accounts in \"{group}\""
+    "no_accounts_in_group": "No accounts in \"{group}\"",
+    "pick_color": "Pick a color"
   }
 }

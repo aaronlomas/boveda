@@ -35,6 +35,8 @@ export class DataState {
   documents = $state<Document[]>([]);
   /** Persisted list of group names. */
   groups = $state<string[]>([]);
+  /** Persisted group colors. */
+  groupColors = $state<Record<string, string>>({});
 }
 
 export const dataState = new DataState();

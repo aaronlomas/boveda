@@ -12,8 +12,9 @@
     IconPencil,
     IconTrash,
   } from "@tabler/icons-svelte";
-  import { uiState } from "$lib/stores/stores.svelte";
+  import { uiState, dataState } from "$lib/stores/stores.svelte";
   import { useGroups } from "$lib/composables/useGroups.svelte";
+  import GroupColorPicker from "$lib/components/features/accounts/groupColors/GroupColorPicker.svelte";
   import { focus, selectOnFocus } from "$lib/utils/actions";
 
   // ── Composable and Initialization
@@ -21,33 +22,38 @@
 
   let editingGroup = $state<string | null>(null); // editing group
   let editingValue = $state(""); // current rename input value
+  let editingColor = $state<string | null>(null); // current rename color
   let addingGroup = $state(false); // new group input visibility
   let newGroupName = $state(""); // new group input value
+  let newGroupColor = $state<string | null>(null); // new group color
 
   // ── Handlers
   // ── Manejo de grupos ───────────────────────────────────────────────────────────────
   async function handleAddGroup(): Promise<void> {
     const trimmed = newGroupName.trim();
     if (!trimmed) return;
-    await groupService.add(trimmed);
+    await groupService.add(trimmed, newGroupColor);
     newGroupName = "";
+    newGroupColor = null;
     addingGroup = false;
   }
 
   function startRename(group: string): void {
     editingGroup = group;
     editingValue = group;
+    editingColor = dataState.groupColors[group] || null;
   }
 
   async function confirmRename(): Promise<void> {
     if (!editingGroup) return;
-    await groupService.rename(editingGroup, editingValue);
+    await groupService.rename(editingGroup, editingValue, editingColor);
     cancelRename();
   }
 
   function cancelRename(): void {
     editingGroup = null;
     editingValue = "";
+    editingColor = null;
   }
 
   onMount(() => {
@@ -60,7 +66,7 @@
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <!-- All -->
   <button
-    class="px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border
+    class="px-3 py-2 rounded-sm text-xs font-semibold transition-all cursor-pointer border leading-none
       {uiState.activeGroup === null
       ? 'bg-accent text-white border-accent shadow-sm shadow-accent/30'
       : 'bg-surface/5 text-text-muted border-surface/10 hover:border-accent/40 hover:text-text-primary'}"
@@ -74,10 +80,10 @@
       {#if editingGroup === group}
         <!-- Rename input -->
         <div
-          class="flex items-center gap-1 px-2 py-2 rounded-full border border-accent/50 bg-surface/10"
+          class="flex items-center gap-1 px-3 py-2 rounded-full border border-accent/50 bg-surface/10"
         >
           <input
-            class="text-xs bg-transparent text-text-primary focus:outline-none w-24"
+            class="text-xs bg-transparent text-text-primary focus:outline-none w-24 leading-none"
             bind:value={editingValue}
             onkeydown={(e) => {
               if (e.key === "Enter") {
@@ -93,20 +99,24 @@
             onclick={confirmRename}
             aria-label={$_("groups.confirm_rename")}
           >
-            <IconCheck size={11} />
+            <IconCheck size={14} />
           </button>
           <button
             class="text-text-muted cursor-pointer"
             onclick={cancelRename}
             aria-label={$_("actions.cancel")}
           >
-            <IconX size={11} />
+            <IconX size={14} />
           </button>
+          <GroupColorPicker bind:selectedColor={editingColor} />
         </div>
       {:else}
         <!-- User-created group -->
+        <!-- --------- -->
+        <!-- | Group | -->
+        <!-- --------- -->
         <button
-          class="px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border
+          class="px-3 py-2 rounded-sm text-xs font-semibold transition-all cursor-pointer border
             {uiState.activeGroup === group
             ? 'bg-accent text-white border-accent shadow-sm shadow-accent/30'
             : 'bg-surface/5 text-text-muted border-surface/10 hover:border-accent/40 hover:text-text-primary'}"
@@ -114,7 +124,16 @@
             (uiState.activeGroup =
               uiState.activeGroup === group ? null : group)}
         >
-          {group}
+          <span class="flex items-center leading-none gap-1">
+            {#if dataState.groupColors[group]}
+              <span
+                class="w-2 h-2 rounded-full"
+                style="background-color: {dataState.groupColors[group]};"
+              ></span>
+            {/if}
+            <!-- text for groups already created -->
+            {group}
+          </span>
         </button>
         <!-- Edit / delete group buttons -->
         <div
@@ -144,7 +163,7 @@
   <!-- Add group button / input -->
   {#if addingGroup}
     <div
-      class="flex items-center gap-1 px-2 py-2 rounded-full border border-accent/40 bg-surface/8"
+      class="flex items-center gap-1 px-3 py-2 rounded-full border border-accent/40 bg-surface/8"
     >
       <input
         class="text-xs bg-transparent text-text-primary focus:outline-none w-24 placeholder:text-text-muted"
@@ -167,22 +186,24 @@
         onclick={handleAddGroup}
         aria-label={$_("groups.confirm_new_group")}
       >
-        <IconCheck size={11} />
+        <IconCheck size={14} />
       </button>
       <button
         class="text-text-muted cursor-pointer"
         onclick={() => {
           addingGroup = false;
           newGroupName = "";
+          newGroupColor = null;
         }}
         aria-label={$_("actions.cancel")}
       >
-        <IconX size={11} />
+        <IconX size={14} />
       </button>
+      <GroupColorPicker bind:selectedColor={newGroupColor} />
     </div>
   {:else}
     <button
-      class="px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border border-dashed border-surface/15 text-text-muted hover:border-accent/50 hover:text-accent inline-flex items-center gap-1"
+      class="px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border border-dashed border-surface/15 text-text-muted hover:border-accent/50 hover:text-accent inline-flex items-center gap-1 leading-none"
       onclick={() => (addingGroup = true)}
       aria-label={$_("groups.new_group")}
     >

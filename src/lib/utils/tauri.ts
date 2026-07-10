@@ -94,6 +94,16 @@ export async function saveGroups(groups: string[]): Promise<void> {
   return invoke("set_preference", { key: "groups", value: JSON.stringify(groups) });
 }
 
+export async function getGroupColors(): Promise<Record<string, string>> {
+  const raw = await invoke<string | null>("get_preference", { key: "group_colors" });
+  if (!raw) return {};
+  try { return JSON.parse(raw) as Record<string, string>; } catch { return {}; }
+}
+
+export async function saveGroupColors(colors: Record<string, string>): Promise<void> {
+  return invoke("set_preference", { key: "group_colors", value: JSON.stringify(colors) });
+}
+
 export async function updateAccountGroup(
   id: string,
   groupName: string | null,

@@ -17,10 +17,10 @@ export async function initI18n() {
     });
 
     // Determine the initial locale
-    const initialLocale = savedLanguage || getLocaleFromNavigator() || "es";
+    const initialLocale = savedLanguage || getLocaleFromNavigator() || "en";
 
     // Fallback to "en" or "es" based on initialLocale
-    const lang = initialLocale.startsWith("en") ? "en" : "es";
+    const lang = initialLocale.startsWith("es") ? "es" : "en";
 
     init({
       fallbackLocale: "es",
@@ -32,8 +32,8 @@ export async function initI18n() {
     console.error("Failed to initialize i18n:", error);
     // Ultimate fallback
     init({
-      fallbackLocale: "es",
-      initialLocale: "es",
+      fallbackLocale: "en",
+      initialLocale: "en"
     });
   }
 }

@@ -72,12 +72,15 @@
 
 <aside
   class="h-screen bg-panel/30 border-r border-surface/8 transition-all overflow-hidden backdrop-blur-2xl flex flex-col px-2 gap-4"
-  style="width: {uiState.sidebarCollapsed
-    ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
-    : UI_CONFIG.SIDEBAR_FULL_WIDTH}; min-width: {uiState.sidebarCollapsed
-    ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH
-    : UI_CONFIG.SIDEBAR_FULL_WIDTH}; transition-duration: {UI_CONFIG.ANIMATION_DURATION_MS}ms;"
+  style="
+    width: {uiState.sidebarCollapsed ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH : UI_CONFIG.SIDEBAR_FULL_WIDTH}; 
+    min-width: {uiState.sidebarCollapsed ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH : UI_CONFIG.SIDEBAR_FULL_WIDTH}; 
+    transition-duration: {UI_CONFIG.ANIMATION_DURATION_MS}ms;
+    will-change: width, min-width; /* 👈 Avisa al navegador para optimizar la memoria */
+    transform: translateZ(0);     /* 👈 Fuerza el uso de la tarjeta gráfica (GPU) */
+  "
 >
+
   <!-- Brand -->
   <!-- centrar esto cuando el boton de toggle este colapsado -->
   <div

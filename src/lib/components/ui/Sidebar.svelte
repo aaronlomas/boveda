@@ -76,8 +76,8 @@
     width: {uiState.sidebarCollapsed ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH : UI_CONFIG.SIDEBAR_FULL_WIDTH}; 
     min-width: {uiState.sidebarCollapsed ? UI_CONFIG.SIDEBAR_COLLAPSED_WIDTH : UI_CONFIG.SIDEBAR_FULL_WIDTH}; 
     transition-duration: {UI_CONFIG.ANIMATION_DURATION_MS}ms;
-    will-change: width, min-width; /* 👈 Avisa al navegador para optimizar la memoria */
-    transform: translateZ(0);     /* 👈 Fuerza el uso de la tarjeta gráfica (GPU) */
+    will-change: width, min-width; 
+    transform: translateZ(0);    
   "
 >
 

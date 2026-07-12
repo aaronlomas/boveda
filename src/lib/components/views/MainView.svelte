@@ -28,7 +28,7 @@
   const ActiveView = $derived(viewMap[uiState.activeView]);
 </script>
 
-<div class="h-full w-full">
+<div class="h-full w-full overflow-hidden">
   {#if ActiveView}
     <ActiveView />
   {/if}

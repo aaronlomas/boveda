@@ -27,6 +27,8 @@
     "update": "Actualizar",
     "search": "Buscar",
     "rename": "Renombrar",
+    "lock_capsule_label":"Desbloquear cápsulas",
+    "unlock_capsule_label":"Bloquear cápsulas",
     "status": {
       "encrypting": "Encriptando...",
       "decryption": "Desencriptando...",

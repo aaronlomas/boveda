@@ -11,6 +11,8 @@
     IconX,
     IconPencil,
     IconTrash,
+    IconLock,
+    IconLockOpen,
   } from "@tabler/icons-svelte";
   import { uiState, dataState } from "$lib/stores/stores.svelte";
   import { useGroups } from "$lib/composables/useGroups.svelte";
@@ -211,4 +213,19 @@
       {$_("groups.new_group")}
     </button>
   {/if}
+
+  <button
+    class="border border-surface/15 rounded-full p-2 cursor-pointer transition-colors hover:border-accent/50 {uiState.capsuleLocked
+      ? 'text-accent border-accent/50'
+      : 'text-text-muted'}"
+    onclick={() => (uiState.capsuleLocked = !uiState.capsuleLocked)}
+    aria-label={uiState.capsuleLocked ? $_("actions.lock_capsule_label") : $_("actions.unlock_capsule_label")}
+    title={uiState.capsuleLocked ? $_("actions.lock_capsule_label") : $_("actions.unlock_capsule_label")}
+  >
+    {#if uiState.capsuleLocked}
+      <IconLock size={14} />
+    {:else}
+      <IconLockOpen size={14} />
+    {/if}
+  </button>
 </div>

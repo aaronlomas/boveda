@@ -10,6 +10,7 @@
 
   import CredentialHeader from "./CredentialHeader.svelte";
   import CredentialField from "./CredentialField.svelte";
+  import Capsule from "$lib/components/core/primitives/Capsule.svelte";
 
   //Props
   let {
@@ -172,17 +173,18 @@
 </script>
 
 <!-- RENDERING OF THE CREDENTIAL CARD -->
-<div
-  class="p-4 flex flex-col gap-4 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border {!(account.group_name && dataState.groupColors[account.group_name]) ? 'border-surface/8 hover:border-accent/30' : ''}"
-  style={account.group_name && dataState.groupColors[account.group_name] ? `border-color: ${dataState.groupColors[account.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[account.group_name]}15;` : ""}
+<Capsule
+  class="border-surface/8 hover:border-accent/30"
   data-card-id={account.id}
 >
-  <!-- Decoupled Modular Header -->
-  <CredentialHeader
-    {account}
-    ondelete={() => ondelete(account.id)}
-    {onrefresh}
-  />
+  {#snippet header()}
+    <!-- Decoupled Modular Header -->
+    <CredentialHeader
+      {account}
+      ondelete={() => ondelete(account.id)}
+      {onrefresh}
+    />
+  {/snippet}
 
   <!-- Password Field -->
   <CredentialField
@@ -237,4 +239,4 @@
       values: { date: formatDate(account.created_at) },
     })}
   </div>
-</div>
+</Capsule>

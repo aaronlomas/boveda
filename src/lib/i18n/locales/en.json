@@ -27,6 +27,8 @@
     "update": "Update",
     "search": "Search",
     "rename": "Rename",
+    "lock_capsule_label":"Unlock capsules",
+    "unlock_capsule_label":"Lock capsules",
     "status": {
       "encrypting": "Encrypting...",
       "decryption": "Decrypting...",

@@ -41,8 +41,8 @@
         <AccountCard
           account={item}
           locale={$locale ?? "es"}
-          ondelete={ondelete}
-          onrefresh={onrefresh}
+          {ondelete}
+          {onrefresh}
         />
       </div>
     </VirtualList>
@@ -51,12 +51,7 @@
   <!-- grid -->
   <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
     {#each filtered as account (account.id)}
-      <AccountCard
-        {account}
-        locale={$locale ?? "es"}
-        ondelete={ondelete}
-        onrefresh={onrefresh}
-      />
+      <AccountCard {account} locale={$locale ?? "es"} {ondelete} {onrefresh} />
     {/each}
   </div>
 {/if}

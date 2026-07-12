@@ -11,7 +11,7 @@
     IconFolderX,
     IconTrash,
   } from "@tabler/icons-svelte";
-  import type { Account } from "$lib/stores/stores.svelte";
+  import { dataState, type Account } from "$lib/stores/stores.svelte";
   import { modal } from "$lib/stores/modal.svelte";
   import { updateAccountGroup } from "$lib/utils/tauri";
   import { toast } from "$lib/stores/toast.svelte";
@@ -81,7 +81,8 @@
   
   <!-- Favicon -->
   <div
-    class="w-11 h-11 rounded-sm bg-surface/5 border border-surface/10 grid place-items-center shrink-0 text-lg font-bold text-text-primary relative overflow-hidden"
+    class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative overflow-hidden {!(account.group_name && dataState.groupColors[account.group_name]) ? 'bg-surface/5 border border-surface/10 text-text-primary' : 'text-white border border-transparent'}"
+    style={account.group_name && dataState.groupColors[account.group_name] ? `background-color: ${dataState.groupColors[account.group_name]}; border-color: ${dataState.groupColors[account.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[account.group_name]}40;` : ""}
   >
     {#if account.favicon_url}
       <img

@@ -7,7 +7,11 @@
    */
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { IconPlus, IconShieldLock, IconArrowLeft } from "@tabler/icons-svelte";
+  import {
+    IconPlus,
+    IconShieldLock,
+    IconArrowLeft,
+  } from "@tabler/icons-svelte";
   import { uiState } from "$lib/stores/stores.svelte";
   import { modal } from "$lib/stores/modal.svelte";
   import { performanceStore } from "$lib/stores/performance.svelte";
@@ -35,11 +39,11 @@
           ? true
           : a.group_name === uiState.activeGroup;
       return matchSearch && matchGroup;
-    })
+    }),
   );
 
   let useVirtualScroll = $derived(
-    performanceStore.massiveList && filtered.length > VIRTUAL_SCROLL_THRESHOLD
+    performanceStore.massiveList && filtered.length > VIRTUAL_SCROLL_THRESHOLD,
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -55,9 +59,7 @@
   });
 </script>
 
-<div
-  
->
+<div class="flex flex-col h-full">
   <!-- Header -->
   <header class="flex items-center justify-between mb-7 gap-4">
     <div class="flex gap-x-4">
@@ -92,59 +94,60 @@
     </Button>
   </header>
 
-  <!-- Filter Input -->
   <AccountsFilter bind:search />
-
-  <!-- Group Management & Filtering Chips -->
   <AccountsGroupFilter />
 
-  <!-- Main Content View -->
-  {#if accountService.error}
-    <div class="text-center py-16 flex flex-col items-center gap-3">
-      <p
-        class="text-danger text-sm bg-danger/10 border border-danger/20 rounded-xl px-6 py-4"
-      >
-        {accountService.error}
-      </p>
-      <button
-        class="text-sm text-accent underline cursor-pointer"
-        onclick={() => accountService.refresh()}
-      >
-        {$_("actions.retry")}
-      </button>
-    </div>
-  {:else if filtered.length === 0}
-    <div
-      class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary"
-    >
-      <div class="text-accent/20 mb-2">
-        <IconShieldLock size={80} stroke={1.5} />
-      </div>
-      <h3 class="text-lg text-text-primary font-semibold">
-        {uiState.activeGroup
-          ? $_("groups.no_accounts_in_group", { values: { group: uiState.activeGroup } })
-          : $_("accounts.no_credentials")}
-      </h3>
-      <p class="text-text-muted">
-        {uiState.activeGroup ? "" : $_("accounts.no_credentials_desc")}
-      </p>
-      {#if !uiState.activeGroup}
-        <Button
-          variant="primary"
-          onclick={handleNewCredential}
-          class="mt-2 shadow-lg shadow-accent/20"
+  <div class="flex-1 min-h-0 overflow-y-auto">
+    <!-- Main Content View -->
+    {#if accountService.error}
+      <div class="text-center py-16 flex flex-col items-center gap-3">
+        <p
+          class="text-danger text-sm bg-danger/10 border border-danger/20 rounded-xl px-6 py-4"
         >
-          <IconPlus size={16} class="mr-2" />
-          {$_("accounts.new_credential")}
-        </Button>
-      {/if}
-    </div>
-  {:else}
-    <AccountsList
-      {filtered}
-      {useVirtualScroll}
-      ondelete={(id) => accountService.delete(id)}
-      onrefresh={() => accountService.refresh()}
-    />
-  {/if}
+          {accountService.error}
+        </p>
+        <button
+          class="text-sm text-accent underline cursor-pointer"
+          onclick={() => accountService.refresh()}
+        >
+          {$_("actions.retry")}
+        </button>
+      </div>
+    {:else if filtered.length === 0}
+      <div
+        class="text-center py-20 px-5 flex flex-col items-center gap-3 text-text-secondary"
+      >
+        <div class="text-accent/20 mb-2">
+          <IconShieldLock size={80} stroke={1.5} />
+        </div>
+        <h3 class="text-lg text-text-primary font-semibold">
+          {uiState.activeGroup
+            ? $_("groups.no_accounts_in_group", {
+                values: { group: uiState.activeGroup },
+              })
+            : $_("accounts.no_credentials")}
+        </h3>
+        <p class="text-text-muted">
+          {uiState.activeGroup ? "" : $_("accounts.no_credentials_desc")}
+        </p>
+        {#if !uiState.activeGroup}
+          <Button
+            variant="primary"
+            onclick={handleNewCredential}
+            class="mt-2 shadow-lg shadow-accent/20"
+          >
+            <IconPlus size={16} class="mr-2" />
+            {$_("accounts.new_credential")}
+          </Button>
+        {/if}
+      </div>
+    {:else}
+      <AccountsList
+        {filtered}
+        {useVirtualScroll}
+        ondelete={(id) => accountService.delete(id)}
+        onrefresh={() => accountService.refresh()}
+      />
+    {/if}
+  </div>
 </div>

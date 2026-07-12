@@ -39,7 +39,7 @@
 
   <!-- Container for user and password + control buttons -->
   <div
-    class="flex min-w-0 items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
+    class="flex min-w-0 items-center gap-2 bg-surface/5 border border-surface/8 p-1 px-3 transition-colors hover:bg-surface/[0.07]"
   >
     <!-- Text or Mask -->
     <code

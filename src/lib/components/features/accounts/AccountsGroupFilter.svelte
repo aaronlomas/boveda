@@ -18,9 +18,24 @@
   import { useGroups } from "$lib/composables/useGroups.svelte";
   import GroupColorPicker from "$lib/components/features/accounts/groupColors/GroupColorPicker.svelte";
   import { focus, selectOnFocus } from "$lib/utils/actions";
+  import { modal } from "$lib/stores/modal.svelte";
 
   // ── Composable and Initialization
   const groupService = useGroups();
+
+  /**
+   * Locks capsules directly. Unlocking requires master password verification.
+   */
+  async function toggleCapsuleLock() {
+    if (!uiState.capsuleLocked) {
+      uiState.capsuleLocked = true;
+      return;
+    }
+    const confirmed = await modal.openVerifyMaster();
+    if (confirmed) {
+      uiState.capsuleLocked = false;
+    }
+  }
 
   let editingGroup = $state<string | null>(null); // editing group
   let editingValue = $state(""); // current rename input value
@@ -218,7 +233,7 @@
     class="border border-surface/15 rounded-full p-2 cursor-pointer transition-colors hover:border-accent/50 {uiState.capsuleLocked
       ? 'text-accent border-accent/50'
       : 'text-text-muted'}"
-    onclick={() => (uiState.capsuleLocked = !uiState.capsuleLocked)}
+    onclick={toggleCapsuleLock}
     aria-label={uiState.capsuleLocked ? $_("actions.lock_capsule_label") : $_("actions.unlock_capsule_label")}
     title={uiState.capsuleLocked ? $_("actions.lock_capsule_label") : $_("actions.unlock_capsule_label")}
   >

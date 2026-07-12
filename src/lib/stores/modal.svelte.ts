@@ -53,13 +53,19 @@ export interface AddPinPayload {
   oncancel?: () => void;
 }
 
+export interface VerifyMasterPayload {
+  onconfirm: () => void;
+  oncancel?: () => void;
+}
+
 type ModalDescriptor =
   | { kind: 'add-credential'; payload: AddCredentialPayload }
   | { kind: 'confirm'; payload: ConfirmPayload }
   | { kind: 'assign-group'; payload: AssignGroupPayload }
   | { kind: 'export-package'; payload: ExportPackagePayload }
   | { kind: 'import-package'; payload: ImportPackagePayload }
-  | { kind: 'add-pin'; payload: AddPinPayload };
+  | { kind: 'add-pin'; payload: AddPinPayload }
+  | { kind: 'verify-master'; payload: VerifyMasterPayload };
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -137,6 +143,18 @@ class ModalManager {
           onconfirm: (password, strategy) => resolve({password, strategy}),
           oncancel: () => resolve(null)
         } 
+      };
+    });
+  }
+
+  openVerifyMaster(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.current = {
+        kind: 'verify-master',
+        payload: {
+          onconfirm: () => resolve(true),
+          oncancel: () => resolve(false),
+        },
       };
     });
   }

@@ -50,6 +50,7 @@ pub fn run() {
             // ── Vault & accounts ──────────────────────────────────────────
             commands::vault::is_vault_initialized,
             commands::vault::unlock_vault,
+            commands::vault::verify_master_password,
             commands::vault::lock_vault,
             commands::vault::delete_vault,
             commands::vault::add_account,

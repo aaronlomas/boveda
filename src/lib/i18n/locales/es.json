@@ -252,7 +252,8 @@
       "totp_recovery_btn": "Recuperar Acceso",
       "totp_recovery_error": "Código de recuperación inválido o ya utilizado.",
       "totp_recovery_success": "¡2FA desactivado con éxito! Ahora puedes entrar solo con tu contraseña maestra.",
-      "totp_recovery_warning_setup": "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil."
+      "totp_recovery_warning_setup": "⚠️ GUARDA ESTOS CÓDIGOS EN UN LUGAR SEGURO. Son la única forma de acceder si pierdes tu dispositivo móvil.",
+      "verify_to_unlock": "Introduce tu contraseña maestra."
     },
     "automatic_session_close":{
       "title": "Cierre de Sesión Automática",

@@ -6,6 +6,7 @@
   import ExportPasswordModal from './forms/ExportPasswordModal.svelte';
   import ImportPackageModal from './forms/ImportPackageModal.svelte';
   import AddPinModal from './forms/AddPinModal.svelte';
+  import VerifyMasterModal from './forms/VerifyMasterModal.svelte';
 </script>
 
 <!--
@@ -95,6 +96,19 @@
     }}
     oncancel={() => {
       const payload = modal.current?.kind === 'import-package' ? modal.current.payload : null;
+      modal.close();
+      payload?.oncancel?.();
+    }}
+  />
+{:else if modal.current?.kind === 'verify-master'}
+  <VerifyMasterModal
+    onconfirm={() => {
+      const payload = modal.current?.kind === 'verify-master' ? modal.current.payload : null;
+      modal.close();
+      payload?.onconfirm();
+    }}
+    oncancel={() => {
+      const payload = modal.current?.kind === 'verify-master' ? modal.current.payload : null;
       modal.close();
       payload?.oncancel?.();
     }}

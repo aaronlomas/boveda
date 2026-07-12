@@ -251,7 +251,8 @@
       "totp_recovery_btn": "Recover access",
       "totp_recovery_error": "Invalid or already used recovery code.",
       "totp_recovery_success": "2FA deactivated successfully! You can now access with just your master password.",
-      "totp_recovery_warning_setup": "⚠️ KEEP THESE CODES IN A SAFE PLACE. They are the only way to access if you lose your mobile device."
+      "totp_recovery_warning_setup": "⚠️ KEEP THESE CODES IN A SAFE PLACE. They are the only way to access if you lose your mobile device.",
+      "verify_to_unlock": "Enter your master password."
     },
     "automatic_session_close":{
       "title": "Automatic Session Close",

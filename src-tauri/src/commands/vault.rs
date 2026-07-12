@@ -76,6 +76,14 @@ pub fn lock_vault(state: State<'_, AppState>, app: tauri::AppHandle) -> Result<(
 }
 
 #[tauri::command]
+pub async fn verify_master_password(
+    password: SecretString,
+    state: State<'_, AppState>,
+) -> Result<bool, String> {
+    state.cmd_verify_master_password(password).await
+}
+
+#[tauri::command]
 pub async fn delete_vault(
     password: SecretString,
     state: State<'_, AppState>,

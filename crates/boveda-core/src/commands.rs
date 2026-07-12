@@ -58,7 +58,7 @@ impl AppState {
         lock.as_ref().cloned().ok_or_else(|| "Vault is locked".to_string())
     }
 
-    /// Devuelve el engine sin requerir verificación de sesión.
+    /// Returns the engine without requiring session verification.
     fn get_engine_unverified(&self) -> Result<BovedaEngine, String> {
         let lock = self.engine.lock()
             .map_err(|e| format!("Vault lock poisoned: {}. Please restart the application.", e))?;
@@ -150,6 +150,18 @@ impl AppState {
         }
         if let Ok(mut session) = self.session_verified.lock() {
             *session = false;
+        }
+    }
+
+    /// Verifies the master password without unlocking or replacing the active vault session.
+    /// The temporary engine is dropped immediately after the check.
+    pub async fn cmd_verify_master_password(&self, password: SecretString) -> Result<bool, String> {
+        match BovedaEngine::unlock(&self.db_path, &password).await {
+            Ok(engine) => {
+                engine.close().await;
+                Ok(true)
+            }
+            Err(_) => Ok(false),
         }
     }
 

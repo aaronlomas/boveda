@@ -82,7 +82,6 @@
 >
 
   <!-- Brand -->
-  <!-- centrar esto cuando el boton de toggle este colapsado -->
   <div
     class="flex items-center gap-2 py-4 border-b border-surface/8 overflow-hidden whitespace-nowrap {uiState.sidebarCollapsed ? 'justify-center px-0' : ''}"
   >

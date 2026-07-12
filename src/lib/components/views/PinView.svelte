@@ -5,6 +5,7 @@
    * using the composable usePins, decoupling it from direct data retrieval.
    */
   import Button from "../core/primitives/Button.svelte";
+  import Capsule from "../core/primitives/Capsule.svelte";
   import { onMount } from "svelte";
   import { _, locale } from "svelte-i18n";
   import {
@@ -42,7 +43,7 @@
   });
 </script>
 
-<div>
+<div class="flex flex-col h-full">
   <!-- Header -->
   <header class="flex items-center justify-between mb-7 gap-4">
     <div class="flex gap-x-4">
@@ -122,7 +123,7 @@
       {/if}
     </div>
   {:else}
-    <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 flex-1 overflow-y-auto min-h-0 pb-4 content-start">
       {#each filtered as pinEntry (pinEntry.id)}
         <PinCard
           {pinEntry}

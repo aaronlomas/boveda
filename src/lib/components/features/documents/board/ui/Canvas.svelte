@@ -35,7 +35,7 @@
     tabindex="0"
     aria-multiline="true"
     aria-label={$_("board.placeholder")}
-    class="editor-pizarra w-full h-full min-h-100 p-8 bg-transparent border-none outline-none text-text-primary transition-all focus:ring-0 leading-relaxed overflow-y-auto"
+    class="editor-pizarra w-full h-full min-h-100 max-h-0 p-8 bg-transparent border-none outline-none text-text-primary transition-all focus:ring-0 leading-relaxed overflow-y-auto"
     placeholder={$_("board.placeholder")}
     onkeyup={() => store.updateState()}
     onmouseup={() => store.updateState()}

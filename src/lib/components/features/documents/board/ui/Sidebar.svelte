@@ -13,10 +13,10 @@
   import { IconEye, IconInfoCircle } from "@tabler/icons-svelte";
   import type { BoardStore } from "../store.svelte";
 
-  let { store, onviewnotes }: { store: BoardStore, onviewnotes?: () => void } = $props();
+  let { onviewnotes }: { store: BoardStore, onviewnotes?: () => void } = $props();
 </script>
 
-<aside class="w-64 border-l border-surface/8 bg-surface/2 flex-col hidden lg:flex">
+<aside class="w-48 border-l border-surface/8 bg-surface/2 flex-col hidden lg:flex">
   <div class="p-4 border-b border-surface/8">
     <h3 class="text-sm font-bold text-text-primary flex items-center gap-2">
       <IconInfoCircle size={18} class="text-accent" />
@@ -41,6 +41,6 @@
   </div>
   
   <div class="p-4 border-t border-surface/8 text-xs text-text-muted text-center italic">
-    Bóveda Secure Editor v1.0
+    Bóveda Secure Editor v0.1.0
   </div>
 </aside>

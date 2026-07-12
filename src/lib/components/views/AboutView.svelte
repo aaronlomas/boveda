@@ -8,7 +8,7 @@
 </script>
 
 <div
-  class="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10"
+  class="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pb-10 h-full overflow-y-auto"
 >
   <div class="mb-10 text-center">
     <div

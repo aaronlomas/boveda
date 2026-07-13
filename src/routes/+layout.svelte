@@ -8,7 +8,7 @@
   import TitleBar from "$lib/components/ui/TitleBar.svelte";
   import Toast from "$lib/components/modals/notifications/Toast.svelte";
   import ModalHost from "$lib/components/modals/ModalHost.svelte";
-  import Log from "$lib/components/features/cli/log/Log.svelte";
+  import Cli from "$lib/components/features/cli/log/Log.svelte";
   import { getCurrentWindow } from "@tauri-apps/api/window";
 
   let initialized = false;
@@ -76,7 +76,7 @@
     <div class="flex-1 overflow-hidden">
       <slot />
     </div>
-    <Log />
+    <Cli />
   </div>
   <Toast />
   <ModalHost />

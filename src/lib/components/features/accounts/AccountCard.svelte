@@ -177,10 +177,11 @@
   class="border-surface/8 hover:border-accent/30"
   data-card-id={account.id}
 >
-  {#snippet header()}
+  {#snippet header(expanded)}
     <!-- Decoupled Modular Header -->
     <CredentialHeader
       {account}
+      {expanded}
       ondelete={() => ondelete(account.id)}
       {onrefresh}
     />

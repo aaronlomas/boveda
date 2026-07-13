@@ -1,7 +1,7 @@
 <script lang="ts">
   /**
-   * @component AccountsGroupFilter
-   * @description Component to filter credentials by group and manage tags/groups.
+   * @component Group
+   * @description Component to filter items by group and manage tags/groups.
    */
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
@@ -16,7 +16,7 @@
   } from "@tabler/icons-svelte";
   import { uiState, dataState } from "$lib/stores/stores.svelte";
   import { useGroups } from "$lib/composables/useGroups.svelte";
-  import GroupColorPicker from "$lib/components/features/accounts/groupColors/GroupColorPicker.svelte";
+  import GroupColorPicker from "$lib/components/organizer/groupColors/GroupColorPicker.svelte";
   import { focus, selectOnFocus } from "$lib/utils/actions";
   import { modal } from "$lib/stores/modal.svelte";
 
@@ -45,7 +45,7 @@
   let newGroupColor = $state<string | null>(null); // new group color
 
   // ── Handlers
-  // ── Manejo de grupos ───────────────────────────────────────────────────────────────
+  // ── Group Management ───────────────────────────────────────────────────────────────
   async function handleAddGroup(): Promise<void> {
     const trimmed = newGroupName.trim();
     if (!trimmed) return;

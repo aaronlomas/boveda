@@ -390,6 +390,8 @@
     "deleted_success": "Grupo eliminado.",
     "deleted_error": "Error al eliminar el grupo.",
     "no_accounts_in_group": "No hay cuentas en \"{group}\"",
-    "pick_color": "Elegir color"
+    "pick_color": "Elegir color",
+    "create_color":"Crear color",
+    "no_color":"Sin color"
   }
 }

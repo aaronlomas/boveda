@@ -7,7 +7,7 @@
   import { uiState } from "$lib/stores/ui.svelte";
 
   interface Props {
-    header: Snippet;
+    header: Snippet<[boolean]>;
     children?: Snippet;
     class?: string;
     style?: string;
@@ -39,7 +39,7 @@
   data-card-id={dataCardId}
 >
   <div class="p-4">
-    {@render header()}
+    {@render header(expanded)}
   </div>
 
   {#if expanded && children}

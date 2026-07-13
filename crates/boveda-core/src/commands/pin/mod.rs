@@ -32,4 +32,12 @@ impl super::AppState {
         let engine = self.get_engine()?;
         engine.delete_pin(id).await.map_err(|e| e.to_string())
     }
+
+    pub async fn cmd_update_pin_group(&self, id: &str, group_name: Option<&str>) -> Result<(), String> {
+        Uuid::parse_str(id)
+            .map_err(|_| format!("Invalid PIN ID: '{}'. Must be a valid UUID.", id))?;
+
+        let engine = self.get_engine()?;
+        engine.update_pin_group(id, group_name).await.map_err(|e| e.to_string())
+    }
 }

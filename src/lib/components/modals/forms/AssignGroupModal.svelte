@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { dataState } from "$lib/stores/stores.svelte";
-  import { updateAccountGroup, saveGroups } from "$lib/utils/tauri";
+  import { updateAccountGroup, updatePinGroup, saveGroups } from "$lib/utils/tauri";
   import { toast } from "$lib/stores/toast.svelte";
   import { IconPlus, IconCheck } from "@tabler/icons-svelte";
   import { focus } from "$lib/utils/actions";
@@ -11,11 +11,13 @@
   // ── Props ──────────────────────────────────────────────────────────────────
   let {
     accountId,
+    itemType = "account",
     currentGroup,
     onassigned,
     onclose,
   }: {
     accountId: string;
+    itemType?: "account" | "pin";
     currentGroup?: string | null;
     onassigned?: () => void;
     onclose: () => void;
@@ -37,7 +39,11 @@
   async function handleSave(): Promise<void> {
     saving = true;
     try {
-      await updateAccountGroup(accountId, selected);
+      if (itemType === "pin") {
+        await updatePinGroup(accountId, selected);
+      } else {
+        await updateAccountGroup(accountId, selected);
+      }
       onassigned?.();
       toast.success($_("groups.assigned_success"));
       onclose();

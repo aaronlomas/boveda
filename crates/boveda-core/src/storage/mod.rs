@@ -27,6 +27,7 @@ pub struct PinRow {
     pub name: String,
     pub encrypted_pin: String,
     pub encrypted_notes: Option<String>,
+    pub group_name: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -74,6 +75,7 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
             name            TEXT NOT NULL,
             encrypted_pin   TEXT NOT NULL,
             encrypted_notes TEXT,
+            group_name      TEXT,
             created_at      TEXT NOT NULL,
             updated_at      TEXT NOT NULL
         );
@@ -127,6 +129,7 @@ pub async fn init_db(pool: &SqlitePool) -> BovedaResult<()> {
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN group_name TEXT").execute(pool).await;
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN encrypted_recovery_code TEXT").execute(pool).await;
     let _ = sqlx::query("ALTER TABLE accounts ADD COLUMN favicon_url TEXT").execute(pool).await;
+    let _ = sqlx::query("ALTER TABLE pins ADD COLUMN group_name TEXT").execute(pool).await;
     // Note: If columns already exist, ALTER TABLE fails safely in this context
 
     Ok(())
@@ -210,19 +213,21 @@ pub async fn add_pin(
     name: &str,
     encrypted_pin: &str,
     encrypted_notes: Option<&str>,
+    group_name: Option<&str>,
 ) -> BovedaResult<String> {
     let id = Uuid::new_v4().to_string();
     let now = Utc::now().to_rfc3339();
 
     sqlx::query(
         r"INSERT INTO pins
-           (id, name, encrypted_pin, encrypted_notes, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?)",
+           (id, name, encrypted_pin, encrypted_notes, group_name, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(&id)
     .bind(name)
     .bind(encrypted_pin)
     .bind(encrypted_notes)
+    .bind(group_name)
     .bind(&now)
     .bind(&now)
     .execute(pool)
@@ -233,7 +238,7 @@ pub async fn add_pin(
 
 pub async fn get_pins(pool: &SqlitePool) -> BovedaResult<Vec<PinRow>> {
     let rows = sqlx::query_as::<_, PinRow>(
-        r"SELECT id, name, encrypted_pin, encrypted_notes, created_at, updated_at
+        r"SELECT id, name, encrypted_pin, encrypted_notes, group_name, created_at, updated_at
            FROM pins ORDER BY name ASC",
     )
     .fetch_all(pool)
@@ -243,6 +248,20 @@ pub async fn get_pins(pool: &SqlitePool) -> BovedaResult<Vec<PinRow>> {
 
 pub async fn delete_pin(pool: &SqlitePool, id: &str) -> BovedaResult<()> {
     sqlx::query("DELETE FROM pins WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn update_pin_group(
+    pool: &SqlitePool,
+    id: &str,
+    group_name: Option<&str>,
+) -> BovedaResult<()> {
+    sqlx::query("UPDATE pins SET group_name = ?, updated_at = ? WHERE id = ?")
+        .bind(group_name)
+        .bind(Utc::now().to_rfc3339())
         .bind(id)
         .execute(pool)
         .await?;
@@ -352,8 +371,18 @@ pub async fn rename_group_tx(conn: &mut SqliteConnection, old_name: &str, new_na
     .bind(new_name)
     .bind(Utc::now().to_rfc3339())
     .bind(old_name)
-    .execute(conn)
+    .execute(&mut *conn)
     .await?;
+
+    sqlx::query(
+        "UPDATE pins SET group_name = ?, updated_at = ? WHERE group_name = ?",
+    )
+    .bind(new_name)
+    .bind(Utc::now().to_rfc3339())
+    .bind(old_name)
+    .execute(&mut *conn)
+    .await?;
+
     Ok(())
 }
 
@@ -364,8 +393,17 @@ pub async fn delete_group_tx(conn: &mut SqliteConnection, name: &str) -> BovedaR
     )
     .bind(Utc::now().to_rfc3339())
     .bind(name)
-    .execute(conn)
+    .execute(&mut *conn)
     .await?;
+
+    sqlx::query(
+        "UPDATE pins SET group_name = NULL, updated_at = ? WHERE group_name = ?",
+    )
+    .bind(Utc::now().to_rfc3339())
+    .bind(name)
+    .execute(&mut *conn)
+    .await?;
+
     Ok(())
 }
 

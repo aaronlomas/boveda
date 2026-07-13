@@ -18,6 +18,7 @@
   import { modal } from "$lib/stores/modal.svelte";
   import { usePins } from "$lib/composables/usePins.svelte";
   import PinCard from "$lib/components/features/pins/PinCard.svelte";
+  import Group from "$lib/components/organizer/Group.svelte";
 
   // ── Composable ────────────────────────────────────────────
   const pinService = usePins();
@@ -25,9 +26,14 @@
 
   // ── Derived State ──────────────────────────────────────────────────────────
   let filtered = $derived(
-    pinService.pins.filter((p) =>
-      p.name?.toLowerCase().includes(search.toLowerCase()),
-    ),
+    pinService.pins.filter((p) => {
+      const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase());
+      const matchGroup =
+        uiState.activeGroup === null
+          ? true
+          : p.group_name === uiState.activeGroup;
+      return matchSearch && matchGroup;
+    }),
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -85,6 +91,7 @@
       placeholder={$_("pin_security.search_placeholder")}
     />
   </div>
+  <Group />
 
   {#if pinService.error}
     <div class="text-center py-16">
@@ -129,6 +136,7 @@
           {pinEntry}
           locale={$locale ?? "es"}
           ondelete={(id) => pinService.delete(id)}
+          onrefresh={() => pinService.refresh()}
         />
       {/each}
     </div>

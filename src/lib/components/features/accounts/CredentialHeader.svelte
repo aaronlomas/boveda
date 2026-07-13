@@ -17,10 +17,11 @@
   import { toast } from "$lib/stores/toast.svelte";
 
   // Props
-  let { account, ondelete, onrefresh } = $props<{
+  let { account, ondelete, onrefresh, expanded = false } = $props<{
     account: Account;
     ondelete: () => void;
     onrefresh?: () => void;
+    expanded?: boolean;
   }>();
 
   // Local state for controlling the opening of the context menu
@@ -81,7 +82,7 @@
   
   <!-- Favicon -->
   <div
-    class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative overflow-hidden {!(account.group_name && dataState.groupColors[account.group_name]) ? 'bg-surface/5 border border-surface/10 text-text-primary' : 'text-white border border-transparent'}"
+    class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative {!(account.group_name && dataState.groupColors[account.group_name]) ? 'bg-surface/5 border border-surface/10 text-text-primary' : 'text-white border border-transparent'}"
     style={account.group_name && dataState.groupColors[account.group_name] ? `background-color: ${dataState.groupColors[account.group_name]}; border-color: ${dataState.groupColors[account.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[account.group_name]}40;` : ""}
   >
     {#if account.favicon_url}
@@ -112,11 +113,12 @@
     <!-- More Actions Button -->
     <div class="relative">
       <button
-        class="text-text-muted rounded-md transition-colors cursor-pointer p-1 hover:bg-surface/10 hover:text-text-primary"
-        onclick={() => (menuOpen = !menuOpen)}
+        class="text-text-muted rounded-md transition-colors p-1 {expanded ? 'hover:bg-surface/10 hover:text-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
+        onclick={(e) => { if (expanded) menuOpen = !menuOpen; }}
         aria-label={$_("groups.menu_label")}
         aria-expanded={menuOpen}
         aria-haspopup="menu"
+        disabled={!expanded}
       >
         <IconDotsVertical size={16} />
       </button>

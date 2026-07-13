@@ -33,6 +33,7 @@ export interface ConfirmPayload {
 
 export interface AssignGroupPayload {
   accountId: string;
+  itemType?: "account" | "pin";
   currentGroup?: string | null;
   onassigned?: () => void;
   oncancel?: () => void;

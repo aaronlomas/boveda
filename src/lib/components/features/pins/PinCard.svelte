@@ -7,20 +7,27 @@
     IconTrash,
     IconCopy,
     IconDotsVertical,
+    IconFolderPlus,
+    IconFolderX,
   } from "@tabler/icons-svelte";
-  import type { Pin } from "$lib/stores/stores.svelte";
+  import { dataState, type Pin } from "$lib/stores/stores.svelte";
+  import { modal } from "$lib/stores/modal.svelte";
+  import { updatePinGroup } from "$lib/utils/tauri";
   import { invoke } from "@tauri-apps/api/core";
   import { toast } from "$lib/stores/toast.svelte";
+  import Capsule from "$lib/components/core/primitives/Capsule.svelte";
 
   // ── Props ──────────────────────────────────────────────────────────────────
   let {
     pinEntry,
     locale,
     ondelete,
+    onrefresh,
   }: {
     pinEntry: Pin;
     locale: string;
     ondelete: (id: string) => void;
+    onrefresh?: () => void;
   } = $props();
 
   // ── Local State ─────────────────────────────────────────────────────────────
@@ -104,6 +111,28 @@
       }
     }, 1000);
   }
+
+  async function openAssignGroup(): Promise<void> {
+    menuOpen = false;
+    const assigned = await modal.openAssignGroup({
+      accountId: pinEntry.id,
+      itemType: "pin",
+      currentGroup: pinEntry.group_name,
+    });
+    if (assigned) onrefresh?.();
+  }
+
+  async function removeFromGroup(): Promise<void> {
+    menuOpen = false;
+    try {
+      await updatePinGroup(pinEntry.id, null);
+      onrefresh?.();
+      toast.success($_("groups.removed_success"));
+    } catch (e) {
+      console.error(e);
+      toast.error($_("groups.removed_error"));
+    }
+  }
 </script>
 
 <!-- Click-outside handler to close menu -->
@@ -111,21 +140,23 @@
   onclick={(e) => {
     if (
       menuOpen &&
-      !(e.target as HTMLElement)?.closest(`[data-pin-id="${pinEntry.id}"]`)
+      !(e.target as HTMLElement)?.closest(`[data-card-id="${pinEntry.id}"]`)
     ) {
       menuOpen = false;
     }
   }}
 />
 
-<div
-  class="p-5 flex flex-col gap-2 transition-all bg-panel/30 backdrop-blur-2xl rounded-2xl border border-surface/8 hover:border-accent/30 hover:translate-y-2 relative"
-  data-pin-id={pinEntry.id}
+<Capsule
+  class="border-surface/8 hover:border-accent/30"
+  data-card-id={pinEntry.id}
 >
-  <!-- Header -->
-  <div class="flex items-center gap-4">
+  {#snippet header(expanded)}
+    <!-- Header -->
+    <div class="flex items-center gap-4">
     <div
-      class="w-11 h-11 rounded-sm bg-accent/5 border border-accent/10 grid place-items-center shrink-0 text-accent-light"
+      class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative overflow-hidden {!(pinEntry.group_name && dataState.groupColors[pinEntry.group_name]) ? 'bg-accent/5 border border-accent/10 text-accent-light' : 'text-white border border-transparent'}"
+      style={pinEntry.group_name && dataState.groupColors[pinEntry.group_name] ? `background-color: ${dataState.groupColors[pinEntry.group_name]}; border-color: ${dataState.groupColors[pinEntry.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[pinEntry.group_name]}40;` : ""}
     >
       <span class="text-lg font-bold">#</span>
     </div>
@@ -136,7 +167,7 @@
         >{pinEntry.name}</span
       >
       <span class="text-text-muted text-xs"
-        >{formatDate(pinEntry.created_at)}</span
+        >{pinEntry.group_name || $_("groups.none")} • {formatDate(pinEntry.created_at)}</span
       >
     </div>
 
@@ -144,19 +175,42 @@
     <div class="flex items-center shrink-0">
       <div class="relative">
         <button
-          class="text-text-muted rounded-full transition-colors cursor-pointer p-1 hover:bg-surface/10 hover:text-text-primary"
-          onclick={() => (menuOpen = !menuOpen)}
+          class="text-text-muted rounded-full transition-colors p-1 {expanded ? 'hover:bg-surface/10 hover:text-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
+          onclick={(e) => { if (expanded) menuOpen = !menuOpen; }}
           aria-label="Menu"
+          disabled={!expanded}
         >
           <IconDotsVertical size={16} />
         </button>
 
         {#if menuOpen}
           <div
-            class="absolute right-0 top-full mt-1 z-20 min-w-32 border border-surface/20 rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150 bg-panel/50 backdrop-blur-2xl"
+            class="absolute right-0 top-full mt-1 z-20 min-w-44 border border-surface/20 rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150 bg-panel/50 backdrop-blur-2xl"
           >
             <button
-              class="w-full flex items-center gap-2 px-3 py-2 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
+              class="w-full flex items-center gap-2 p-2 px-3 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
+              onclick={openAssignGroup}
+            >
+              <IconFolderPlus size={15} class="text-accent shrink-0" />
+              {pinEntry.group_name
+                ? $_("groups.change_group")
+                : $_("groups.add_to_group")}
+            </button>
+
+            {#if pinEntry.group_name}
+              <button
+                class="w-full flex items-center gap-2 p-2 px-3 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
+                onclick={removeFromGroup}
+              >
+                <IconFolderX size={15} class="text-text-muted shrink-0" />
+                {$_("groups.remove_from_group")}
+              </button>
+            {/if}
+
+            <div class="h-px bg-surface/8 mx-2 my-1"></div>
+
+            <button
+              class="w-full flex items-center gap-2 p-2 px-3 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
               onclick={() => {
                 menuOpen = false;
                 ondelete(pinEntry.id);
@@ -169,7 +223,8 @@
         {/if}
       </div>
     </div>
-  </div>
+    </div>
+  {/snippet}
 
   <!-- PIN Field -->
   <div class="grid gap-2 mt-4">
@@ -233,4 +288,4 @@
       </div>
     {/if}
   {/if}
-</div>
+</Capsule>

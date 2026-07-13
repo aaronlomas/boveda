@@ -82,6 +82,13 @@ export async function deletePin(id: string): Promise<void> {
   return invoke("delete_pin", { id });
 }
 
+export async function updatePinGroup(
+  id: string,
+  groupName: string | null,
+): Promise<void> {
+  return invoke("update_pin_group", { id, groupName });
+}
+
 // ─── Groups ───────────────────────────────────────────────────────────────────
 
 export async function getGroups(): Promise<string[]> {

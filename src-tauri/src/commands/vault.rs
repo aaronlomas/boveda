@@ -233,6 +233,17 @@ pub async fn delete_pin(id: String, state: State<'_, AppState>) -> Result<(), St
     state.cmd_delete_pin(&id).await
 }
 
+#[tauri::command]
+pub async fn update_pin_group(
+    id: String,
+    group_name: Option<String>,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
+    state
+        .cmd_update_pin_group(&id, group_name.as_deref())
+        .await
+}
+
 // ─── Document commands ────────────────────────────────────────────────────────
 
 #[tauri::command]

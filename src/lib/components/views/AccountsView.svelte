@@ -2,8 +2,8 @@
   /**
    * @component AccountsView
    * @description Main view for credential management (Accounts).
-   * Orchestrates the specialized components AccountsFilter, AccountsGroupFilter
-    and AccountsList, and uses the reactive composables useAccounts and uiState.
+   * Orchestrates the specialized components AccountsFilter, Group
+   * and AccountsList, and uses the reactive composables useAccounts and uiState.
    */
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
@@ -18,7 +18,7 @@
   import { useAccounts } from "$lib/composables/useAccounts.svelte";
   import Button from "../core/primitives/Button.svelte";
   import AccountsFilter from "../features/accounts/AccountsFilter.svelte";
-  import AccountsGroupFilter from "../features/accounts/AccountsGroupFilter.svelte";
+  import Group from "../organizer/Group.svelte";
   import AccountsList from "../features/accounts/AccountsList.svelte";
 
   // ── Composable e Inicialización ────────────────────────────────────────────
@@ -95,7 +95,7 @@
   </header>
 
   <AccountsFilter bind:search />
-  <AccountsGroupFilter />
+  <Group />
 
   <div class="flex-1 min-h-0 overflow-y-auto">
     <!-- Main Content View -->

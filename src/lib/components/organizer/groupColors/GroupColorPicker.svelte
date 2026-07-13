@@ -1,7 +1,7 @@
 <script lang="ts">
   import { IconPalette, IconBan, IconPlus } from "@tabler/icons-svelte";
   import { _ } from "svelte-i18n";
-  
+
   let { selectedColor = $bindable(), onselect } = $props<{
     selectedColor: string | null;
     onselect?: (color: string | null) => void;
@@ -24,7 +24,11 @@
   let customColor = $state<string | null>(null);
 
   $effect(() => {
-    if (selectedColor && !colors.includes(selectedColor) && customColor !== selectedColor) {
+    if (
+      selectedColor &&
+      !colors.includes(selectedColor) &&
+      customColor !== selectedColor
+    ) {
       customColor = selectedColor;
     }
   });
@@ -36,7 +40,7 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && isOpen) {
+    if (e.key === "Escape" && isOpen) {
       isOpen = false;
     }
   }
@@ -49,7 +53,7 @@
     return {
       destroy() {
         document.removeEventListener("click", handleClick, true);
-      }
+      },
     };
   }
 </script>
@@ -64,7 +68,10 @@
     title={$_("groups.pick_color")}
   >
     {#if selectedColor}
-      <div class="w-3 h-3 rounded-full" style="background-color: {selectedColor};"></div>
+      <div
+        class="w-3 h-3 rounded-full"
+        style="background-color: {selectedColor};"
+      ></div>
     {:else}
       <IconPalette size={14} />
     {/if}
@@ -72,30 +79,36 @@
 
   {#if isOpen}
     <!-- Color picker popover -->
-    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 bg-panel/95 backdrop-blur-md border border-surface/20 rounded-lg shadow-xl shadow-black/20 z-20 flex flex-wrap gap-2 w-max max-w-[140px] justify-center">
+    <div
+      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 bg-panel/95 backdrop-blur-md border border-surface/20 rounded-lg shadow-xl shadow-black/20 z-20 flex flex-wrap gap-2 w-max max-w-[140px] justify-center"
+    >
       {#each colors as color}
         <button
           class="w-5 h-5 rounded-full cursor-pointer hover:scale-125 transition-transform border border-black/20"
-          style="background-color: {color}; {selectedColor === color ? 'outline: 2px solid white; outline-offset: 1px;' : ''}"
+          style="background-color: {color}; {selectedColor === color
+            ? 'outline: 2px solid white; outline-offset: 1px;'
+            : ''}"
           onclick={() => selectColor(color)}
           aria-label="Color {color}"
         ></button>
       {/each}
-      
+
       {#if customColor}
         <button
           class="w-5 h-5 rounded-full cursor-pointer hover:scale-125 transition-transform border border-black/20"
-          style="background-color: {customColor}; {selectedColor === customColor ? 'outline: 2px solid white; outline-offset: 1px;' : ''}"
+          style="background-color: {customColor}; {selectedColor === customColor
+            ? 'outline: 2px solid white; outline-offset: 1px;'
+            : ''}"
           onclick={() => selectColor(customColor)}
-          aria-label="Color personalizado"
-          title="Color personalizado"
+          aria-label="Custom color"
+          title="Custom color"
         ></button>
       {/if}
 
       <!-- Custom color input -->
       <label
         class="w-5 h-5 rounded-full cursor-pointer hover:scale-110 transition-colors border border-surface/40 bg-surface/10 flex items-center justify-center text-text-muted hover:text-white relative overflow-hidden"
-        title="Crear color"
+        title={$_("groups.create_color")}
       >
         <IconPlus size={12} />
         <input
@@ -113,7 +126,7 @@
       <button
         class="w-5 h-5 rounded-full cursor-pointer hover:scale-110 transition-colors border border-surface/40 bg-surface/10 flex items-center justify-center text-text-muted hover:text-white"
         onclick={() => selectColor(null)}
-        title="Sin color"
+        title={$_("groups.no_color")}
       >
         <IconBan size={12} />
       </button>

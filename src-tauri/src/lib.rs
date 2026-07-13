@@ -66,6 +66,7 @@ pub fn run() {
             commands::vault::add_pin,
             commands::vault::get_pins,
             commands::vault::delete_pin,
+            commands::vault::update_pin_group,
             // ── Documents ─────────────────────────────────────────────────
             commands::vault::add_document,
             commands::vault::get_documents,

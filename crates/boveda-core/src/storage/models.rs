@@ -24,6 +24,7 @@ pub struct Pin {
     pub name: String,
     pub encrypted_pin: String,
     pub encrypted_notes: Option<String>,
+    pub group_name: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }

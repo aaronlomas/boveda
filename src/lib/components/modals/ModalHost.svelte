@@ -62,6 +62,7 @@
 {:else if modal.current?.kind === 'assign-group'}
   <AssignGroupModal
     accountId={modal.current.payload.accountId}
+    itemType={modal.current.payload.itemType}
     currentGroup={modal.current.payload.currentGroup}
     onassigned={() => {
       const payload = modal.current?.kind === 'assign-group' ? modal.current.payload : null;

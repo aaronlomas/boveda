@@ -20,6 +20,7 @@ impl super::BovedaEngine {
                 name: dec_name.as_str().to_string(),
                 encrypted_pin: row.encrypted_pin,
                 encrypted_notes: row.encrypted_notes,
+                group_name: row.group_name,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
             });
@@ -54,6 +55,7 @@ impl super::BovedaEngine {
             &enc_name,
             &enc_pin,
             enc_notes.as_deref(),
+            None,
         ).await?;
 
         self.log_audit(crate::audit::AuditAction::PinCreate, Some(&id)).await?;
@@ -64,5 +66,11 @@ impl super::BovedaEngine {
         self.check_unlocked()?;
         self.log_audit(crate::audit::AuditAction::PinDelete, Some(id)).await?;
         storage::delete_pin(&self.db, id).await
+    }
+
+    pub async fn update_pin_group(&self, id: &str, group_name: Option<&str>) -> BovedaResult<()> {
+        self.check_unlocked()?;
+        self.log_audit(crate::audit::AuditAction::PinGroupUpdate, Some(id)).await?;
+        storage::update_pin_group(&self.db, id, group_name).await
     }
 }

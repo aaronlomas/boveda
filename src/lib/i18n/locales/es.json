@@ -85,7 +85,7 @@
   "add_credential": {
     "title": "Nueva Credencial",
     "site_label": "Sitio / Aplicación",
-    "site_placeholder": "github.com",
+    "site_placeholder": "Github.com",
     "user_label": "Usuario / Email",
     "user_placeholder": "tu@email.com",
     "password_label": "Contraseña:",

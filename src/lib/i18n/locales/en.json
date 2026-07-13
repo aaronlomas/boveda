@@ -85,9 +85,9 @@
   "add_credential": {
     "title": "New Credential",
     "site_label": "Site / Application",
-    "site_placeholder": "github.com",
+    "site_placeholder": "Github.com",
     "user_label": "Username / Email",
-    "user_placeholder": "[EMAIL_ADDRESS]",
+    "user_placeholder": "User@domain.com",
     "password_label": "Password",
     "placeholder": "•••••••••••••••",
     "recovery_code_label": "Recovery code",

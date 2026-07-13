@@ -9,6 +9,7 @@
   import Toast from "$lib/components/modals/notifications/Toast.svelte";
   import ModalHost from "$lib/components/modals/ModalHost.svelte";
   import Cli from "$lib/components/features/cli/log/Log.svelte";
+  import { startPersistentLogListener } from "$lib/utils/logEvents";
   import { getCurrentWindow } from "@tauri-apps/api/window";
 
   let initialized = false;
@@ -23,6 +24,8 @@
     await themeStore.init();
     // Load performance preferences
     performanceStore.init();
+    // Start always-on log listener (captures unlock/import errors on login screen)
+    await startPersistentLogListener();
 
     initialized = true;
   });

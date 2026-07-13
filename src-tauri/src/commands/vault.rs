@@ -48,6 +48,18 @@ pub async fn unlock_vault(
                     "boveda://audit",
                     serde_json::json!({ "action": "remote_blocked" }),
                 );
+            } else if err_str.contains("CRITICAL") || err_str.contains("SQLCipher") {
+                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault integrity check failed: the database may be corrupted or is not a valid Bóveda file." }));
+                let _ = app.emit(
+                    "boveda://audit",
+                    serde_json::json!({ "action": "failed_login_attempt" }),
+                );
+            } else if err_str.contains("Disk access") || err_str.contains("IoError") || err_str.contains("salt") {
+                let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault file access error: one or more vault files may be missing or unreadable." }));
+                let _ = app.emit(
+                    "boveda://audit",
+                    serde_json::json!({ "action": "failed_login_attempt" }),
+                );
             } else {
                 let _ = app.emit("boveda://audit", serde_json::json!({ "action": "custom", "category": "ERROR", "msg": "Vault unlock failed. Check your master password." }));
                 let _ = app.emit(

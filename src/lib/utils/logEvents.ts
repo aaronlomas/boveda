@@ -1,45 +1,53 @@
-/**
- * logEvents.ts
- *
- * Connects them to the visual log (logStore) and the session state.
- * Call `startLogListeners()` once when the vault is unlocked.
- * Call `stopLogListeners()` when it locks.
- */
-
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { logStore, type LogCategory } from "$lib/stores/log.svelte";
 
-let unlistenAudit: UnlistenFn | null = null;
+let unlistenPersistent: UnlistenFn | null = null;
+let unlistenSession: UnlistenFn | null = null;
 
-export async function startLogListeners(): Promise<void> {
-  if (unlistenAudit) {
-    unlistenAudit();
-    unlistenAudit = null;
+function handleAuditPayload(payload: any): void {
+  if (payload.action === "clear_log") {
+    logStore.clear();
+    return;
   }
 
-  // Listen to audit events from Rust core
-  unlistenAudit = await listen<{ action: string; msg?: string; category?: LogCategory }>(
+  if (payload.action === "remote_blocked") {
+    logStore.add("SEC", "Vault unlock blocked: remote session detected (AnyDesk/VNC/RDP)");
+    return;
+  }
+
+  if (payload.action === "custom" || payload.msg) {
+    logStore.add(payload.category || "SYSTEM", payload.msg);
+    return;
+  }
+}
+
+export async function startPersistentLogListener(): Promise<void> {
+  if (unlistenPersistent) return;
+
+  unlistenPersistent = await listen<{ action: string; msg?: string; category?: LogCategory }>(
     "boveda://audit",
-    ({ payload }: { payload: any }) => {
-      if (payload.action === "clear_log") {
-        logStore.clear();
-        return;
-      }
+    ({ payload }) => handleAuditPayload(payload)
+  );
+}
 
-      if (payload.action === "remote_blocked") {
-        logStore.add("SEC", "Vault unlock blocked: remote session detected (AnyDesk/VNC/RDP)");
-        return;
-      }
+export function stopPersistentLogListener(): void {
+  unlistenPersistent?.();
+  unlistenPersistent = null;
+}
 
-      if (payload.action === "custom" || payload.msg) {
-        logStore.add(payload.category || "SYSTEM", payload.msg);
-        return;
-      }
-    }
+export async function startLogListeners(): Promise<void> {
+  if (unlistenSession) {
+    unlistenSession();
+    unlistenSession = null;
+  }
+
+  unlistenSession = await listen<{ action: string; msg?: string; category?: LogCategory }>(
+    "boveda://audit",
+    ({ payload }) => handleAuditPayload(payload)
   );
 }
 
 export function stopLogListeners(): void {
-  unlistenAudit?.();
-  unlistenAudit = null;
+  unlistenSession?.();
+  unlistenSession = null;
 }

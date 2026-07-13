@@ -1,6 +1,6 @@
 use crate::state::AppState;
 use boveda_core::vault::ImportStrategy;
-use tauri::State;
+use tauri::{Emitter, State};
 
 // ─── User Preferences ─────────────────────────────────────────────────────────
 
@@ -65,10 +65,69 @@ pub async fn import_secure_package(
     password: String,
     strategy: ImportStrategy,
     state: State<'_, AppState>,
+    app: tauri::AppHandle,
 ) -> Result<(), String> {
-    state
+    let path = std::path::Path::new(&src_path);
+    let ext = path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("");
+
+    if ext != "pack" {
+        let _ = app.emit(
+            "boveda://audit",
+            serde_json::json!({
+                "action": "custom",
+                "category": "ERROR",
+                "msg": "Import rejected: file is not a valid .bvda.pack package."
+            }),
+        );
+        return Err("Invalid file type. Expected a .bvda.pack package.".to_string());
+    }
+
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({
+            "action": "custom",
+            "category": "IPC",
+            "msg": "Importing encrypted .bvda.pack package..."
+        }),
+    );
+
+    match state
         .cmd_import_secure_package(&src_path, password, strategy)
         .await
+    {
+        Ok(()) => {
+            let _ = app.emit(
+                "boveda://audit",
+                serde_json::json!({
+                    "action": "custom",
+                    "category": "SUCCESS",
+                    "msg": "Secure package imported successfully."
+                }),
+            );
+            Ok(())
+        }
+        Err(e) => {
+            let msg = if e.contains("Incorrect password") || e.contains("CryptoError") || e.contains("DecodeError") {
+                "Import failed: invalid password or corrupted package.".to_string()
+            } else if e.contains("SerializationError") || e.contains("format") {
+                "Import failed: package structure is invalid or corrupted.".to_string()
+            } else {
+                "Import failed: unexpected error reading the package.".to_string()
+            };
+            let _ = app.emit(
+                "boveda://audit",
+                serde_json::json!({
+                    "action": "custom",
+                    "category": "ERROR",
+                    "msg": msg
+                }),
+            );
+            Err(e)
+        }
+    }
 }
 
 #[derive(serde::Serialize)]
@@ -92,14 +151,68 @@ pub fn get_os_username() -> String {
         .unwrap_or_else(|_| "guest".to_string())
 }
 
-/// Importa una base de datos externa: cierra el pool, copia archivos y reinicia la app.
-/// La lógica de archivos vive en boveda-core; solo `app.restart()` permanece aquí.
 #[tauri::command]
 pub async fn import_db(
     src_path: String,
     state: State<'_, AppState>,
     app: tauri::AppHandle,
 ) -> Result<(), String> {
-    state.cmd_prepare_import_db(&src_path).await?;
-    app.restart();
+    let path = std::path::Path::new(&src_path);
+    let ext = path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("");
+
+    if ext != "bvda" {
+        let _ = app.emit(
+            "boveda://audit",
+            serde_json::json!({
+                "action": "custom",
+                "category": "ERROR",
+                "msg": "Import rejected: file is not a valid .bvda database."
+            }),
+        );
+        return Err("Invalid file type. Expected a .bvda database file.".to_string());
+    }
+
+    let _ = app.emit(
+        "boveda://audit",
+        serde_json::json!({
+            "action": "custom",
+            "category": "IPC",
+            "msg": "Preparing to import .bvda database..."
+        }),
+    );
+
+    match state.cmd_prepare_import_db(&src_path).await {
+        Ok(()) => {
+            let _ = app.emit(
+                "boveda://audit",
+                serde_json::json!({
+                    "action": "custom",
+                    "category": "SUCCESS",
+                    "msg": "Database replaced. Restarting vault..."
+                }),
+            );
+            app.restart();
+        }
+        Err(e) => {
+            let msg = if e.contains("does not exist") || e.contains("not found") {
+                "Import failed: source file not found.".to_string()
+            } else if e.contains("same file") {
+                "Import rejected: cannot replace the active vault with itself.".to_string()
+            } else {
+                "Import failed: could not replace the database file.".to_string()
+            };
+            let _ = app.emit(
+                "boveda://audit",
+                serde_json::json!({
+                    "action": "custom",
+                    "category": "ERROR",
+                    "msg": msg
+                }),
+            );
+            Err(e)
+        }
+    }
 }

@@ -119,7 +119,7 @@ pub fn decrypt_raw(ciphertext: &[u8], nonce: &[u8], key: &SecretKey) -> BovedaRe
 
 /// Generates a random secure password of `length` characters.
 /// Includes symbols and numbers.
-#[must_use = "la contraseña generada debe usarse o almacenarse de forma segura"]
+#[must_use = "The generated password must be used or stored securely."]
 pub fn generate_password(length: usize, include_symbols: bool) -> BovedaResult<SecretString> {
     let mut rng = OsRng;
 
@@ -162,7 +162,7 @@ pub fn generate_password(length: usize, include_symbols: bool) -> BovedaResult<S
         let mut b = e.into_bytes();
         use zeroize::Zeroize;
         b.zeroize();
-        BovedaError::DecodeError("Error al generar cadena de contraseña".to_string())
+        BovedaError::DecodeError("Error generating password string".to_string())
     });
 
     // SEC-H2: Return error instead of predecible fallback. Let caller handle the error.

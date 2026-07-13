@@ -33,13 +33,12 @@ impl BovedaEngine {
         let salt_path = db_path.with_file_name("vault.salt");
 
         let salt = if salt_path.exists() {
-            std::fs::read(&salt_path).map_err(|e| BovedaError::IoError(format!("Error al leer salt: {}", e)))?
+            std::fs::read(&salt_path).map_err(|e| BovedaError::IoError(format!("Failed to read vault salt: {}", e)))?
         } else {
-            // First time initialization: generate new salt
             use rand::RngCore;
             let mut new_salt = vec![0u8; 32];
             rand::rngs::OsRng.fill_bytes(&mut new_salt);
-            std::fs::write(&salt_path, &new_salt).map_err(|e| BovedaError::IoError(format!("Error al escribir salt: {}", e)))?;
+            std::fs::write(&salt_path, &new_salt).map_err(|e| BovedaError::IoError(format!("Failed to write vault salt: {}", e)))?;
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
@@ -53,7 +52,7 @@ impl BovedaEngine {
                 // (e.g., C:\Users\<User>\AppData\Local\...), which by default inherits ACLs
                 // that restrict access strictly to the current user profile and administrators.
                 let mut perms = std::fs::metadata(&salt_path)
-                    .map_err(|e| BovedaError::IoError(format!("Error leyendo metadatos de salt: {}", e)))?
+                    .map_err(|e| BovedaError::IoError(format!("Failed to read salt metadata: {}", e)))?
                     .permissions();
                 perms.set_readonly(true);
                 let _ = std::fs::set_permissions(&salt_path, perms);

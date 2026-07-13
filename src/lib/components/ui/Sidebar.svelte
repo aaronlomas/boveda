@@ -105,7 +105,7 @@
   </div>
 
   <!-- Nav items -->
-  <nav class="flex-1 flex flex-col gap-1">
+  <nav class="flex flex-col gap-1">
     {#each navItems as item}
       {@const Icon = item.icon}
       <button
@@ -123,27 +123,27 @@
         {/if}
       </button>
     {/each}
+    <!-- Logout button -->
+    <button
+      class="nav-item-btn hover:bg-danger/10 hover:text-text-primary"
+      onclick={logout}
+      data-tooltip={uiState.sidebarCollapsed
+        ? $_("sidebar.logout")
+        : undefined}
+    >
+      <div class="shrink-0 w-5 flex justify-center">
+        <IconLogout size={20} />
+      </div>
+      {#if !uiState.sidebarCollapsed}
+        <span class="flex-1">{$_("sidebar.logout")}</span>
+      {/if}
+    </button>
   </nav>
 
-  <!-- Logout button -->
-  <button
-    class="mt-auto flex justify-center items-center gap-3 py-2.5 px-3 border-none rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-full whitespace-nowrap overflow-hidden w-full text-left hover:bg-danger/10 hover:text-text-primary"
-    onclick={logout}
-    data-tooltip={uiState.sidebarCollapsed
-      ? $_("sidebar.logout")
-      : undefined}
-  >
-    <div class="shrink-0 w-5 flex justify-center">
-      <IconLogout size={20} />
-    </div>
-    {#if !uiState.sidebarCollapsed}
-      <span class="flex-1">{$_("sidebar.logout")}</span>
-    {/if}
-  </button>
 
   <!-- Collapse toggle -->
   <button
-    class="flex items-center gap-2.5 mb-12 p-4 border-none border-t border-surface/8 rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-all whitespace-nowrap overflow-hidden w-full mt-2 pt-4 hover:text-text-secondary"
+    class="flex items-center gap-2.5 mb-12 p-4 border-none border rounded-sm bg-transparent text-text-muted cursor-pointer font-medium text-xs transition-all whitespace-nowrap w-full mt-2 pt-4 hover:text-text-secondary"
     onclick={toggle}
     aria-label="Toggle sidebar"
   >

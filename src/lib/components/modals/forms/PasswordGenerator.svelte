@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { onDestroy } from "svelte";
   import { generatePassword } from "$lib/utils/tauri";
   import { _ } from "svelte-i18n";
+  import { writeText } from "@tauri-apps/plugin-clipboard-manager";
   import Button from "../../core/primitives/Button.svelte";
-  import { UI_CONFIG } from "$lib/config/ui";
 
   let { onuse }: { onuse: (pw: string) => void } = $props();
 
@@ -11,6 +12,8 @@
   let genPreview = $state("");
   let genLoading = $state(false);
   let genCopied = $state(false);
+  let clipboardCountdown = $state<number | null>(null);
+  let clipboardInterval: ReturnType<typeof setInterval> | null = null;
 
   export async function refreshPreview() {
     genLoading = true;
@@ -25,17 +28,42 @@
     }
   }
 
+  function startClipboardCleanupCountdown() {
+    if (clipboardInterval) {
+      clearInterval(clipboardInterval);
+    }
+
+    clipboardCountdown = 30;
+    genCopied = true;
+
+    clipboardInterval = setInterval(() => {
+      if (clipboardCountdown === null || clipboardCountdown <= 1) {
+        clearInterval(clipboardInterval!);
+        clipboardInterval = null;
+        clipboardCountdown = null;
+        writeText("").catch(() => {});
+        genCopied = false;
+      } else {
+        clipboardCountdown -= 1;
+      }
+    }, 1000);
+  }
+
   async function copyGenerated() {
     if (!genPreview) return;
     try {
-      const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
       await writeText(genPreview);
-      genCopied = true;
-      setTimeout(() => (genCopied = false), UI_CONFIG.COPY_FEEDBACK_DURATION);
+      startClipboardCleanupCountdown();
     } catch (e) {
       console.warn("Tauri clipboard error:", e);
     }
   }
+
+  onDestroy(() => {
+    if (clipboardInterval) {
+      clearInterval(clipboardInterval);
+    }
+  });
 
   // Generate initial password when mounted
   $effect(() => {
@@ -43,9 +71,13 @@
   });
 </script>
 
-<div class="p-4 flex flex-col gap-3 rounded-xl border border-accent/20 bg-accent/10 backdrop-blur-md">
+<div
+  class="p-4 flex flex-col gap-3 rounded-xl border border-accent/20 bg-accent/10 backdrop-blur-md"
+>
   <div class="flex items-center gap-2 bg-panel/30 rounded-sm p-2.5 px-3">
-    <code class="flex-1 font-mono text-sm text-accent-light break-all select-all">
+    <code
+      class="flex-1 font-mono text-sm text-accent-light break-all select-all"
+    >
       {genLoading ? $_("add_credential.generating") : genPreview}
     </code>
     <button
@@ -62,7 +94,8 @@
   <div class="flex flex-col gap-2.5">
     <div class="flex flex-col gap-1.5">
       <label for="gen-length" class="text-text-secondary text-xs">
-        {$_("add_credential.length_label")} <strong class="text-text-primary">{genLength}</strong>
+        {$_("add_credential.length_label")}
+        <strong class="text-text-primary">{genLength}</strong>
       </label>
       <input
         id="gen-length"
@@ -74,7 +107,9 @@
         class="w-full accent-accent cursor-pointer"
       />
     </div>
-    <label class="flex items-center gap-2 cursor-pointer text-text-secondary text-xs">
+    <label
+      class="flex items-center gap-2 cursor-pointer text-text-secondary text-xs"
+    >
       <input
         type="checkbox"
         class="accent-accent cursor-pointer"
@@ -86,13 +121,12 @@
   </div>
 
   <div class="flex gap-2 justify-end mt-1 flex-wrap">
-    <Button
-      type="button"
-      variant="secondary"
-      size="sm"
-      onclick={copyGenerated}
-    >
-      {genCopied ? $_("actions.copied") : $_("actions.copy")}
+    <Button type="button" variant="secondary" size="sm" onclick={copyGenerated}>
+      {clipboardCountdown !== null
+        ? `${clipboardCountdown}s`
+        : genCopied
+          ? $_("actions.copied")
+          : $_("actions.copy")}
     </Button>
     <Button
       type="button"

@@ -244,7 +244,7 @@
       {$_("pin_security.pin_label")}
     </span>
     <div
-      class="flex items-center gap-2 bg-surface/5 border border-surface/8 rounded-xl p-2 px-3 transition-colors hover:bg-surface/[0.07]"
+      class="flex items-center gap-2 bg-surface/5 border border-surface/8 py-1 px-3 transition-colors hover:bg-surface/[0.07] rounded-sm"
     >
       <code
         class="flex-1 font-mono text-lg text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis tracking-[0.2em]"

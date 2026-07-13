@@ -61,8 +61,6 @@
         <button
           class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer"
           onclick={ontogglereveal}
-          aria-label={revealed ? $_("actions.hide") : $_("actions.show")}
-          data-tooltip={revealed ? $_("actions.hide") : $_("actions.show")}
         >
           {#if revealed}
             <IconEyeOff size={16} />
@@ -77,7 +75,6 @@
         class="p-2 text-text-muted hover:text-text-primary hover:bg-surface/10 rounded-md transition-all cursor-pointer
                {countdown !== null ? 'text-accent-light' : ''}"
         onclick={oncopy}
-        aria-label={$_("actions.copy")}
         data-tooltip={countdown !== null
           ? $_("actions.status.clearing", { values: { seconds: countdown } })
           : $_("actions.copy")}

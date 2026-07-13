@@ -17,7 +17,12 @@
   import { toast } from "$lib/stores/toast.svelte";
 
   // Props
-  let { account, ondelete, onrefresh, expanded = false } = $props<{
+  let {
+    account,
+    ondelete,
+    onrefresh,
+    expanded = false,
+  } = $props<{
     account: Account;
     ondelete: () => void;
     onrefresh?: () => void;
@@ -71,19 +76,26 @@
 <!-- GLOBAL WINDOW EVENTS -->
 <svelte:window
   onclick={(e) => {
-    if (menuOpen && !(e.target as HTMLElement)?.closest(`[data-card-id="${account.id}"]`)) {
+    if (
+      menuOpen &&
+      !(e.target as HTMLElement)?.closest(`[data-card-id="${account.id}"]`)
+    ) {
       menuOpen = false;
     }
   }}
 />
 
-
 <div class="flex items-center gap-2">
-  
   <!-- Favicon -->
   <div
-    class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative {!(account.group_name && dataState.groupColors[account.group_name]) ? 'bg-surface/5 border border-surface/10 text-text-primary' : 'text-white border border-transparent'}"
-    style={account.group_name && dataState.groupColors[account.group_name] ? `background-color: ${dataState.groupColors[account.group_name]}; border-color: ${dataState.groupColors[account.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[account.group_name]}40;` : ""}
+    class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative {!(
+      account.group_name && dataState.groupColors[account.group_name]
+    )
+      ? 'bg-surface/5 border border-surface/10 text-text-primary'
+      : 'text-white border border-transparent'}"
+    style={account.group_name && dataState.groupColors[account.group_name]
+      ? `background-color: ${dataState.groupColors[account.group_name]}; border-color: ${dataState.groupColors[account.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[account.group_name]}40;`
+      : ""}
   >
     {#if account.favicon_url}
       <img
@@ -104,17 +116,22 @@
       class="block font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis"
       >{account.site}</span
     >
-    <span class="text-text-muted text-xs">{account.group_name || $_("groups.none")}</span>
+    <span class="text-text-muted text-xs"
+      >{account.group_name || $_("groups.none")}</span
+    >
   </div>
 
   <!-- More Actions Button -->
   <div class="flex items-center shrink-0">
-    
     <!-- More Actions Button -->
     <div class="relative">
       <button
-        class="text-text-muted rounded-md transition-colors p-1 {expanded ? 'hover:bg-surface/10 hover:text-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
-        onclick={(e) => { if (expanded) menuOpen = !menuOpen; }}
+        class="text-text-muted rounded-md transition-colors p-1 {expanded
+          ? 'hover:bg-surface/10 hover:text-text-primary cursor-pointer'
+          : 'opacity-50 cursor-default'}"
+        onclick={(e) => {
+          if (expanded) menuOpen = !menuOpen;
+        }}
         aria-label={$_("groups.menu_label")}
         aria-expanded={menuOpen}
         aria-haspopup="menu"
@@ -159,7 +176,10 @@
           <!-- Delete Credential -->
           <button
             class="w-full flex items-center gap-2 p-2 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
-            onclick={() => { menuOpen = false; ondelete(); }}
+            onclick={() => {
+              menuOpen = false;
+              ondelete();
+            }}
             role="menuitem"
           >
             <IconTrash size={15} class="shrink-0" />
@@ -168,6 +188,5 @@
         </div>
       {/if}
     </div>
-
   </div>
 </div>

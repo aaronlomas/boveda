@@ -154,75 +154,87 @@
   {#snippet header(expanded)}
     <!-- Header -->
     <div class="flex items-center gap-4">
-    <div
-      class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative overflow-hidden {!(pinEntry.group_name && dataState.groupColors[pinEntry.group_name]) ? 'bg-accent/5 border border-accent/10 text-accent-light' : 'text-white border border-transparent'}"
-      style={pinEntry.group_name && dataState.groupColors[pinEntry.group_name] ? `background-color: ${dataState.groupColors[pinEntry.group_name]}; border-color: ${dataState.groupColors[pinEntry.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[pinEntry.group_name]}40;` : ""}
-    >
-      <span class="text-lg font-bold">#</span>
-    </div>
-
-    <div class="flex-1 min-w-0">
-      <span
-        class="block font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis"
-        >{pinEntry.name}</span
+      <div
+        class="w-11 h-11 rounded-sm grid place-items-center shrink-0 text-lg font-bold relative overflow-hidden {!(
+          pinEntry.group_name && dataState.groupColors[pinEntry.group_name]
+        )
+          ? 'bg-accent/5 border border-accent/10 text-accent-light'
+          : 'text-white border border-transparent'}"
+        style={pinEntry.group_name && dataState.groupColors[pinEntry.group_name]
+          ? `background-color: ${dataState.groupColors[pinEntry.group_name]}; border-color: ${dataState.groupColors[pinEntry.group_name]}; box-shadow: 0 0 10px ${dataState.groupColors[pinEntry.group_name]}40;`
+          : ""}
       >
-      <span class="text-text-muted text-xs"
-        >{pinEntry.group_name || $_("groups.none")} • {formatDate(pinEntry.created_at)}</span
-      >
-    </div>
+        <span class="text-lg font-bold">#</span>
+      </div>
 
-    <!-- Actions row -->
-    <div class="flex items-center shrink-0">
-      <div class="relative">
-        <button
-          class="text-text-muted rounded-full transition-colors p-1 {expanded ? 'hover:bg-surface/10 hover:text-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
-          onclick={(e) => { if (expanded) menuOpen = !menuOpen; }}
-          aria-label="Menu"
-          disabled={!expanded}
+      <div class="flex-1 min-w-0">
+        <span
+          class="block font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis"
+          >{pinEntry.name}</span
         >
-          <IconDotsVertical size={16} />
-        </button>
+        <span class="text-text-muted text-xs"
+          >{pinEntry.group_name || $_("groups.none")} • {formatDate(
+            pinEntry.created_at,
+          )}</span
+        >
+      </div>
 
-        {#if menuOpen}
-          <div
-            class="absolute right-0 top-full mt-1 z-20 min-w-44 border border-surface/20 rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150 bg-panel/50 backdrop-blur-2xl"
+      <!-- Actions row -->
+      <div class="flex items-center shrink-0">
+        <div class="relative">
+          <button
+            class="text-text-muted rounded-full transition-colors p-1 {expanded
+              ? 'hover:bg-surface/10 hover:text-text-primary cursor-pointer'
+              : 'opacity-50 cursor-default'}"
+            onclick={(e) => {
+              if (expanded) menuOpen = !menuOpen;
+            }}
+            aria-label="Menu"
+            disabled={!expanded}
           >
-            <button
-              class="w-full flex items-center gap-2 p-2 px-3 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
-              onclick={openAssignGroup}
-            >
-              <IconFolderPlus size={15} class="text-accent shrink-0" />
-              {pinEntry.group_name
-                ? $_("groups.change_group")
-                : $_("groups.add_to_group")}
-            </button>
+            <IconDotsVertical size={16} />
+          </button>
 
-            {#if pinEntry.group_name}
+          {#if menuOpen}
+            <div
+              class="absolute right-0 top-full mt-1 z-20 min-w-44 border border-surface/20 rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150 bg-panel/50 backdrop-blur-2xl"
+            >
               <button
                 class="w-full flex items-center gap-2 p-2 px-3 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
-                onclick={removeFromGroup}
+                onclick={openAssignGroup}
               >
-                <IconFolderX size={15} class="text-text-muted shrink-0" />
-                {$_("groups.remove_from_group")}
+                <IconFolderPlus size={15} class="text-accent shrink-0" />
+                {pinEntry.group_name
+                  ? $_("groups.change_group")
+                  : $_("groups.add_to_group")}
               </button>
-            {/if}
 
-            <div class="h-px bg-surface/8 mx-2 my-1"></div>
+              {#if pinEntry.group_name}
+                <button
+                  class="w-full flex items-center gap-2 p-2 px-3 text-sm text-text-secondary hover:bg-surface/10 hover:text-text-primary transition-colors cursor-pointer text-left"
+                  onclick={removeFromGroup}
+                >
+                  <IconFolderX size={15} class="text-text-muted shrink-0" />
+                  {$_("groups.remove_from_group")}
+                </button>
+              {/if}
 
-            <button
-              class="w-full flex items-center gap-2 p-2 px-3 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
-              onclick={() => {
-                menuOpen = false;
-                ondelete(pinEntry.id);
-              }}
-            >
-              <IconTrash size={15} class="shrink-0" />
-              {$_("actions.delete")}
-            </button>
-          </div>
-        {/if}
+              <div class="h-px bg-surface/8 mx-2 my-1"></div>
+
+              <button
+                class="w-full flex items-center gap-2 p-2 px-3 text-sm text-danger hover:bg-danger/8 transition-colors cursor-pointer text-left"
+                onclick={() => {
+                  menuOpen = false;
+                  ondelete(pinEntry.id);
+                }}
+              >
+                <IconTrash size={15} class="shrink-0" />
+                {$_("actions.delete")}
+              </button>
+            </div>
+          {/if}
+        </div>
       </div>
-    </div>
     </div>
   {/snippet}
 

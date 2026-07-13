@@ -164,6 +164,7 @@
         if (userCopyTimer === null || userCopyTimer <= 1) {
           clearInterval(interval);
           userCopyTimer = null;
+          writeText("").catch(() => {});
         } else {
           userCopyTimer--;
         }
@@ -216,6 +217,7 @@
   <CredentialField
     label={$_("accounts.username_label")}
     value={account.username}
+    countdown={userCopyTimer}
     oncopy={() => copyToClipboard(account.username, "user")}
   />
 

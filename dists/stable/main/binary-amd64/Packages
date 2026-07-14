@@ -1,14 +1,14 @@
 Package: boveda
-Version: 1.4.2
+Version: 1.4.3
 Architecture: amd64
 Maintainer: you
-Installed-Size: 35207
+Installed-Size: 35208
 Depends: libayatana-appindicator3-1, libwebkit2gtk-4.1-0, libgtk-3-0
-Filename: pool/main/Boveda_1.4.2_amd64.deb
-Size: 11741720
-MD5sum: 534e3d08bcd93bf916ec5a97a692538f
-SHA1: 76f1e0884dcb9b9ca1061556e56b5d470a52133f
-SHA256: c8cc40337ee0b5652eb4445e62de755ab75adee6a70a4463b7b7a065a5c6fa99
+Filename: pool/main/Boveda_1.4.3_amd64.deb
+Size: 11741500
+MD5sum: fdb074e73cc1f96045b4ed602b7fc898
+SHA1: 665564a9ecb707c7834775068eaf5bb324fb704e
+SHA256: 66ced580cc04ba691db30e9a05ce0ad7e2f073790796196f32e7bfae5b0c032f
 Priority: optional
 Description: Bóveda — Elegant Password Manager
  (none)

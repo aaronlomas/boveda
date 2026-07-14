@@ -2,7 +2,6 @@ import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { logStore, type LogCategory } from "$lib/stores/log.svelte";
 
 let unlistenPersistent: UnlistenFn | null = null;
-let unlistenSession: UnlistenFn | null = null;
 
 function handleAuditPayload(payload: any): void {
   if (payload.action === "clear_log") {
@@ -35,19 +34,4 @@ export function stopPersistentLogListener(): void {
   unlistenPersistent = null;
 }
 
-export async function startLogListeners(): Promise<void> {
-  if (unlistenSession) {
-    unlistenSession();
-    unlistenSession = null;
-  }
 
-  unlistenSession = await listen<{ action: string; msg?: string; category?: LogCategory }>(
-    "boveda://audit",
-    ({ payload }) => handleAuditPayload(payload)
-  );
-}
-
-export function stopLogListeners(): void {
-  unlistenSession?.();
-  unlistenSession = null;
-}

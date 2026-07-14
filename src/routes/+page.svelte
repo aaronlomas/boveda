@@ -6,7 +6,6 @@
   import { sessionState, uiState } from "$lib/stores/stores.svelte";
   import { themeStore } from "$lib/stores/theme.svelte";
   import { startAutoLock, stopAutoLock } from "$lib/utils/autoLock";
-  import { startLogListeners, stopLogListeners } from "$lib/utils/logEvents";
   import { invoke } from "@tauri-apps/api/core";
 
   async function loadTimeoutSeconds(): Promise<number> {
@@ -18,7 +17,6 @@
   function doLock() {
     sessionState.isUnlocked = false;
     stopAutoLock();
-    stopLogListeners();
   }
 
   let remoteGuardInterval: ReturnType<typeof setInterval> | null = null;
@@ -46,11 +44,9 @@
       loadTimeoutSeconds().then((seconds) => {
         startAutoLock({ onLock: doLock, seconds });
       });
-      startLogListeners();
       startRemoteGuard();
     } else {
       stopAutoLock();
-      stopLogListeners();
       stopRemoteGuard();
     }
   });

@@ -1,5 +1,0 @@
-[advisories]
-ignore = [
-    "RUSTSEC-2024-0429", # glib unsoundness - unfixable transitive dependency of Tauri/WebKit2GTK on Linux
-    "RUSTSEC-2023-0071", # rsa marvin attack - transitive dependency of sqlx-mysql (unused)
-]

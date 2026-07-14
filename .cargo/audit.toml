@@ -3,6 +3,8 @@
 #
 # All ignored advisories are for vulnerabilities in TRANSITIVE dependencies
 # that Bóveda does not control and that are not exploitable in this application.
+[output]
+deny = ["unmaintained"] 
 
 [advisories]
 # Desactiva que las dependencias sin mantenimiento ("unmaintained") hagan fallar la CI

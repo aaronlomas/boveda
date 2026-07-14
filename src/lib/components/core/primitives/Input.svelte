@@ -31,7 +31,7 @@
   const gridLayouts = {
     simple: "grid-cols-1",
     double: "grid-cols-[1fr_auto]",
-    triple: "grid-cols-[auto_1fr_auto]"
+    triple: "grid-cols-[auto_1fr_auto]",
   };
 </script>
 
@@ -43,16 +43,17 @@
   {/if}
 
   <!-- Base Container -->
-  <div 
+  <div
     class="
       {COMPONENTS.input} 
       grid items-center gap-2 px-3
       {gridLayouts[variant]}
-      {error ? 'border-danger focus-within:ring-danger focus-within:border-danger' : ''} 
+      {error
+      ? 'border-danger focus-within:ring-danger focus-within:border-danger'
+      : ''} 
       {className}
     "
   >
-  
     {#if variant === "triple" && icon}
       <div class="flex items-center justify-center shrink-0">
         {@render icon()}
@@ -63,7 +64,7 @@
     <input
       {id}
       bind:value
-      class="w-full bg-transparent py-1 border-none outline-none focus:ring-0 focus:outline-none"
+      class="w-full bg-transparent border-none outline-none focus:ring-0 focus:outline-none"
       {...rest}
     />
 

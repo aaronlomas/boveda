@@ -33,7 +33,7 @@
     loading = true;
     try {
       const filePath = await open({
-        title: $_("global.select_db_title") || "Select Database",
+        title: "Select Database",
         filters: [
           { name: "Bóveda Vaults", extensions: ["bvda", "db", "pack", "bvda.pack"] },
         ],
@@ -54,7 +54,7 @@
         } catch (e: any) {
           console.error("Secure import failed:", e);
           error = e.toString();
-          toast.error(t("global.error_import") + ": " + e.toString());
+          toast.error("Error: " + e.toString());
         }
       } else {
         // Legacy DB Import (SQLite file replacement)
@@ -65,7 +65,7 @@
         } catch (e: any) {
           console.error("Import failed:", e);
           error = e.toString();
-          toast.error(t("global.error_import") + ": " + e.toString());
+          toast.error("Error: " + e.toString());
         }
       }
     } catch (e: any) {
@@ -78,7 +78,7 @@
   function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     if (password.length < 8) {
-      error = "La contraseña debe tener al menos 8 caracteres.";
+      error = "The password must be at least 8 characters long.";
       return;
     }
     handleImport();

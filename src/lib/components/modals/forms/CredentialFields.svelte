@@ -61,19 +61,13 @@
         {showGenerator ? $_("actions.hide") : $_("actions.generate")}
       </button>
     </div>
-    <div class="relative">
-      <input
-        id="add-pw"
-        class="flex h-10 w-full rounded-md border {errors.password ? 'border-danger' : 'border-surface/10'} bg-surface/4 px-3 py-2 text-sm text-text-primary ring-offset-bg-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent disabled:cursor-not-allowed disabled:opacity-50 pr-10"
-        type={showPw ? "text" : "password"}
-        bind:value={password}
-        placeholder={$_("add_credential.placeholder") || "•••••••••••••••"}
-        autocomplete="new-password"
-      />
+
+    {#snippet eyeAction()}
       <button
         type="button"
-        class="absolute right-2 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-text-muted hover:text-text-primary opacity-60 hover:opacity-100 transition-all flex items-center"
+        class="bg-none border-none cursor-pointer text-text-muted hover:text-text-primary opacity-60 hover:opacity-100 transition-all flex items-center"
         onclick={() => (showPw = !showPw)}
+        aria-label={showPw ? "Hide password" : "Show password"}
       >
         {#if showPw}
           <IconEyeOff size={18} />
@@ -81,13 +75,18 @@
           <IconEye size={18} />
         {/if}
       </button>
-    </div>
-    
-    {#if errors.password}
-      <span class="text-xs text-danger mt-1 animate-in fade-in slide-in-from-top-1">
-        {$_(`add_credential.${errors.password}`)}
-      </span>
-    {/if}
+    {/snippet}
+
+    <Input
+      id="add-pw"
+      variant="double"
+      action={eyeAction}
+      type={showPw ? "text" : "password"}
+      bind:value={password}
+      placeholder={$_("add_credential.placeholder") || "•••••••••••••••"}
+      autocomplete="new-password"
+      error={errors.password ? $_(`add_credential.${errors.password}`) : undefined}
+    />
 
     <PasswordStrength {password} />
 

@@ -1,3 +1,4 @@
+// vitest-setup.ts
 import { vi } from 'vitest';
 import '@testing-library/svelte/vitest';
 

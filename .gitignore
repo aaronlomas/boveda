@@ -7,7 +7,7 @@ src-tauri/gen/schemas
 # --- Auditories ---
 *_report.txt
 *_results.txt
-# --- Bóveda Specific (Security) ---
+# --- (Security) ---
 # Never commit actual vaults or cryptographic salts
 *.bvda
 *.db

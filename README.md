@@ -50,6 +50,25 @@ flowchart TD
 - **`src`**: our user interface.
 ---
 
+## Installation in Debian/Ubuntu
+
+**Commands:**
+
+1. Download the public GPG key
+  `curl -fsSL https://github.io | sudo gpg --dearmor -o /usr/share/keyrings/boveda-archive-keyring.gpg`
+2. Add the repository to APT sources
+  `echo "deb [arch=amd64 signed-by=/usr/share/keyrings/boveda-archive-keyring.gpg] https://github.io stable main" | sudo tee /etc/apt/sources.list.d/boveda.list > /dev/null`
+3. Synchronize and install Bóveda
+  `sudo apt update && sudo apt install boveda`
+
+## Installation in Windows
+
+**Download the .exe or .msi binary from our releases**
+
+More details on our website -> <a href="https://boveda-web.vercel.app/">Bóveda Web</a>
+
+---
+
 ## Development Setup
 
 **Prerequisites:**
@@ -103,6 +122,6 @@ Bóveda is free software under the **GPL-3.0** license.
 | [PRIVACY.md](./PRIVACY.md) | Privacy policy |
 | [CHANGELOG.md](./CHANGELOG.md) | Change log |
 
-## Web
+## Our Website
 
 <a href="https://boveda-web.vercel.app/">Bóveda Web</a>

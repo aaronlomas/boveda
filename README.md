@@ -50,7 +50,7 @@ flowchart TD
 - **`src`**: our user interface.
 ---
 
-## Installation in Debian/Ubuntu
+## Installation on Debian/Ubuntu
 
 **Commands:**
 
@@ -61,7 +61,7 @@ flowchart TD
 3. Synchronize and install Bóveda
   `sudo apt update && sudo apt install boveda`
 
-## Installation in Windows
+## Installation on Windows
 
 **Download the .exe or .msi binary from our releases**
 

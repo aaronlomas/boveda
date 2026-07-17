@@ -1,4 +1,5 @@
 # Bóveda — Credential Manager
+
 <img width="1100" height="720" alt="image" src="https://github.com/user-attachments/assets/75666c5a-c670-4493-a774-1a32c6eb2356" />
 
 Bóveda means **Security through Isolation**. We prioritize network-isolated security and practice digital transparency.
@@ -102,8 +103,6 @@ Bóveda is free software under the **GPL-3.0** license.
 | [PRIVACY.md](./PRIVACY.md) | Privacy policy |
 | [CHANGELOG.md](./CHANGELOG.md) | Change log |
 
-## Acknowledgements
+## Web
 
-* Free code signing provided by [SignPath Foundation](https://signpath.org).
-
-
+<a href="https://boveda-web.vercel.app/">Bóveda Web</a>

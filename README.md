@@ -54,11 +54,11 @@ flowchart TD
 
 **Commands:**
 
-1. Download the public GPG key
+1. **Download the public GPG key:**
   `curl -fsSL https://github.io | sudo gpg --dearmor -o /usr/share/keyrings/boveda-archive-keyring.gpg`
-2. Add the repository to APT sources
+2. **Add the repository to APT sources:**
   `echo "deb [arch=amd64 signed-by=/usr/share/keyrings/boveda-archive-keyring.gpg] https://github.io stable main" | sudo tee /etc/apt/sources.list.d/boveda.list > /dev/null`
-3. Synchronize and install Bóveda
+3. **Synchronize and install Bóveda:**
   `sudo apt update && sudo apt install boveda`
 
 ## Installation on Windows

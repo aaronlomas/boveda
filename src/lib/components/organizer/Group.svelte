@@ -235,7 +235,7 @@
       : 'text-text-muted'}"
     onclick={toggleCapsuleLock}
     aria-label={uiState.capsuleLocked ? $_("actions.lock_capsule_label") : $_("actions.unlock_capsule_label")}
-    title={uiState.capsuleLocked ? $_("actions.lock_capsule_label") : $_("actions.unlock_capsule_label")}
+    title={uiState.capsuleLocked ? $_("actions.unlock_capsule_label") : $_("actions.unlock_capsule_label")}
   >
     {#if uiState.capsuleLocked}
       <IconLock size={14} />

@@ -8,36 +8,36 @@ Codename: stable
 Architectures: amd64
 Components: main
 Description: Boveda Password Manager APT Repository
-Date: Wed, 15 Jul 2026 02:12:27 +0000
+Date: Mon, 20 Jul 2026 22:53:52 +0000
 MD5Sum:
- 7557d25b3efadecfd3735d168ec45f8d              203 Release
+ c3514e7f6f5dd11fa1f9821944f9f870              203 Release
  31b9c5849a769cbdfcab858780a288d2              455 main/binary-amd64/Packages
  129f22741e93c6f7e650e7f889e5fe32              367 main/binary-amd64/Packages.gz
 SHA1:
- fb04e2c7267fdb8d59cc0ad22f8d0834bbe00161              203 Release
+ b8dbba6298119000cf9246373035cc409b27e64c              203 Release
  cecfc690ee5332c81225078f34579f03eb414248              455 main/binary-amd64/Packages
  627676ddb1cb0c58ba7cb46748e7d9e2122a888d              367 main/binary-amd64/Packages.gz
 SHA256:
- 3ebc4cdd31f22d338b8eee4e42e492663c7ea1c2fe852b633b7c56eb75533d49              203 Release
+ 9d24e14450ddb93db87827efc908334213e9358caaca8bbeac3b1a23f48129ba              203 Release
  e0c31a3e8d832483f9e335f0117052aff1fa7a3fa1f220117531092d7f48beb6              455 main/binary-amd64/Packages
  079c92c1fb4550042e9d1dc09ddb18d5bdc9eaa42bcebf85beb5ba6e1cb7228c              367 main/binary-amd64/Packages.gz
 SHA512:
- 567e90883de15d3afc3c7076c1b8deeafe28ee7c0e3fa3dd011b7c860f4f4f0b0570f4a00f39b74c0f3ac60d5e89051fe1404e7c486bda71fbcbea02d5ef5655              203 Release
+ 4147687f18a17f9f382c23279911f83898a7dff44c84faf3d8eb6f0c34f581c1fcf15c5f15b87a691301bbe52ee02287ec984a09fe8172945fc980b4fbcad67c              203 Release
  d36c5bdbdeb66824b851893a6003a76bdc0c9a748b100199252d27a35f08d16b5ac12d58ee83756d6064639b770f20151ab0a629f0e05c68cbbd7ffed33b36ed              455 main/binary-amd64/Packages
  0be719a26d29559687c8ded96706a40d8517606efc787e793e8e98fb7188dd4746c4d745d1c069d7ebc91136f813dad4904e7aa48e5034e4c895f31fb07ffa91              367 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEZ0COxlX5g8oBbqyo2Tcl3CZBXtQFAmpW7IsACgkQ2Tcl3CZB
-XtS1KRAAqtavYazpl3YrkxWsnkriMXSlH1ZAZeDNCFLznydSH2PYG7UzbOmvpkmQ
-cB5bVrWSUWpCPy0wEVljIOcidjmADUDAJraTSvCxoVs6kg5KzImFw3hjrLcNK+Ob
-ktDMDZX9SdOtFxqvaBqGmsRfcL61KDiwg3vmTClpp+YsSOuis38Lp1VSNmi0NWbK
-h0dwnhtLRWAPYhmyf+iSvYen7Mc4sO4jcEM4uiGvvfGJqdD69KuzNMhGF8QD1pu1
-HNd9H6VL9a68jOE+Hgyb3kQcrptAFMtpMYjUcLKA3RnH1BmOHgBJiHv0h9WgBTH7
-BVCwEREBhjfC+yr6rI/0F3Zpo+AMS0JORcs4ab8k9X5xZYZqDV7wEZj7s6I5gAsV
-db5o/EWpYwd5Hjq++gYWyCgVKQ63HMb4zpQEQ6d63mic5mJb5AyfAznscaaJm9Rv
-hs05HgdzbRl/q6rIMBAWjMa8kii1atzr3oxYBNCSKjOOCVM3Wnlyd6Dqf1/P6hTu
-yPO+ttT1b51ff9qCUtFzTM7QdnM2m2WKf0Lle/XTObEOFrs5Z59v7AcAKwzAaBZk
-4Pb/o6V1PSW07SoBeQrMrOaE9b36Si7lk/qEfJMoh5QMIN8u33oumRvTY/bCCpS+
-3+EwOHLzFX+Ca6m09eTYbhZTm3673uuYZBsmthUdQz9nndLUa2s=
-=EBtF
+iQIzBAEBCgAdFiEEZ0COxlX5g8oBbqyo2Tcl3CZBXtQFAmpepwAACgkQ2Tcl3CZB
+XtRv1g//eMiGIwtA/t75BTe8++w9+MgawUDIWw8AE5Cmvea67fpfEcW8IOhuBbfo
+iMStsOZkA6YKmdrB08xSKIb2UGDfuUdmlRZC+k9JJrtULA9EBborrOzzYwTm0JDM
+YMvzgivPWj+WFppBicCFwPJgUbrzjq2bvg6GDfkJ4ZrScFOjgcFQSlSJ3OFbT2T4
+4rel88g15qx/W5EHC37tNCRHTYvmzbkVxMGJu/7z0kOdZzkkv7sz1UHFQk9GEiG3
+vD1a3Vjy5vTS4I4zua/o/xWNHdodKfQVlNb0F5LTTLsy1iTJ8Svaz5+d+2dyC7T+
+z6RZ9NmOfby/DyHRFn5e2D4pMaQiCzdskTLtJSKm5CxqVFlb1oSojUC3V1zqDNGF
+s4NYRA7tb2etKlgFxbI640V7IVL+4F0ijkDC9qcwk759cCfy0vnCk0Seie/pRxEI
+1wBaQ2fJfKkH3e7qWBHxgyWvVaDgyrbqZLlzWhQhSvLTV1W5XkcH1pxBysnC+UMg
+3bNVBMY6n4mmNF6xOsgza0KQ6ZsX6XdIamADW9PQ1ELnNv0Jv9hJMVRfA1JYWB2C
+QExdV4Mg+S3PmMM2dkl+BMivxtQBHfHkIImSrcZbK8/hvIfp4YA4BBt+5BU6Crzn
+5UUgBJsTERhLZliNrfPxE0RqxPTnQlgSHd7BCtmI/IA4z6Jk00Q=
+=AIr0
 -----END PGP SIGNATURE-----

@@ -56,7 +56,7 @@
 {#if sessionState.isUnlocked}
   <div class="app-layout">
     <Sidebar />
-    <main class="main-content flex-1 min-w-0 overflow-hidden" class:collapsed={uiState.sidebarCollapsed}>
+    <main class="main-content flex-1 min-w-0 overflow-hidden">
       <MainView />
     </main>
   </div>

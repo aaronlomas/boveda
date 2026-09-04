@@ -10,7 +10,7 @@ export type ViewId =
   | "import";
 
 export class UIState {
-  sidebarCollapsed = $state(false);
+  sidebarWidth = $state(220);
   activeView = $state<ViewId>("general");
   /** The currently selected group filter; null means "All". */
   activeGroup = $state<string | null>(null);

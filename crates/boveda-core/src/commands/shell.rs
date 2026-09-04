@@ -29,16 +29,16 @@ impl AppState {
 
             "crypto" => vec![
                 "── Cryptographic Parameters ────────────────────────────────".into(),
-                format!("  KDF Algorithm    : Argon2id (RFC 9106)"),
+                "  KDF Algorithm    : Argon2id (RFC 9106)".to_string(),
                 format!("  Memory Cost (m)  : {} KiB  ({} MiB)", crypto::ARGON2_M_COST, crypto::ARGON2_M_COST / 1024),
                 format!("  Time Cost   (t)  : {} iterations", crypto::ARGON2_T_COST),
                 format!("  Parallelism (p)  : {} lanes", crypto::ARGON2_P_COST),
-                format!("  Output Length    : 32 bytes (256-bit key)"),
+                "  Output Length    : 32 bytes (256-bit key)".to_string(),
                 "".into(),
-                format!("  AEAD Cipher      : ChaCha20-Poly1305 (RFC 8439)"),
+                "  AEAD Cipher      : ChaCha20-Poly1305 (RFC 8439)".to_string(),
                 format!("  Nonce Length     : {} bytes (96-bit random)", crypto::NONCE_LEN),
                 format!("  Auth Tag Length  : {} bytes (128-bit MAC)", crypto::TAG_LEN),
-                format!("  Key Length       : 32 bytes (256-bit)"),
+                "  Key Length       : 32 bytes (256-bit)".to_string(),
                 "────────────────────────────────────────────────────────────".into(),
             ],
 
